@@ -3,7 +3,10 @@ import { Address } from "viem";
 import { useAccount, useChainId, usePublicClient } from "wagmi";
 import { CompanyCard } from "@/components/CompanyCard";
 import router from "next/router";
-import { getRegisterBorderlessCompanyContractAddress } from "@/utils/contractAddress";
+import {
+  getRegisterBorderlessCompanyContractAddress,
+  getStartBlockNumber,
+} from "@/utils/contractAddress";
 
 const ListCompanies = () => {
   const chainId = useChainId();
@@ -11,8 +14,11 @@ const ListCompanies = () => {
   const publicClient = usePublicClient();
   const [companies, setCompanies] = useState<any[]>([]);
   const [contractAddress, setContractAddress] = useState<Address>();
+  const [startBlockNumber, setStartBlockNumber] = useState<number>();
+
   useEffect(() => {
     setContractAddress(getRegisterBorderlessCompanyContractAddress(chainId));
+    setStartBlockNumber(getStartBlockNumber(chainId));
   }, [chainId]);
 
   const fetchLogs = useCallback(async () => {
@@ -43,7 +49,7 @@ const ListCompanies = () => {
           },
         ],
       },
-      fromBlock: BigInt(5723975),
+      fromBlock: startBlockNumber ? BigInt(startBlockNumber) : undefined,
       toBlock: "latest",
     });
     const companies = logs.map((log) => ({
@@ -52,7 +58,8 @@ const ListCompanies = () => {
       companyIndex: Number(log.args.companyIndex_),
     }));
     setCompanies(companies);
-  }, [contractAddress, publicClient]);
+    console.log(logs);
+  }, [contractAddress, publicClient, startBlockNumber]);
 
   useEffect(() => {
     fetchLogs();
