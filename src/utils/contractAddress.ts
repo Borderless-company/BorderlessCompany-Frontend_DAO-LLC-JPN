@@ -5,6 +5,11 @@ export const BlockExplorerUrl: { [chain: string]: string } = {
   Amoy: "https://amoy.polygonscan.com/tx/",
 };
 
+export const StartBlockNumber: { [chain: string]: number } = {
+  Sepolia: 5701622,
+  Amoy: 5886234,
+};
+
 export const WhitelistContractAddress: { [chain: string]: Address } = {
   Sepolia: "0x09FaFD544F9dc6656743A5C828FB7491E18bC41D",
   Amoy: "0xaFD8e809a7f7d7C6bcb67866938F721ff0D345C4",
@@ -28,6 +33,10 @@ const getNetwork = (chainId: number) => {
     console.error("Invalid chainId");
   }
   return network;
+};
+
+export const getStartBlockNumber = (chainId: number): number => {
+  return StartBlockNumber[getNetwork(chainId)];
 };
 
 export const getBlockExplorerUrl = (chainId: number): string => {
