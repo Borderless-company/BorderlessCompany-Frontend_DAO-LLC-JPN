@@ -5,24 +5,25 @@ import { CompanyCard } from "@/components/CompanyCard";
 import router from "next/router";
 import {
   getRegisterBorderlessCompanyContractAddress,
-  getStartBlockNumber,
+  getRegisterBorderlessCompanyStartBlockNumber,
 } from "@/utils/contractAddress";
+import { Spinner } from "@nextui-org/react";
 
 const ListCompanies = () => {
   const chainId = useChainId();
   const { address } = useAccount();
   const publicClient = usePublicClient();
   const [companies, setCompanies] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [contractAddress, setContractAddress] = useState<Address>();
   const [startBlockNumber, setStartBlockNumber] = useState<number>();
 
-  useEffect(() => {
-    setContractAddress(getRegisterBorderlessCompanyContractAddress(chainId));
-    setStartBlockNumber(getStartBlockNumber(chainId));
-  }, [chainId]);
-
   const fetchLogs = useCallback(async () => {
-    if (!publicClient) return;
+    setIsLoading(true);
+    if (!publicClient) {
+      setIsLoading(false);
+      return;
+    }
     const logs = await publicClient.getLogs({
       address: contractAddress,
       event: {
@@ -58,30 +59,45 @@ const ListCompanies = () => {
       companyIndex: Number(log.args.companyIndex_),
     }));
     setCompanies(companies);
-    console.log(logs);
+    setIsLoading(false);
   }, [contractAddress, publicClient, startBlockNumber]);
 
   useEffect(() => {
-    fetchLogs();
-  }, [fetchLogs]);
+    setContractAddress(getRegisterBorderlessCompanyContractAddress(chainId));
+    setStartBlockNumber(getRegisterBorderlessCompanyStartBlockNumber(chainId));
+  }, [chainId]);
+
+  useEffect(() => {
+    if (contractAddress && startBlockNumber) {
+      fetchLogs();
+    }
+  }, [fetchLogs, contractAddress, startBlockNumber]);
 
   return (
-    <ul
-      role="list"
-      className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3"
-    >
-      {companies.map((company, index) => (
-        <li
-          key={index}
-          className="col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow cursor-pointer"
-          onClick={() => {
-            router.push(`/dao/${company.company}`);
-          }}
+    <>
+      {isLoading ? (
+        <div className="flex justify-center min-h-[100px]">
+          <Spinner size="lg" />
+        </div>
+      ) : (
+        <ul
+          role="list"
+          className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3"
         >
-          <CompanyCard company={company} />
-        </li>
-      ))}
-    </ul>
+          {companies.map((company, index) => (
+            <li
+              key={index}
+              className="col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow cursor-pointer"
+              onClick={() => {
+                router.push(`/dao/${company.company}`);
+              }}
+            >
+              <CompanyCard company={company} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
   );
 };
 

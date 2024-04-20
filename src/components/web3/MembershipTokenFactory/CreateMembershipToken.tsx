@@ -5,20 +5,19 @@ import {
   BaseError,
   useChainId,
 } from "wagmi";
-import { RegisterBorderlessCompanyAbi } from "@/utils/abi/RegisterBorderlessCompany.sol/RegisterBorderlessCompany";
+import { MembershipTokenFactoryAbi } from "@/utils/abi/MembershipTokenFactory";
 import { Address, stringToHex } from "viem";
-import { Button, Checkbox, Input } from "@nextui-org/react";
+import { Button, Input } from "@nextui-org/react";
 import {
   getBlockExplorerUrl,
-  getRegisterBorderlessCompanyContractAddress,
+  getMembershipTokenFactoryContractAddress,
 } from "@/utils/contractAddress";
 
-export function CreateBorderlessCompany() {
+export function CreateMembershipToken() {
   const [isClient, setIsClient] = useState(false);
   const chainId = useChainId();
 
   const { data: hash, error, isPending, writeContract } = useWriteContract();
-  const [isConfirmed, setIsConfirmed] = useState(false);
 
   const [contractAddress, setContractAddress] = useState<Address>();
   const [blockExplorerUrl, setBlockExplorerUrl] = useState<string>();
@@ -28,29 +27,15 @@ export function CreateBorderlessCompany() {
       return;
     }
     e.preventDefault();
-    // example
-    // companyID = "0x-borderless-company-id";
-    // establishmentDate = "YYYY-MM-DD HH:MM:SS";
-    // confirmed = true;
     const formData = new FormData(e.target as HTMLFormElement);
-    const companyID_ = formData.get("companyID_") as string;
-
-    // TODO: 設立日は自分で入れる
-    const establishmentDate_ = new Date()
-      .toISOString()
-      .replace("T", " ")
-      .substring(0, 19);
-    const confirmedBool = isConfirmed;
+    const name_ = formData.get("name_") as string;
+    const symbol_ = formData.get("symbol_") as string;
 
     writeContract({
       address: contractAddress,
-      abi: RegisterBorderlessCompanyAbi,
-      functionName: "createBorderlessCompany",
-      args: [
-        stringToHex(companyID_),
-        stringToHex(establishmentDate_),
-        confirmedBool,
-      ],
+      abi: MembershipTokenFactoryAbi,
+      functionName: "createMembershipToken",
+      args: [name_, symbol_],
     });
   }
 
@@ -60,7 +45,7 @@ export function CreateBorderlessCompany() {
     });
 
   useEffect(() => {
-    setContractAddress(getRegisterBorderlessCompanyContractAddress(chainId));
+    setContractAddress(getMembershipTokenFactoryContractAddress(chainId));
     setBlockExplorerUrl(getBlockExplorerUrl(chainId));
   }, [chainId]);
 
@@ -78,19 +63,11 @@ export function CreateBorderlessCompany() {
       {isClient && (
         <div>
           <form onSubmit={submit}>
-            <Input name="companyID_" label="companyID_" required />
+            <Input name="name_" label="name_" required />
+            <Input name="symbol_" label="symbol_" required />
 
-            <div className="flex flex-col gap-2">
-              <Checkbox isSelected={isConfirmed} onValueChange={setIsConfirmed}>
-                利用規約に同意する
-              </Checkbox>
-            </div>
-            <Button
-              isDisabled={isConfirmed !== true}
-              type="submit"
-              color="primary"
-            >
-              {isPending ? "Confirming..." : "DAOを起動"}
+            <Button type="submit" color="primary">
+              {isPending ? "Confirming..." : "トークンを作成する"}
             </Button>
           </form>
           {hash && (
@@ -107,6 +84,7 @@ export function CreateBorderlessCompany() {
           {isSuccess && <div>Transaction confirmed.</div>}
           {error && (
             <div className="text-red-500">
+              {error.message}
               {(error as BaseError).shortMessage || error.message}
             </div>
           )}

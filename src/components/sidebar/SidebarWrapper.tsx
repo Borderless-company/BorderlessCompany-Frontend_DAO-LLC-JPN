@@ -16,7 +16,7 @@ export const SidebarWrapper = () => {
   const pathname = usePathname();
   const { collapsed, setCollapsed } = useSidebarContext();
   const router = useRouter();
-  const { id } = router.query;
+  const { daoId } = router.query;
 
   return (
     <aside className="h-screen z-[20] sticky top-0">
@@ -29,7 +29,7 @@ export const SidebarWrapper = () => {
         })}
       >
         <div className={Sidebar.Header()}>
-          <Link href={`/dao/${id}`}>
+          <Link href={`/dao/${daoId}`}>
             <SidebarLogo />
           </Link>
         </div>
@@ -38,15 +38,21 @@ export const SidebarWrapper = () => {
             <SidebarItem
               title="ホーム"
               icon={<HomeIcon />}
-              isActive={pathname === `/dao/${id}`}
-              href={`/dao/${id}`}
+              isActive={pathname === `/dao/${daoId}`}
+              href={`/dao/${daoId}`}
             />
             <SidebarMenu title="メイン">
               <SidebarItem
-                isActive={pathname === `/dao/${id}/members`}
+                isActive={pathname === `/dao/${daoId}/members`}
                 title="メンバー一覧"
                 icon={<AccountsIcon />}
-                href={`/dao/${id}/members`}
+                href={`/dao/${daoId}/members`}
+              />
+              <SidebarItem
+                isActive={pathname === `/dao/${daoId}/membership-token`}
+                title="メンバーシップトークン"
+                icon={<AccountsIcon />}
+                href={`/dao/${daoId}/membership-token`}
               />
             </SidebarMenu>
           </div>
