@@ -35,8 +35,8 @@ export const CardTransactions = () => {
         </div>
 
         <div className="flex flex-col gap-1">
-          {items.map((item) => (
-            <div key={item.name} className="grid grid-cols-4 w-full">
+          {items.map((item, index) => (
+            <div key={index} className="grid grid-cols-4 w-full">
               <div>
                 <span className="text-default-900 font-semibold text-xs">
                   {item.name}

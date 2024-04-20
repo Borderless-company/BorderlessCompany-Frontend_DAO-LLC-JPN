@@ -20,6 +20,7 @@ export const CompanyCard = ({ company }: { company: Company }) => {
           className="object-cover rounded-xl"
           src="https://via.placeholder.com/500x500"
           width={270}
+          height={270}
         />
       </CardBody>
     </Card>

@@ -1,12 +1,21 @@
 import { Address } from "viem";
 
 export const BlockExplorerUrl: { [chain: string]: string } = {
-  Sepolia: "https://sepolia.etherscan.io/tx/",
-  Amoy: "https://amoy.polygonscan.com/tx/",
+  Sepolia: "https://sepolia.etherscan.io",
+  Amoy: "https://amoy.polygonscan.com",
 };
 
-export const StartBlockNumber: { [chain: string]: number } = {
+export const RegisterBorderlessCompanyStartBlockNumber: {
+  [chain: string]: number;
+} = {
   Sepolia: 5701622,
+  Amoy: 5886234,
+};
+
+export const MembershipTokenFactoryStartBlockNumber: {
+  [chain: string]: number;
+} = {
+  Sepolia: 5735686,
   Amoy: 5886234,
 };
 
@@ -22,6 +31,14 @@ export const RegisterBorderlessCompanyContractAddress: {
   Amoy: "0x04E0240556Fd3673B7F1f4968ddB4B58475E208E",
 };
 
+// TODO: AmoyのTokenFactoryAddressを入れる
+export const MembershipTokenFactoryContractAddress: {
+  [chain: string]: Address;
+} = {
+  Sepolia: "0x6D111FADbF1e42d6115C10515D30917829c330D9",
+  Amoy: "0x6D111FADbF1e42d6115C10515D30917829c330D9", // dummy
+};
+
 const chainIdToNetwork: { [chainId: number]: string } = {
   11155111: "Sepolia",
   80002: "Amoy",
@@ -35,8 +52,16 @@ const getNetwork = (chainId: number) => {
   return network;
 };
 
-export const getStartBlockNumber = (chainId: number): number => {
-  return StartBlockNumber[getNetwork(chainId)];
+export const getRegisterBorderlessCompanyStartBlockNumber = (
+  chainId: number
+): number => {
+  return RegisterBorderlessCompanyStartBlockNumber[getNetwork(chainId)];
+};
+
+export const getMembershipTokenFactoryStartBlockNumber = (
+  chainId: number
+): number => {
+  return MembershipTokenFactoryStartBlockNumber[getNetwork(chainId)];
 };
 
 export const getBlockExplorerUrl = (chainId: number): string => {
@@ -51,4 +76,10 @@ export const getRegisterBorderlessCompanyContractAddress = (
   chainId: number
 ): Address => {
   return RegisterBorderlessCompanyContractAddress[getNetwork(chainId)];
+};
+
+export const getMembershipTokenFactoryContractAddress = (
+  chainId: number
+): Address => {
+  return MembershipTokenFactoryContractAddress[getNetwork(chainId)];
 };

@@ -1,7 +1,7 @@
 "use client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider, createConfig, http } from "wagmi";
-import { walletConnect } from "wagmi/connectors";
+import { walletConnect, injected } from "wagmi/connectors";
 import { sepolia, polygonAmoy } from "wagmi/chains";
 
 import Web3AuthConnectorInstance from "@/utils/Web3AuthConnectorInstance";
