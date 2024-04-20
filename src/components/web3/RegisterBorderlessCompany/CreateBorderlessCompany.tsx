@@ -34,6 +34,8 @@ export function CreateBorderlessCompany() {
     // confirmed = true;
     const formData = new FormData(e.target as HTMLFormElement);
     const companyID_ = formData.get("companyID_") as string;
+
+    // TODO: 設立日は自分で入れる
     const establishmentDate_ = new Date()
       .toISOString()
       .replace("T", " ")
