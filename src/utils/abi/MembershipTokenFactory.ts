@@ -24,6 +24,35 @@ export const MembershipTokenFactoryAbi = [
     stateMutability: "nonpayable",
   },
   {
+    type: "function",
+    name: "createUtilityToken",
+    inputs: [
+      {
+        name: "name_",
+        type: "string",
+        internalType: "string",
+      },
+      {
+        name: "symbol_",
+        type: "string",
+        internalType: "string",
+      },
+      {
+        name: "initialSupply_",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
     type: "event",
     name: "TokenCreated",
     inputs: [

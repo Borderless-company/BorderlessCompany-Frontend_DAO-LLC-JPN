@@ -35,24 +35,32 @@ export const SidebarWrapper = () => {
         </div>
         <div className="flex flex-col justify-between h-full">
           <div className={Sidebar.Body()}>
-            <SidebarItem
-              title="ホーム"
-              icon={<HomeIcon />}
-              isActive={pathname === `/dao/${daoId}`}
-              href={`/dao/${daoId}`}
-            />
-            <SidebarMenu title="メイン">
+            <SidebarMenu title="一般">
+              <SidebarItem
+                title="ホーム"
+                icon={<HomeIcon />}
+                isActive={pathname === `/dao/${daoId}`}
+                href={`/dao/${daoId}`}
+              />
               <SidebarItem
                 isActive={pathname === `/dao/${daoId}/members`}
                 title="メンバー一覧"
                 icon={<AccountsIcon />}
                 href={`/dao/${daoId}/members`}
               />
+            </SidebarMenu>
+            <SidebarMenu title="トークン">
               <SidebarItem
                 isActive={pathname === `/dao/${daoId}/membership-token`}
                 title="メンバーシップトークン"
                 icon={<AccountsIcon />}
                 href={`/dao/${daoId}/membership-token`}
+              />
+              <SidebarItem
+                isActive={pathname === `/dao/${daoId}/utility-token`}
+                title="ユーティリティトークン"
+                icon={<AccountsIcon />}
+                href={`/dao/${daoId}/utility-token`}
               />
             </SidebarMenu>
           </div>
