@@ -35,8 +35,8 @@ export const RegisterBorderlessCompanyContractAddress: {
 export const MembershipTokenFactoryContractAddress: {
   [chain: string]: Address;
 } = {
-  Sepolia: "0x6D111FADbF1e42d6115C10515D30917829c330D9",
-  Amoy: "0x6D111FADbF1e42d6115C10515D30917829c330D9", // dummy
+  Sepolia: "0xBd05570A3eB660Df73d794F554C3011E1131d702",
+  Amoy: "0xBd05570A3eB660Df73d794F554C3011E1131d702", // dummy
 };
 
 const chainIdToNetwork: { [chainId: number]: string } = {
