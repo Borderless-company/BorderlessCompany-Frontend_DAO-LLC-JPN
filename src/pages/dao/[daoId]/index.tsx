@@ -10,6 +10,11 @@ import { useRouter } from "next/router";
 import { Address } from "viem";
 import Members from "@/components/Members";
 import ListMembershipTokens from "@/components/web3/MembershipTokenFactory/ListMembershipTokens";
+import { useEffect, useState } from "react";
+import { Footer } from "@/components/Footer";
+import { Link } from "@nextui-org/react";
+import { getBlockExplorerUrl } from "@/utils/contractAddress";
+import { useChainId } from "wagmi";
 
 const Chart = dynamic(
   () => import("@/components/charts/pie").then((mod) => mod.Pie),
@@ -21,56 +26,85 @@ const Chart = dynamic(
 const Dashboard: NextPage = () => {
   const router = useRouter();
   const { daoId } = router.query;
+  const [isReady, setIsReady] = useState(false);
+  const [blockExplorerUrl, setBlockExplorerUrl] = useState<string>();
+  const chainId = useChainId();
+  useEffect(() => {
+    setBlockExplorerUrl(getBlockExplorerUrl(chainId));
+  }, [chainId]);
+
+  useEffect(() => {
+    setIsReady(router.isReady);
+  }, [router.isReady]);
+
   return (
-    <DashboardLayout>
-      <div className="h-full lg:px-6">
-        <div className="flex justify-center gap-4 xl:gap-6 pt-3 px-4 lg:px-0  flex-wrap xl:flex-nowrap sm:pt-10 max-w-[90rem] mx-auto w-full">
-          <div className="mt-6 gap-6 flex flex-col w-full">
-            {/* Card Section Top */}
-            <div className="flex flex-col gap-2">
-              <h3 className="text-xl font-semibold"></h3>
-              <div className="grid md:grid-cols-2 grid-cols-1 2xl:grid-cols-3 gap-5  justify-center w-full">
-                <CardBalance />
+    <>
+      {!isReady ? (
+        <></>
+      ) : (
+        <DashboardLayout>
+          <div className="h-full lg:px-6">
+            <div className="flex flex-col justify-center gap-4 xl:gap-6 py-5 pt-3 px-4 lg:px-0 sm:pt-10 max-w-[90rem] mx-auto w-full">
+              {/* Company */}
+              <div className="flex flex-col justify-center w-full px-4 lg:px-0  max-w-[90rem] mx-auto gap-3">
+                <div className="flex flex-col items-start">
+                  <h3 className="text-center text-2xl font-bold">会社の名前</h3>
+                  <Link
+                    href={`${blockExplorerUrl}/address/${daoId as string}`}
+                    target="_blank"
+                    className="text-center text-sm text-default-600 font-semibold"
+                    showAnchorIcon
+                  >
+                    {daoId as string}
+                  </Link>
+                </div>
+              </div>
+              <div className="grid grid-flow-row-dense grid-cols-12 mt-6 gap-6 w-full">
+                <div className="col-span-12 lg:col-span-7">
+                  {/* Chart */}
+                  <div className="flex flex-col h-full gap-2">
+                    <h3 className="text-xl font-semibold"></h3>
+                    <div className="w-full bg-default-50 shadow-lg rounded-2xl p-6">
+                      <Chart />
+                    </div>
+                  </div>
+                </div>
+                <div className="col-span-12 lg:col-span-5">
+                  {/* Card Section */}
+                  <div className="flex flex-col gap-2">
+                    <h3 className="text-xl font-semibold"></h3>
+                    <div className="flex flex-col">
+                      <CardBalance />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Members */}
+              <div className="flex flex-col justify-center w-full py-5 px-4 lg:px-0  max-w-[90rem] mx-auto gap-3">
+                <div className="flex  flex-wrap justify-between">
+                  <h3 className="text-center text-xl font-semibold">
+                    メンバーシップトークン
+                  </h3>
+                </div>
+                <ListMembershipTokens contractAddress={daoId as Address} />
+              </div>
+
+              {/* Members */}
+              <div className="flex flex-col justify-center w-full py-5 px-4 lg:px-0  max-w-[90rem] mx-auto gap-3">
+                <div className="flex  flex-wrap justify-between">
+                  <h3 className="text-center text-xl font-semibold">
+                    メンバー
+                  </h3>
+                </div>
+                <Members contractAddress={daoId as Address} />
               </div>
             </div>
-
-            {/* Chart */}
-            <div className="h-full flex flex-col gap-2">
-              <h3 className="text-xl font-semibold">トークン割合</h3>
-              <div className="w-full bg-default-50 shadow-lg rounded-2xl p-6">
-                <Chart />
-              </div>
-            </div>
           </div>
-
-          {/* Right Section */}
-          <div className="mt-4 gap-2 flex flex-col xl:max-w-md w-full">
-            <h3 className="text-xl font-semibold"></h3>
-            <div className="flex flex-col justify-center gap-4 flex-wrap md:flex-nowrap md:flex-col">
-              <CardTransactions />
-            </div>
-          </div>
-        </div>
-
-        {/* Members */}
-        <div className="flex flex-col justify-center w-full py-5 px-4 lg:px-0  max-w-[90rem] mx-auto gap-3">
-          <div className="flex  flex-wrap justify-between">
-            <h3 className="text-center text-xl font-semibold">
-              メンバーシップトークン
-            </h3>
-          </div>
-          <ListMembershipTokens contractAddress={daoId as Address} />
-        </div>
-
-        {/* Members */}
-        <div className="flex flex-col justify-center w-full py-5 px-4 lg:px-0  max-w-[90rem] mx-auto gap-3">
-          <div className="flex  flex-wrap justify-between">
-            <h3 className="text-center text-xl font-semibold">メンバー</h3>
-          </div>
-          <Members contractAddress={daoId as Address} />
-        </div>
-      </div>
-    </DashboardLayout>
+          <Footer />
+        </DashboardLayout>
+      )}
+    </>
   );
 };
 
