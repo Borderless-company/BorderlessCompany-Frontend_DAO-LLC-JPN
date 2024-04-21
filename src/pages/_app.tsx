@@ -1,5 +1,7 @@
 import "@/styles/globals.css";
 import "@/styles/hero-anim.css";
+import "@/styles/complete.css";
+
 import type { AppProps } from "next/app";
 import { NextUIProvider } from "@nextui-org/react";
 

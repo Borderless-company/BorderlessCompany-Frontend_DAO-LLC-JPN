@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import Datastore from "nedb";
 import path from "path";
 
-// NeDBデータベースのインスタンスを作成
 const db = new Datastore({
   filename: path.join(__dirname, "members.db"),
   autoload: true,
