@@ -22,6 +22,7 @@ import {
   Spinner,
 } from "@nextui-org/react";
 import Image from "next/image";
+import useMembershipTokenHolders from "@/components/hooks/useMembershipTokenHolders";
 
 const columns = [
   { name: "TOKEN ID", uid: "id" },
@@ -55,80 +56,14 @@ const ListMembershipTokenHolders = ({
 }: {
   contractAddress: Address;
 }) => {
-  const router = useRouter();
-  const { daoId, membershipTokenId } = router.query;
-  const chainId = useChainId();
-  const { address } = useAccount();
-  const publicClient = usePublicClient();
-  const [tokenHolders, setTokenHolders] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [startBlockNumber, setStartBlockNumber] = useState<number>();
-
-  const fetchLogs = useCallback(async () => {
-    setIsLoading(true);
-    if (!publicClient) {
-      setIsLoading(false);
-      return;
-    }
-    const logs = await publicClient.getLogs({
-      address: contractAddress,
-      // TODO: abiから取得
-      event: {
-        type: "event",
-        name: "Transfer",
-        inputs: [
-          {
-            name: "from",
-            type: "address",
-            indexed: true,
-            internalType: "address",
-          },
-          {
-            name: "to",
-            type: "address",
-            indexed: true,
-            internalType: "address",
-          },
-          {
-            name: "tokenId",
-            type: "uint256",
-            indexed: true,
-            internalType: "uint256",
-          },
-        ],
-        anonymous: false,
-      },
-      fromBlock: startBlockNumber ? BigInt(startBlockNumber) : BigInt(5700000),
-      toBlock: "latest",
-    });
-
-    const tokenHolders = new Set();
-    logs.forEach((log, index) => {
-      console.log("log", log);
-      tokenHolders.add({
-        id: Number(log.args.tokenId),
-        holderAddress: log.args.to,
-      });
-    });
-
-    setTokenHolders(Array.from(tokenHolders));
-    setIsLoading(false);
-  }, [contractAddress, publicClient, startBlockNumber]);
-
-  useEffect(() => {
-    setStartBlockNumber(getMembershipTokenFactoryStartBlockNumber(chainId));
-  }, [chainId]);
-
-  useEffect(() => {
-    if (membershipTokenId && contractAddress && startBlockNumber) {
-      console.log("start fetch");
-      fetchLogs();
-    }
-  }, [fetchLogs, membershipTokenId, contractAddress, startBlockNumber]);
+  const { tokenHolders, isPending } = useMembershipTokenHolders({
+    contractAddress,
+    showAll: false,
+  });
 
   return (
     <>
-      {isLoading ? (
+      {isPending ? (
         <div className="flex justify-center min-h-[100px]">
           <Spinner size="lg" />
         </div>
