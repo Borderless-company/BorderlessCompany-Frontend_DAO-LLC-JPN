@@ -4,7 +4,7 @@ import path from "path";
 
 // NeDBデータベースのインスタンスを作成
 const db = new Datastore({
-  filename: path.join(__dirname, "companies.db"),
+  filename: path.join("./tmp", "companies.db"),
   autoload: true,
 });
 
