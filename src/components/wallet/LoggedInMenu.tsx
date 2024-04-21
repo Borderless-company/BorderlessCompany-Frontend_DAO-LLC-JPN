@@ -38,7 +38,7 @@ export function LoggedInMenu() {
                   </Button>
                 )}
                 <Balance />
-                <SwitchChain />
+                {/* <SwitchChain /> */}
               </div>
             </ModalBody>
             <ModalFooter>

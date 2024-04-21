@@ -21,7 +21,7 @@ export const MembershipTokenFactoryStartBlockNumber: {
 
 // TODO: AmoyのWhitelistContractAddressを入れる
 export const WhitelistContractAddress: { [chain: string]: Address } = {
-  Sepolia: "0xc27190ECBaD46E6AeA32894e0D8e2344d0Fb1C11",
+  Sepolia: "0x15F8f9FEF076dE5EB7211E9a11c346B6bB957Cd7",
   Amoy: "0xaFD8e809a7f7d7C6bcb67866938F721ff0D345C4",
 };
 
@@ -29,7 +29,7 @@ export const WhitelistContractAddress: { [chain: string]: Address } = {
 export const RegisterBorderlessCompanyContractAddress: {
   [chain: string]: Address;
 } = {
-  Sepolia: "0x7716C66bd9B97d5324a6b2079e37EB9668181904",
+  Sepolia: "0x3E60646B7Ea3F60750bf3e75008fdB48D6F6c521",
   Amoy: "0x04E0240556Fd3673B7F1f4968ddB4B58475E208E",
 };
 
