@@ -62,15 +62,16 @@ export const RenderCell = ({ item, columnKey }: Props) => {
   }
 };
 
-const ListMembershipTokenHistory = () => {
-  const router = useRouter();
-  const { daoId, membershipTokenId } = router.query;
+const ListMembershipTokenHistory = ({
+  contractAddress,
+}: {
+  contractAddress: Address;
+}) => {
   const chainId = useChainId();
   const { address } = useAccount();
   const publicClient = usePublicClient();
   const [tokenHolders, setTokenHolders] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [contractAddress, setContractAddress] = useState<Address>();
   const [startBlockNumber, setStartBlockNumber] = useState<number>();
 
   const fetchLogs = useCallback(async () => {
@@ -136,15 +137,10 @@ const ListMembershipTokenHistory = () => {
   }, [chainId]);
 
   useEffect(() => {
-    setContractAddress(membershipTokenId as Address);
-  }, [membershipTokenId]);
-
-  useEffect(() => {
-    if (membershipTokenId && contractAddress && startBlockNumber) {
-      console.log("start fetch");
+    if (contractAddress && startBlockNumber) {
       fetchLogs();
     }
-  }, [fetchLogs, membershipTokenId, contractAddress, startBlockNumber]);
+  }, [fetchLogs, contractAddress, startBlockNumber]);
 
   return (
     <>

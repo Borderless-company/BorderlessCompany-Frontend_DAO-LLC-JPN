@@ -99,6 +99,7 @@ const ListMembershipTokens = () => {
   const [contractAddress, setContractAddress] = useState<Address>();
   const [startBlockNumber, setStartBlockNumber] = useState<number>();
 
+  // TODO: getServiceでTokenServiceを取得
   useEffect(() => {
     setContractAddress(getMembershipTokenFactoryContractAddress(chainId));
     setStartBlockNumber(getMembershipTokenFactoryStartBlockNumber(chainId));
