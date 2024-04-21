@@ -27,9 +27,9 @@ import Image from "next/image";
 import useMembershipTokenHolders from "@/components/hooks/useMembershipTokenHolders";
 
 const columns = [
-  { name: "TOKEN ID", uid: "id" },
-  { name: "HOLDER ADDRESS", uid: "holderAddress" },
-  { name: "NAME", uid: "name" },
+  { name: "トークンID", uid: "id" },
+  { name: "お名前", uid: "name" },
+  { name: "アカウント", uid: "holderAddress" },
 ];
 
 type MembershipTokenHolder = {
@@ -91,7 +91,7 @@ export const RenderCell = ({ item, columnKey }: Props) => {
       return <span>{cellValue}</span>;
     case "name":
       return isEditing ? (
-        <div>
+        <div className="flex flex-col gap-2">
           <Input
             type="text"
             value={newName}
@@ -102,12 +102,14 @@ export const RenderCell = ({ item, columnKey }: Props) => {
             label="お名前"
             placeholder="名前を入力"
           />
-          <Button size="sm" onClick={handleSave}>
-            確定
-          </Button>
-          <Button size="sm" onClick={handleCancel}>
-            キャンセル
-          </Button>
+          <div className="flex gap-2">
+            <Button size="sm" color="primary" onClick={handleSave}>
+              確定
+            </Button>
+            <Button size="sm" onClick={handleCancel}>
+              キャンセル
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="px-2 min-w-[20px] cursor-pointer">
