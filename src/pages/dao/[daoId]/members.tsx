@@ -7,7 +7,6 @@ import { TableWrapper } from "@/components/table/table";
 import { CardBalance } from "@/components/home/CardBalance";
 import { CardTransactions } from "@/components/home/CardTransactions";
 import { useRouter } from "next/router";
-import { CurrentAddressCallAdmin } from "@/components/web3/BorderlessCompany/CurrentAddressCallAdmin";
 import { Address } from "viem";
 
 const Chart = dynamic(

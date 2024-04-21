@@ -76,7 +76,7 @@ export function CreateMembershipToken({
             <Input name="symbol_" label="symbol_" required />
             <Input name="baseURI_" label="baseURI_" />
             <Checkbox isSelected={isSbt} onValueChange={setIsSbt}>
-              SBTにする
+              業務執行社員トークンにする
             </Checkbox>
 
             <Button type="submit" color="primary">

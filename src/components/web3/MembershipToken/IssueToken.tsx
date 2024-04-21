@@ -5,20 +5,18 @@ import {
   BaseError,
   useChainId,
 } from "wagmi";
-import { MembershipTokenAbi } from "@/utils/abi/MembershipToken";
+import { NonFungibleTokenTYPE721Abi } from "@/utils/abi/NonFungibleTokenTYPE721.sol/NonFungibleTokenTYPE721";
 import { Address, stringToHex } from "viem";
 import { Button, Input } from "@nextui-org/react";
 import { getBlockExplorerUrl } from "@/utils/contractAddress";
 import { useRouter } from "next/router";
 
-export function IssueToken() {
+export function IssueToken({ contractAddress }: { contractAddress: Address }) {
   const [isClient, setIsClient] = useState(false);
   const chainId = useChainId();
-  const { daoId, membershipTokenId } = useRouter().query;
 
   const { data: hash, error, isPending, writeContract } = useWriteContract();
 
-  const [contractAddress, setContractAddress] = useState<Address>();
   const [blockExplorerUrl, setBlockExplorerUrl] = useState<string>();
 
   async function submit(e: FormEvent<HTMLFormElement>) {
@@ -31,8 +29,8 @@ export function IssueToken() {
 
     writeContract({
       address: contractAddress,
-      abi: MembershipTokenAbi,
-      functionName: "issueToken",
+      abi: NonFungibleTokenTYPE721Abi,
+      functionName: "mint",
       args: [to_],
     });
   }
@@ -43,9 +41,8 @@ export function IssueToken() {
     });
 
   useEffect(() => {
-    setContractAddress(membershipTokenId as Address);
     setBlockExplorerUrl(getBlockExplorerUrl(chainId));
-  }, [chainId, membershipTokenId]);
+  }, [chainId]);
 
   useEffect(() => {
     setIsClient(true);

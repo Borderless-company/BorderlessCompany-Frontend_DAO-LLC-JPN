@@ -1,4 +1,4 @@
-export const NonFungibleToken721Abi = [
+export const NonFungibleTokenTYPE721Abi = [
   {
     type: "constructor",
     inputs: [

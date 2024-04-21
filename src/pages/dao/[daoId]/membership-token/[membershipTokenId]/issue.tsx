@@ -2,8 +2,11 @@
 import type { NextPage } from "next";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { IssueToken } from "@/components/web3/MembershipToken/IssueToken";
+import { useRouter } from "next/router";
+import { Address } from "viem";
 
 const MembershipTokenIssue: NextPage = () => {
+  const { daoId, membershipTokenId } = useRouter().query;
   return (
     <DashboardLayout>
       <div className="h-full lg:px-6">
@@ -14,7 +17,7 @@ const MembershipTokenIssue: NextPage = () => {
             </h3>
           </div>
           <div className="w-full flex flex-col gap-4">
-            <IssueToken />
+            <IssueToken contractAddress={membershipTokenId as Address} />
           </div>
         </div>
       </div>
