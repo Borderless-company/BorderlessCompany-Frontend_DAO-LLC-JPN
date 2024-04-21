@@ -41,6 +41,9 @@ dependencies:
   '@web3auth/web3auth-wagmi-connector':
     specifier: ^6.0.0
     version: 6.0.0(@wagmi/core@2.6.17)(@web3auth/base@8.3.0)(@web3auth/modal@8.3.0)(@web3auth/no-modal@8.3.0)(@web3auth/openlogin-adapter@8.3.0)(viem@2.9.21)
+  clsx:
+    specifier: ^2.1.0
+    version: 2.1.0
   framer-motion:
     specifier: ^11.1.5
     version: 11.1.5(react-dom@18.2.0)(react@18.2.0)
@@ -60,7 +63,7 @@ dependencies:
     specifier: ^18.2.0
     version: 18.2.0(react@18.2.0)
   utf-8-validate:
-    specifier: ^5.0.10
+    specifier: ^5.0.2
     version: 5.0.10
   viem:
     specifier: ~2.9.21
