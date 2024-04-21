@@ -21,6 +21,7 @@ import {
   Tooltip,
   Chip,
   Button,
+  Spinner,
 } from "@nextui-org/react";
 import Image from "next/image";
 import { NonFungibleTokenTYPE721Abi } from "@/utils/abi/NonFungibleTokenTYPE721.sol/NonFungibleTokenTYPE721";
@@ -120,44 +121,45 @@ const ListMembershipTokens = ({
 }: {
   contractAddress: Address;
 }) => {
-  const router = useRouter();
-  const { daoId } = router.query;
-  const chainId = useChainId();
-  const { address } = useAccount();
-  const publicClient = usePublicClient();
-  const [tokens, setTokens] = useState<any[]>([]);
-  const [startBlockNumber, setStartBlockNumber] = useState<number>();
   const { data, isPending, error } = useMembershipTokens({
     daoContractAddress: contractAddress,
   });
 
   return (
-    <div className=" w-full flex flex-col gap-4">
-      <Table aria-label="ListMembershipTokens">
-        <TableHeader columns={columns}>
-          {(column) => (
-            <TableColumn
-              key={column.uid}
-              hideHeader={column.uid === "actions"}
-              align={column.uid === "actions" ? "center" : "start"}
-            >
-              {column.name}
-            </TableColumn>
-          )}
-        </TableHeader>
-        <TableBody items={data}>
-          {(item) => (
-            <TableRow>
-              {(columnKey) => (
-                <TableCell>
-                  <RenderCell item={item} columnKey={columnKey} />
-                </TableCell>
+    <>
+      {isPending ? (
+        <div className="flex justify-center min-h-[100px]">
+          <Spinner size="lg" />
+        </div>
+      ) : (
+        <div className=" w-full flex flex-col gap-4">
+          <Table aria-label="ListMembershipTokens">
+            <TableHeader columns={columns}>
+              {(column) => (
+                <TableColumn
+                  key={column.uid}
+                  hideHeader={column.uid === "actions"}
+                  align={column.uid === "actions" ? "center" : "start"}
+                >
+                  {column.name}
+                </TableColumn>
               )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
+            </TableHeader>
+            <TableBody items={data}>
+              {(item) => (
+                <TableRow>
+                  {(columnKey) => (
+                    <TableCell>
+                      <RenderCell item={item} columnKey={columnKey} />
+                    </TableCell>
+                  )}
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+    </>
   );
 };
 
