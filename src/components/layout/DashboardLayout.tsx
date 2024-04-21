@@ -4,6 +4,13 @@ import { DashboardNavbar } from "../navbar/DashboardNavbar";
 import { SidebarWrapper } from "../sidebar/SidebarWrapper";
 import { SidebarContext } from "./DashboardLayoutContext";
 
+import clsx from "clsx";
+import { Noto_Sans_JP } from "next/font/google";
+
+const notoSansJP = Noto_Sans_JP({
+  subsets: ["latin"],
+});
+
 interface Props {
   children: React.ReactNode;
 }
@@ -23,7 +30,7 @@ export const DashboardLayout = ({ children }: Props) => {
         setCollapsed: handleToggleSidebar,
       }}
     >
-      <section className="flex">
+      <section className={clsx(notoSansJP.className, "font-sans flex")}>
         <SidebarWrapper />
         <DashboardNavbar>{children}</DashboardNavbar>
       </section>

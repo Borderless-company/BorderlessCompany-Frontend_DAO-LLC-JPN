@@ -12,18 +12,8 @@ import router from "next/router";
 export default function Home() {
   return (
     <SimpleLayout>
-      <CurrentAddressIsWhitelisted />
+      {/* <CurrentAddressIsWhitelisted /> */}
       <CreateBorderlessCompany />
-
-      <div>
-        <Button
-          onPress={() => {
-            router.push("/dao");
-          }}
-        >
-          DAO一覧を見る
-        </Button>
-      </div>
     </SimpleLayout>
   );
 }
