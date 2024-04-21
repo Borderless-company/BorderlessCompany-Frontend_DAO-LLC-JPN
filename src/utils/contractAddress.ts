@@ -19,19 +19,21 @@ export const MembershipTokenFactoryStartBlockNumber: {
   Amoy: 5886234,
 };
 
+// TODO: AmoyのWhitelistContractAddressを入れる
 export const WhitelistContractAddress: { [chain: string]: Address } = {
-  Sepolia: "0x09FaFD544F9dc6656743A5C828FB7491E18bC41D",
+  Sepolia: "0xc27190ECBaD46E6AeA32894e0D8e2344d0Fb1C11",
   Amoy: "0xaFD8e809a7f7d7C6bcb67866938F721ff0D345C4",
 };
 
+// TODO: AmoyのRegisterBorderlessCompanyContractAddressを入れる
 export const RegisterBorderlessCompanyContractAddress: {
   [chain: string]: Address;
 } = {
-  Sepolia: "0x6F0A57e52f7Bb31D8b53ede1a148FE64247010d3",
+  Sepolia: "0x7716C66bd9B97d5324a6b2079e37EB9668181904",
   Amoy: "0x04E0240556Fd3673B7F1f4968ddB4B58475E208E",
 };
 
-// TODO: AmoyのTokenFactoryAddressを入れる
+// TODO: MembershipTokenFactoryContractAddressの機能を削除する
 export const MembershipTokenFactoryContractAddress: {
   [chain: string]: Address;
 } = {

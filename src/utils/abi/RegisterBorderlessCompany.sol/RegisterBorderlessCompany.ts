@@ -27,6 +27,15 @@ export const RegisterBorderlessCompanyAbi = [
     stateMutability: "nonpayable",
   },
   {
+    type: "function",
+    name: "setFactoryPool",
+    inputs: [
+      { name: "factoryPool_", type: "address", internalType: "address" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
     type: "event",
     name: "NewBorderlessCompany",
     inputs: [
@@ -52,6 +61,25 @@ export const RegisterBorderlessCompanyAbi = [
     anonymous: false,
   },
   {
+    type: "event",
+    name: "SetFactoryPool",
+    inputs: [
+      {
+        name: "account_",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "pool_",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+    ],
+    anonymous: false,
+  },
+  {
     type: "error",
     name: "DoNotCreateBorderlessCompany",
     inputs: [{ name: "account_", type: "address", internalType: "address" }],
@@ -59,6 +87,11 @@ export const RegisterBorderlessCompanyAbi = [
   {
     type: "error",
     name: "InvalidCompanyInfo",
+    inputs: [{ name: "account_", type: "address", internalType: "address" }],
+  },
+  {
+    type: "error",
+    name: "InvalidParam",
     inputs: [{ name: "account_", type: "address", internalType: "address" }],
   },
 ] as const;
