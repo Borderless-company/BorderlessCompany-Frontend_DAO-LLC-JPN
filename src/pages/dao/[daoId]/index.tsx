@@ -31,15 +31,11 @@ const Dashboard: NextPage = () => {
   const chainId = useChainId();
   const [companyInfo, setCompanyInfo] = useState<any>({});
 
-  const getCompanyInfo = useCallback(
-    async (contractAddress: string) => {
-      const res = await fetch(`/api/companies/${contractAddress}`);
-      const data = await res.json();
-      console.log("data", data);
-      setCompanyInfo(data);
-    },
-    [daoId]
-  );
+  const getCompanyInfo = useCallback(async (contractAddress: string) => {
+    const res = await fetch(`/api/companies/${contractAddress}`);
+    const data = await res.json();
+    setCompanyInfo(data);
+  }, []);
 
   useEffect(() => {
     setBlockExplorerUrl(getBlockExplorerUrl(chainId));
