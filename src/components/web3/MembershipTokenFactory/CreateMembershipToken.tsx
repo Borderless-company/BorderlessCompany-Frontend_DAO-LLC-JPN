@@ -5,22 +5,27 @@ import {
   BaseError,
   useChainId,
 } from "wagmi";
-import { MembershipTokenFactoryAbi } from "@/utils/abi/MembershipTokenFactory";
+import { TokenServiceAbi } from "@/utils/abi/TokenService.sol/TokenService";
 import { Address, stringToHex } from "viem";
-import { Button, Input } from "@nextui-org/react";
+import { Button, Checkbox, Input } from "@nextui-org/react";
 import {
   getBlockExplorerUrl,
   getMembershipTokenFactoryContractAddress,
 } from "@/utils/contractAddress";
 
-export function CreateMembershipToken() {
+export function CreateMembershipToken({
+  contractAddress,
+}: {
+  contractAddress: Address;
+}) {
   const [isClient, setIsClient] = useState(false);
   const chainId = useChainId();
 
   const { data: hash, error, isPending, writeContract } = useWriteContract();
 
-  const [contractAddress, setContractAddress] = useState<Address>();
   const [blockExplorerUrl, setBlockExplorerUrl] = useState<string>();
+
+  const [isSbt, setIsSbt] = useState(false);
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     if (!contractAddress) {
@@ -30,12 +35,17 @@ export function CreateMembershipToken() {
     const formData = new FormData(e.target as HTMLFormElement);
     const name_ = formData.get("name_") as string;
     const symbol_ = formData.get("symbol_") as string;
+    const baseURI_ = formData.get("baseURI_") as string;
+    const sbt_ = isSbt;
+    alert(
+      `name_: ${name_}, symbol_: ${symbol_}, baseURI_: ${baseURI_}, sbt_: ${sbt_}`
+    );
 
     writeContract({
       address: contractAddress,
-      abi: MembershipTokenFactoryAbi,
-      functionName: "createMembershipToken",
-      args: [name_, symbol_],
+      abi: TokenServiceAbi,
+      functionName: "activateStandard721Token",
+      args: [name_, symbol_, baseURI_, sbt_],
     });
   }
 
@@ -45,7 +55,6 @@ export function CreateMembershipToken() {
     });
 
   useEffect(() => {
-    setContractAddress(getMembershipTokenFactoryContractAddress(chainId));
     setBlockExplorerUrl(getBlockExplorerUrl(chainId));
   }, [chainId]);
 
@@ -65,6 +74,10 @@ export function CreateMembershipToken() {
           <form onSubmit={submit}>
             <Input name="name_" label="name_" required />
             <Input name="symbol_" label="symbol_" required />
+            <Input name="baseURI_" label="baseURI_" />
+            <Checkbox isSelected={isSbt} onValueChange={setIsSbt}>
+              SBTにする
+            </Checkbox>
 
             <Button type="submit" color="primary">
               {isPending ? "Confirming..." : "トークンを作成する"}
