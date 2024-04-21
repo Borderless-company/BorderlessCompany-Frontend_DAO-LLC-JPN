@@ -6,6 +6,7 @@ import Link from "next/link";
 import ListMembershipTokenHolders from "@/components/web3/MembershipToken/ListMembershipTokenHolders";
 import ListMembershipTokenHistory from "@/components/web3/MembershipToken/ListMembershipTokenHistory";
 import { Button } from "@nextui-org/react";
+import { Address } from "viem";
 
 const MembershipTokenDetail: NextPage = () => {
   const { daoId, membershipTokenId } = useRouter().query;
@@ -17,14 +18,18 @@ const MembershipTokenDetail: NextPage = () => {
             <h3 className="text-center text-xl font-semibold">所有者一覧</h3>
           </div>
           <div className="w-full flex flex-col gap-4">
-            <ListMembershipTokenHolders />
+            <ListMembershipTokenHolders
+              contractAddress={membershipTokenId as Address}
+            />
           </div>
 
           <div className="flex  flex-wrap justify-between">
             <h3 className="text-center text-xl font-semibold">移動履歴</h3>
           </div>
           <div className="w-full flex flex-col gap-4">
-            <ListMembershipTokenHistory />
+            <ListMembershipTokenHistory
+              contractAddress={membershipTokenId as Address}
+            />
           </div>
 
           <div>

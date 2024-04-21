@@ -1,6 +1,5 @@
 import SimpleLayout from "@/components/layout/SimpleLayout";
 import WalletLogin from "@/components/wallet/WalletLogin";
-import { CurrentAddressCallAdmin } from "@/components/web3/BorderlessCompany/CurrentAddressCallAdmin";
 import { CreateBorderlessCompany } from "@/components/web3/RegisterBorderlessCompany/CreateBorderlessCompany";
 import ListCompanies from "@/components/web3/RegisterBorderlessCompany/ListCompanies";
 import { CurrentAddressIsWhitelisted } from "@/components/web3/Whitelist/CurrentAddressIsWhitelisted";

@@ -23,8 +23,6 @@ import {
   Button,
 } from "@nextui-org/react";
 import Image from "next/image";
-import { NonFungibleTokenTYPE721Abi } from "@/utils/abi/NonFungibleTokenTYPE721.sol/NonFungibleTokenTYPE721";
-import { TokenServiceAbi } from "@/utils/abi/TokenService.sol/TokenService";
 
 const columns = [
   { name: "トークンシンボル", uid: "symbol" },
@@ -114,7 +112,7 @@ export const RenderCell = ({ item, columnKey }: Props) => {
   }
 };
 
-const ListMembershipTokens = ({
+const ListMembershipTokensFromEvent = ({
   contractAddress,
 }: {
   contractAddress: Address;
@@ -134,34 +132,53 @@ const ListMembershipTokens = ({
 
   const fetchLogs = useCallback(async () => {
     if (!publicClient) return;
-    const lastIndex = await publicClient.readContract({
+    const logs = await publicClient.getLogs({
       address: contractAddress,
-      abi: TokenServiceAbi,
-      functionName: "getLastIndexStandard721Token",
+      // TODO: abiから取得
+      event: {
+        type: "event",
+        name: "NewNonFungibleToken721",
+        inputs: [
+          {
+            name: "token_",
+            type: "address",
+            indexed: true,
+            internalType: "address",
+          },
+          {
+            name: "symbol_",
+            type: "string",
+            indexed: true,
+            internalType: "string",
+          },
+          {
+            name: "name_",
+            type: "string",
+            indexed: false,
+            internalType: "string",
+          },
+          {
+            name: "sbt_",
+            type: "bool",
+            indexed: false,
+            internalType: "bool",
+          },
+        ],
+        anonymous: false,
+      },
+      fromBlock: startBlockNumber ? BigInt(startBlockNumber) : undefined,
+      toBlock: "latest",
     });
-
-    let logs: any[] = [];
-
-    for (let i = 1; i <= lastIndex; i++) {
-      const log = await publicClient.readContract({
-        address: contractAddress,
-        abi: TokenServiceAbi,
-        functionName: "getInfoStandard721token",
-        args: [BigInt(i)],
-      });
-      console.log(log);
-      logs.push(log);
-    }
 
     const tokens = logs.map((log, index) => ({
       id: index,
-      tokenAddress: log[0],
-      name: log[1],
-      symbol: log[2],
-      sbt: false,
+      tokenAddress: log.args.token_,
+      name: log.args.name_,
+      symbol: log.args.symbol_,
+      sbt: log.args.sbt_,
     }));
     setTokens(tokens);
-  }, [contractAddress, publicClient]);
+  }, [contractAddress, publicClient, startBlockNumber]);
 
   useEffect(() => {
     if (daoId && contractAddress && startBlockNumber) {
@@ -199,4 +216,4 @@ const ListMembershipTokens = ({
   );
 };
 
-export default ListMembershipTokens;
+export default ListMembershipTokensFromEvent;

@@ -7,7 +7,6 @@ import { TableWrapper } from "@/components/table/table";
 import { CardBalance } from "@/components/home/CardBalance";
 import { CardTransactions } from "@/components/home/CardTransactions";
 import { useRouter } from "next/router";
-import { CurrentAddressCallAdmin } from "@/components/web3/BorderlessCompany/CurrentAddressCallAdmin";
 import { Address } from "viem";
 
 const Chart = dynamic(
@@ -30,10 +29,6 @@ const Dashboard: NextPage = () => {
               <h3 className="text-xl font-semibold">左側</h3>
               <div className="grid md:grid-cols-2 grid-cols-1 2xl:grid-cols-3 gap-5  justify-center w-full">
                 <CardBalance />
-
-                <div className="text-sm font-semibold">
-                  <CurrentAddressCallAdmin contractAddress={id as Address} />
-                </div>
               </div>
             </div>
 

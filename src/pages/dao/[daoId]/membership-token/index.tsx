@@ -14,13 +14,13 @@ const MembershipToken: NextPage = () => {
   const router = useRouter();
   const { daoId } = router.query;
   const [isReady, setIsReady] = useState<boolean>(false);
-  const [tokenServiceAddress, setTokenServiceAddress] = useState<Address>();
   const { data, error, isPending } = useGetService(daoId as Address, 3);
 
   useEffect(() => {
     setIsReady(router.isReady);
   }, [router.isReady]);
 
+  // TODO: ログインしてなかったらウォレットログインを促す。
   return (
     <>
       {!isReady || isPending ? (
@@ -39,7 +39,7 @@ const MembershipToken: NextPage = () => {
                 <CreateMembershipToken contractAddress={data as Address} />
               </div>
               <div className="w-full flex flex-col gap-4">
-                <ListMembershipTokens />
+                <ListMembershipTokens contractAddress={data as Address} />
               </div>
             </div>
           </div>
