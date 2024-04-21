@@ -132,32 +132,30 @@ const ListMembershipTokens = ({
           <Spinner size="lg" />
         </div>
       ) : (
-        <div className=" w-full flex flex-col gap-4">
-          <Table aria-label="ListMembershipTokens">
-            <TableHeader columns={columns}>
-              {(column) => (
-                <TableColumn
-                  key={column.uid}
-                  hideHeader={column.uid === "actions"}
-                  align={column.uid === "actions" ? "center" : "start"}
-                >
-                  {column.name}
-                </TableColumn>
-              )}
-            </TableHeader>
-            <TableBody items={data}>
-              {(item) => (
-                <TableRow>
-                  {(columnKey) => (
-                    <TableCell>
-                      <RenderCell item={item} columnKey={columnKey} />
-                    </TableCell>
-                  )}
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+        <Table aria-label="ListMembershipTokens">
+          <TableHeader columns={columns}>
+            {(column) => (
+              <TableColumn
+                key={column.uid}
+                hideHeader={column.uid === "actions"}
+                align={column.uid === "actions" ? "center" : "start"}
+              >
+                {column.name}
+              </TableColumn>
+            )}
+          </TableHeader>
+          <TableBody items={data}>
+            {(item) => (
+              <TableRow>
+                {(columnKey) => (
+                  <TableCell>
+                    <RenderCell item={item} columnKey={columnKey} />
+                  </TableCell>
+                )}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       )}
     </>
   );

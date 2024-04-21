@@ -92,7 +92,7 @@ const useMembershipTokenHolders = ({
       setTokenHolders(Array.from(tokenHolders));
       setIsPending(false);
     }
-  }, [contractAddress, publicClient, startBlockNumber]);
+  }, [contractAddress, publicClient, showAll, startBlockNumber]);
 
   useEffect(() => {
     setStartBlockNumber(getMembershipTokenFactoryStartBlockNumber(chainId));
