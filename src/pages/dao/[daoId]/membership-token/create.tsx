@@ -5,8 +5,11 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useRouter } from "next/router";
 import { CreateMembershipToken } from "@/components/web3/MembershipTokenFactory/CreateMembershipToken";
 import ListMembershipTokens from "@/components/web3/MembershipTokenFactory/ListMembershipTokens";
+import { Address } from "viem";
 
 const MembershipTokenCreate: NextPage = () => {
+  const router = useRouter();
+  const { daoId } = router.query;
   return (
     <DashboardLayout>
       <div className="h-full lg:px-6">
@@ -17,7 +20,7 @@ const MembershipTokenCreate: NextPage = () => {
             </h3>
           </div>
           <div className="w-full flex flex-col gap-4">
-            <CreateMembershipToken />
+            <CreateMembershipToken contractAddress={daoId as Address} />
           </div>
         </div>
       </div>

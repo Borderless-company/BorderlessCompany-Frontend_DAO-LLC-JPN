@@ -39,7 +39,7 @@ const MembershipToken: NextPage = () => {
                 <CreateMembershipToken contractAddress={data as Address} />
               </div>
               <div className="w-full flex flex-col gap-4">
-                <ListMembershipTokens contractAddress={data as Address} />
+                <ListMembershipTokens contractAddress={daoId as Address} />
               </div>
             </div>
           </div>
