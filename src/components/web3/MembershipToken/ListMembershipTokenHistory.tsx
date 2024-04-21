@@ -112,16 +112,6 @@ const ListMembershipTokenHistory = ({
       toBlock: "latest",
     });
 
-    // TODO: 同じオーナーが複数のNFTを持てるので、一個だけ表示すべきか、全て表示すべきか決めたい。
-    // const tokenHolders = new Set();
-    // logs.forEach((log, index) => {
-    //   console.log("log", log);
-    //   tokenHolders.add({
-    //     id: Number(log.args.tokenId),
-    //     holderAddress: log.args.to,
-    //   });
-    // });
-    // setTokenHolders(Array.from(tokenHolders));
     const tokens = logs.map((log, index) => ({
       id: Number(log.args.tokenId),
       from: log.args.from,
