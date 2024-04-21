@@ -7,27 +7,67 @@ import { FormIsWhitelisted } from "@/components/web3/Whitelist/FormIsWhitelisted
 import { IsWhitelisted } from "@/components/web3/Whitelist/IsWhitelisted";
 import { Button } from "@nextui-org/react";
 import router from "next/router";
+import Image from "next/image";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
 
 export default function Home() {
   return (
-    <SimpleLayout>
-      <div>
-        <Button
-          onPress={() => {
-            router.push("/dao");
-          }}
-        >
-          DAO一覧を見る
-        </Button>
+    <div>
+      <Header />
+      <div
+        className="flex w-full items-center justify-center"
+        style={{ height: "calc(100dvh - 4rem - 133px)" }}
+      >
+        <div className="flex-row gap-4 justify-between max-w-[1024px] px-6 relative w-full">
+          <div className="my-12">
+            <section className="bg-white dark:bg-gray-900">
+              <div className="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
+                <div className="mr-auto place-self-center lg:col-span-9">
+                  <h1 className="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">
+                    <Image
+                      src="/borderless_logo.png"
+                      alt="borderless_logo"
+                      width={500}
+                      height={300}
+                    />
+                  </h1>
+                  <p className="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+                    DAOで始める、境界線のない会社へ
+                  </p>
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => {
+                        router.push("/dao/register");
+                      }}
+                      className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded animate-pulse"
+                    >
+                      DAOを作成する
+                    </button>
 
-        <Button
-          onPress={() => {
-            router.push("/dao/register");
-          }}
-        >
-          DAOを作成する
-        </Button>
+                    <button
+                      onClick={() => {
+                        router.push("/dao/");
+                      }}
+                      className="border-2 bg-white hover:bg-sky-200 text-sky-700 font-bold py-2 px-4 rounded "
+                    >
+                      DAO一覧を見る
+                    </button>
+                  </div>
+                </div>
+                <div className="justify-center lg:col-span-3 lg:flex lg:mt-0 my-10 max-w-[250px]">
+                  <div className="loader">
+                    <div className="box-1"></div>
+                    <div className="box-2"></div>
+                    <div className="box-3"></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
       </div>
-    </SimpleLayout>
+      <Footer />
+    </div>
   );
 }
