@@ -8,10 +8,14 @@ import { CardBalance } from "@/components/home/CardBalance";
 import { CardTransactions } from "@/components/home/CardTransactions";
 import { useRouter } from "next/router";
 import { Address } from "viem";
+import useMembershipTokens from "@/components/hooks/useMembershipTokens";
 
 const Members: NextPage = () => {
   const router = useRouter();
   const { daoId } = router.query;
+  const { data, isPending, error } = useMembershipTokens({
+    daoContractAddress: daoId as Address,
+  });
   return (
     <DashboardLayout>
       <div className="h-full lg:px-6">
