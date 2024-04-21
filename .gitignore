@@ -35,6 +35,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# 環境変数
 .env
 
-/out
+# 一時保存ファイル
+/tmp/

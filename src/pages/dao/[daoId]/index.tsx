@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import { Address } from "viem";
 import Members from "@/components/Members";
 import ListMembershipTokens from "@/components/web3/MembershipTokenFactory/ListMembershipTokens";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Footer } from "@/components/Footer";
 import { Link } from "@nextui-org/react";
 import { getBlockExplorerUrl } from "@/utils/contractAddress";
@@ -29,17 +29,31 @@ const Dashboard: NextPage = () => {
   const [isReady, setIsReady] = useState(false);
   const [blockExplorerUrl, setBlockExplorerUrl] = useState<string>();
   const chainId = useChainId();
+  const [companyInfo, setCompanyInfo] = useState<any>({});
+
+  const getCompanyInfo = useCallback(
+    async (contractAddress: string) => {
+      const res = await fetch(`/api/companies/${contractAddress}`);
+      const data = await res.json();
+      console.log("data", data);
+      setCompanyInfo(data);
+    },
+    [daoId]
+  );
+
   useEffect(() => {
     setBlockExplorerUrl(getBlockExplorerUrl(chainId));
   }, [chainId]);
 
   useEffect(() => {
     setIsReady(router.isReady);
-  }, [router.isReady]);
+    if (!daoId) return;
+    getCompanyInfo(daoId as string);
+  }, [getCompanyInfo, router.isReady, daoId]);
 
   return (
     <>
-      {!isReady ? (
+      {!isReady || !companyInfo ? (
         <></>
       ) : (
         <DashboardLayout>
@@ -48,7 +62,9 @@ const Dashboard: NextPage = () => {
               {/* Company */}
               <div className="flex flex-col justify-center w-full px-4 lg:px-0  max-w-[90rem] mx-auto gap-3">
                 <div className="flex flex-col items-start">
-                  <h3 className="text-center text-2xl font-bold">会社の名前</h3>
+                  <h3 className="text-center text-2xl font-bold">
+                    {companyInfo.daoName}
+                  </h3>
                   <Link
                     href={`${blockExplorerUrl}/address/${daoId as string}`}
                     target="_blank"
