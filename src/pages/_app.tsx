@@ -5,6 +5,13 @@ import { NextUIProvider } from "@nextui-org/react";
 
 import WagmiWrapper from "@/components/provider/WagmiWrapper";
 
+import clsx from "clsx";
+import { Noto_Sans_JP } from "next/font/google";
+
+const notoSansJP = Noto_Sans_JP({
+  subsets: ["latin"],
+});
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <WagmiWrapper>

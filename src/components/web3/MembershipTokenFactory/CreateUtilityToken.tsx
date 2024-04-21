@@ -86,7 +86,7 @@ export function CreateUtilityToken() {
               Transaction Hash: {hash}
             </a>
           )}
-          {isLoading && "Waiting for confirmation..."}
+          {isLoading && <div>Waiting for confirmation...</div>}
           {isSuccess && <div>Transaction confirmed.</div>}
           {error && (
             <div className="text-red-500">
