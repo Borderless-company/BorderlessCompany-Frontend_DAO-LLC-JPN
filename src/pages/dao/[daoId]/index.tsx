@@ -8,6 +8,8 @@ import { CardBalance } from "@/components/home/CardBalance";
 import { CardTransactions } from "@/components/home/CardTransactions";
 import { useRouter } from "next/router";
 import { Address } from "viem";
+import Members from "@/components/Members";
+import ListMembershipTokens from "@/components/web3/MembershipTokenFactory/ListMembershipTokens";
 
 const Chart = dynamic(
   () => import("@/components/charts/pie").then((mod) => mod.Pie),
@@ -18,7 +20,7 @@ const Chart = dynamic(
 
 const Dashboard: NextPage = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { daoId } = router.query;
   return (
     <DashboardLayout>
       <div className="h-full lg:px-6">
@@ -26,7 +28,7 @@ const Dashboard: NextPage = () => {
           <div className="mt-6 gap-6 flex flex-col w-full">
             {/* Card Section Top */}
             <div className="flex flex-col gap-2">
-              <h3 className="text-xl font-semibold">左側</h3>
+              <h3 className="text-xl font-semibold"></h3>
               <div className="grid md:grid-cols-2 grid-cols-1 2xl:grid-cols-3 gap-5  justify-center w-full">
                 <CardBalance />
               </div>
@@ -35,27 +37,37 @@ const Dashboard: NextPage = () => {
             {/* Chart */}
             <div className="h-full flex flex-col gap-2">
               <h3 className="text-xl font-semibold">トークン割合</h3>
-              <div className="w-full bg-default-50 shadow-lg rounded-2xl p-6 ">
+              <div className="w-full bg-default-50 shadow-lg rounded-2xl p-6">
                 <Chart />
               </div>
             </div>
           </div>
 
-          {/* Left Section */}
+          {/* Right Section */}
           <div className="mt-4 gap-2 flex flex-col xl:max-w-md w-full">
-            <h3 className="text-xl font-semibold">右側</h3>
+            <h3 className="text-xl font-semibold"></h3>
             <div className="flex flex-col justify-center gap-4 flex-wrap md:flex-nowrap md:flex-col">
               <CardTransactions />
             </div>
           </div>
         </div>
 
-        {/* Table */}
+        {/* Members */}
         <div className="flex flex-col justify-center w-full py-5 px-4 lg:px-0  max-w-[90rem] mx-auto gap-3">
           <div className="flex  flex-wrap justify-between">
-            <h3 className="text-center text-xl font-semibold">メンバー一覧</h3>
+            <h3 className="text-center text-xl font-semibold">
+              メンバーシップトークン
+            </h3>
           </div>
-          <TableWrapper />
+          <ListMembershipTokens contractAddress={daoId as Address} />
+        </div>
+
+        {/* Members */}
+        <div className="flex flex-col justify-center w-full py-5 px-4 lg:px-0  max-w-[90rem] mx-auto gap-3">
+          <div className="flex  flex-wrap justify-between">
+            <h3 className="text-center text-xl font-semibold">メンバー</h3>
+          </div>
+          <Members contractAddress={daoId as Address} />
         </div>
       </div>
     </DashboardLayout>
