@@ -158,7 +158,7 @@ const ListMembershipTokens = ({
       tokenAddress: log[0],
       name: log[1],
       symbol: log[2],
-      sbt: false,
+      sbt: log[3],
     }));
     setTokens(tokens);
   }, [contractAddress, publicClient]);

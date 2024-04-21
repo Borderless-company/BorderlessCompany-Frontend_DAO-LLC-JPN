@@ -27,6 +27,7 @@ export const TokenServiceAbi = [
       { name: "token_", type: "address", internalType: "address" },
       { name: "name_", type: "string", internalType: "string" },
       { name: "symbol_", type: "string", internalType: "string" },
+      { name: "sbt_", type: "bool", internalType: "bool" },
     ],
     stateMutability: "view",
   },

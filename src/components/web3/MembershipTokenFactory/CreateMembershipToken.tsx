@@ -12,12 +12,14 @@ import {
   getBlockExplorerUrl,
   getMembershipTokenFactoryContractAddress,
 } from "@/utils/contractAddress";
+import { useRouter } from "next/router";
 
 export function CreateMembershipToken({
   contractAddress,
 }: {
   contractAddress: Address;
 }) {
+  const router = useRouter();
   const [isClient, setIsClient] = useState(false);
   const chainId = useChainId();
 
@@ -37,9 +39,6 @@ export function CreateMembershipToken({
     const symbol_ = formData.get("symbol_") as string;
     const baseURI_ = formData.get("baseURI_") as string;
     const sbt_ = isSbt;
-    alert(
-      `name_: ${name_}, symbol_: ${symbol_}, baseURI_: ${baseURI_}, sbt_: ${sbt_}`
-    );
 
     writeContract({
       address: contractAddress,
@@ -66,6 +65,12 @@ export function CreateMembershipToken({
     if (!hash) return;
     console.log("hash", hash);
   }, [hash]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      router.reload();
+    }
+  }, [isSuccess, router]);
 
   return (
     <>
