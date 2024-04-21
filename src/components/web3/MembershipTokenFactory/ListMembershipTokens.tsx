@@ -25,6 +25,7 @@ import {
 import Image from "next/image";
 import { NonFungibleTokenTYPE721Abi } from "@/utils/abi/NonFungibleTokenTYPE721.sol/NonFungibleTokenTYPE721";
 import { TokenServiceAbi } from "@/utils/abi/TokenService.sol/TokenService";
+import useMembershipTokens from "@/components/hooks/useMembershipTokens";
 
 const columns = [
   { name: "トークンシンボル", uid: "symbol" },
@@ -126,52 +127,13 @@ const ListMembershipTokens = ({
   const publicClient = usePublicClient();
   const [tokens, setTokens] = useState<any[]>([]);
   const [startBlockNumber, setStartBlockNumber] = useState<number>();
-
-  // TODO: getServiceでTokenServiceを取得
-  useEffect(() => {
-    setStartBlockNumber(getMembershipTokenFactoryStartBlockNumber(chainId));
-  }, [chainId]);
-
-  const fetchLogs = useCallback(async () => {
-    if (!publicClient) return;
-    const lastIndex = await publicClient.readContract({
-      address: contractAddress,
-      abi: TokenServiceAbi,
-      functionName: "getLastIndexStandard721Token",
-    });
-
-    let logs: any[] = [];
-
-    for (let i = 1; i <= lastIndex; i++) {
-      const log = await publicClient.readContract({
-        address: contractAddress,
-        abi: TokenServiceAbi,
-        functionName: "getInfoStandard721token",
-        args: [BigInt(i)],
-      });
-      console.log(log);
-      logs.push(log);
-    }
-
-    const tokens = logs.map((log, index) => ({
-      id: index,
-      tokenAddress: log[0],
-      name: log[1],
-      symbol: log[2],
-      sbt: log[3],
-    }));
-    setTokens(tokens);
-  }, [contractAddress, publicClient]);
-
-  useEffect(() => {
-    if (daoId && contractAddress && startBlockNumber) {
-      fetchLogs();
-    }
-  }, [fetchLogs, daoId, contractAddress, startBlockNumber]);
+  const { data, isPending, error } = useMembershipTokens({
+    daoContractAddress: contractAddress,
+  });
 
   return (
     <div className=" w-full flex flex-col gap-4">
-      <Table aria-label="Example table with custom cells">
+      <Table aria-label="ListMembershipTokens">
         <TableHeader columns={columns}>
           {(column) => (
             <TableColumn
@@ -183,7 +145,7 @@ const ListMembershipTokens = ({
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody items={tokens}>
+        <TableBody items={data}>
           {(item) => (
             <TableRow>
               {(columnKey) => (
