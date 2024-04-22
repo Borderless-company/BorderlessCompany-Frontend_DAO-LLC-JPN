@@ -57,12 +57,29 @@ export function IssueToken({ contractAddress }: { contractAddress: Address }) {
     <>
       {isClient && (
         <div>
-          <form onSubmit={submit}>
+          <form onSubmit={submit} className="flex flex-col gap-2">
             {/* // TODO: isAddressでアドレスかどうかの判定をする */}
-            <Input name="to_" label="to_" required />
-            <Button type="submit" color="primary">
-              {isPending ? "Confirming..." : "トークンを発行する"}
-            </Button>
+            <div>
+              <label className="font-semibold text-md">
+                受け取り先のアドレス
+              </label>
+              <Input
+                name="to_"
+                key="inside"
+                type="text"
+                label=""
+                labelPlacement="inside"
+                placeholder="受け取り先のアドレスを入力"
+                description="0xから始まるアドレスを入力する"
+                variant="bordered"
+                size="md"
+              />
+            </div>
+            <div className="mt-2">
+              <Button type="submit" color="primary" size="md">
+                {isPending ? "Confirming..." : "トークンを発行する"}
+              </Button>
+            </div>
           </form>
 
           {hash && (

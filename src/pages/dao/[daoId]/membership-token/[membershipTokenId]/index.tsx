@@ -33,12 +33,14 @@ const MembershipTokenDetail: NextPage = () => {
           </div>
 
           <div>
-            <Button>
-              <Link
-                href={`/dao/${daoId}/membership-token/${membershipTokenId}/issue`}
-              >
-                トークンを発行する
-              </Link>
+            <Button
+              type="submit"
+              color="primary"
+              size="md"
+              as={Link}
+              href={`/dao/${daoId}/membership-token/${membershipTokenId}/issue`}
+            >
+              トークンを発行する →
             </Button>
           </div>
         </div>

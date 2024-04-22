@@ -6,12 +6,9 @@ import {
   useChainId,
 } from "wagmi";
 import { TokenServiceAbi } from "@/utils/abi/TokenService.sol/TokenService";
-import { Address, stringToHex } from "viem";
+import { Address } from "viem";
 import { Button, Checkbox, Input } from "@nextui-org/react";
-import {
-  getBlockExplorerUrl,
-  getMembershipTokenFactoryContractAddress,
-} from "@/utils/contractAddress";
+import { getBlockExplorerUrl } from "@/utils/contractAddress";
 import { useRouter } from "next/router";
 
 export function CreateMembershipToken({
@@ -62,11 +59,6 @@ export function CreateMembershipToken({
   }, []);
 
   useEffect(() => {
-    if (!hash) return;
-    console.log("hash", hash);
-  }, [hash]);
-
-  useEffect(() => {
     if (isSuccess) {
       router.reload();
     }
@@ -76,17 +68,72 @@ export function CreateMembershipToken({
     <>
       {isClient && (
         <div>
-          <form onSubmit={submit}>
-            <Input name="name_" label="name_" required />
-            <Input name="symbol_" label="symbol_" required />
-            <Input name="baseURI_" label="baseURI_" />
-            <Checkbox isSelected={isSbt} onValueChange={setIsSbt}>
-              業務執行社員トークンにする
-            </Checkbox>
+          <form onSubmit={submit} className="flex flex-col gap-2">
+            <div>
+              <label className="font-semibold text-md">トークンの名前</label>
+              <Input
+                name="name_"
+                key="inside"
+                type="text"
+                label=""
+                labelPlacement="inside"
+                placeholder="トークンの名前を入力"
+                description="例) ビットコイン, Ethereum ※トークンのシンボルではありません。"
+                variant="bordered"
+                size="md"
+              />
+            </div>
+            <div>
+              <label className="font-semibold text-md">
+                トークンのシンボル
+              </label>
+              <Input
+                name="symbol_"
+                key="inside"
+                type="text"
+                label=""
+                labelPlacement="inside"
+                placeholder="トークンのシンボルを入力"
+                description="例) BTC,ETH,BNB"
+                variant="bordered"
+                size="md"
+              />
+            </div>
+            <div>
+              <label className="font-semibold text-md">
+                トークン情報の参照URL
+              </label>
+              <Input
+                name="baseURI_"
+                key="inside"
+                type="text"
+                label=""
+                labelPlacement="inside"
+                placeholder="https://example.com/token-info.json"
+                description="※ 現在は利用していません。"
+                variant="bordered"
+                disabled
+                size="md"
+              />
+            </div>
+            <div>
+              <Checkbox
+                isSelected={isSbt}
+                onValueChange={setIsSbt}
+                size="md"
+                classNames={{
+                  label: "font-semibold",
+                }}
+              >
+                業務執行社員トークンにする
+              </Checkbox>
+            </div>
 
-            <Button type="submit" color="primary">
-              {isPending ? "Confirming..." : "トークンを作成する"}
-            </Button>
+            <div className="mt-2">
+              <Button type="submit" color="primary" size="md">
+                {isPending ? "Confirming..." : "トークンを作成する"}
+              </Button>
+            </div>
           </form>
           {hash && (
             <a
