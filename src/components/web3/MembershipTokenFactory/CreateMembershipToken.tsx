@@ -112,7 +112,6 @@ export function CreateMembershipToken({
                 placeholder="https://example.com/token-info.json"
                 description="※ 現在は利用していません。"
                 variant="bordered"
-                disabled
                 size="md"
               />
             </div>
