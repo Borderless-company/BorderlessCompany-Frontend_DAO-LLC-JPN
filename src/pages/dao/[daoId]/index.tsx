@@ -15,6 +15,7 @@ import { Footer } from "@/components/Footer";
 import { Link } from "@nextui-org/react";
 import { getBlockExplorerUrl } from "@/utils/contractAddress";
 import { useChainId } from "wagmi";
+import UpdateCompanyForm from "@/components/UpdateCompanyForm";
 
 const Chart = dynamic(
   () => import("@/components/charts/pie").then((mod) => mod.Pie),
@@ -61,6 +62,9 @@ const Dashboard: NextPage = () => {
                   <h3 className="text-center text-2xl font-bold">
                     {companyInfo.daoName}
                   </h3>
+                  {/* <div>
+                    <UpdateCompanyForm daoId={daoId as string} />
+                  </div> */}
                   <Link
                     href={`${blockExplorerUrl}/address/${daoId as string}`}
                     target="_blank"
