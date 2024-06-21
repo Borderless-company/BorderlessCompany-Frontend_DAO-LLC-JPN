@@ -62,9 +62,9 @@ const Dashboard: NextPage = () => {
                   <h3 className="text-center text-2xl font-bold">
                     {companyInfo.daoName}
                   </h3>
-                  <div>
+                  {/* <div>
                     <UpdateCompanyForm daoId={daoId as string} />
-                  </div>
+                  </div> */}
                   <Link
                     href={`${blockExplorerUrl}/address/${daoId as string}`}
                     target="_blank"
