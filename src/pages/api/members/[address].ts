@@ -1,13 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import Datastore from "nedb";
-import path from "path";
+import { getMember, updateMember } from "@/utils/api/member";
 
-const db = new Datastore({
-  filename: path.join("./tmp", "members.db"),
-  autoload: true,
-});
-
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { address } = req.query;
 
   if (typeof address !== "string") {
@@ -17,40 +14,31 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
   switch (req.method) {
     case "GET":
-      // メンバー情報の取得
-      db.findOne({ address: address }, (err: any, member: any) => {
-        if (err) {
-          res.status(500).json({ error: "Internal server error" });
-          return;
-        }
+      try {
+        const member = await getMember(address);
         if (member) {
           res.status(200).json(member);
         } else {
           res.status(404).json({ error: "Member not found" });
         }
-      });
+      } catch (err) {
+        res.status(500).json({ error: "Internal server error" });
+      }
       break;
     case "POST":
-      // メンバー情報の更新または登録
       const { name } = req.body;
-      if (typeof name !== "string") {
-        res
-          .status(400)
-          .json({ error: "name is required and must be a string" });
+      if (typeof name !== "string" && name !== undefined) {
+        res.status(400).json({ error: "name must be a string if provided" });
         return;
       }
-      db.update(
-        { address: address },
-        { $set: { name: name } },
-        { upsert: true },
-        (err: any) => {
-          if (err) {
-            res.status(500).json({ error: "Internal server error" });
-            return;
-          }
-          res.status(200).json({ address, name });
-        }
-      );
+
+      try {
+        const updateData = { address, name };
+        await updateMember(address, updateData);
+        res.status(200).json({ ...updateData });
+      } catch (err) {
+        res.status(500).json({ error: "Internal server error" });
+      }
       break;
     default:
       res.setHeader("Allow", ["GET", "POST"]);
