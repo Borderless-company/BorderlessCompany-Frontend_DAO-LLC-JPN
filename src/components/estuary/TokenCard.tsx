@@ -24,13 +24,13 @@ export const TokenCard: FC<TokenCardProps> = ({
         base: cn(
           "flex flex-col w-64 h-[340px] flex-shrink-0 p-0 bg-white rounded-2xl shadow-lg overflow-hidden m-0 box-content",
           isSelected &&
-            "outline outline-1 outline-teal-500 shadow-lg shadow-teal-500/50 transition-all"
+            "outline outline-1 outline-yellow-500 shadow-lg shadow-yellow-500/50 transition-all"
         ),
         wrapper: cn(
           "absolute right-2 top-2 w-6 h-6 rounded-md z-10 m-0 bg-white",
-          "border-2 group-data-[selected=true]:border-teal-600"
+          "border-2 group-data-[selected=true]:border-yellow-600"
         ),
-        control: cn("bg-teal-600"),
+        control: cn("bg-yellow-600"),
         labelWrapper: "m-0",
       }}
     >
