@@ -55,6 +55,7 @@ const Estuary: NextPage<EstuaryProps> = () => {
             {estuarySample.token.map((token) => {
               return (
                 <TokenCard
+                  key={token.id}
                   name={token.name}
                   value={token.id}
                   imageSrc={token.image || ""}
