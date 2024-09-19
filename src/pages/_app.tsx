@@ -7,6 +7,7 @@ import { NextUIProvider } from "@nextui-org/react";
 
 import WagmiWrapper from "@/components/provider/WagmiWrapper";
 
+import { Provider } from "jotai";
 import clsx from "clsx";
 import { Noto_Sans_JP } from "next/font/google";
 
@@ -18,7 +19,9 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <WagmiWrapper>
       <NextUIProvider>
-        <Component {...pageProps} />
+        <Provider>
+          <Component {...pageProps} />
+        </Provider>
       </NextUIProvider>
     </WagmiWrapper>
   );

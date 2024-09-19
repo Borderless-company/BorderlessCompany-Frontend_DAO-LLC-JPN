@@ -11,11 +11,9 @@ export type Token = {
 };
 
 export type TermSheet = {
-  AoI: string;
-  tokenAgreement: string;
-  governanceAgreement: string;
-  operationAgreement: string;
-  [key: string]: string | undefined;
+  id: string;
+  name: string;
+  url: string;
 };
 
 export type Estuary = {
@@ -54,8 +52,7 @@ export const estuarySample: Estuary = {
       id: "1",
       name: "KABAトークン",
       isExecutive: false,
-      image:
-        "https://media.discordapp.net/attachments/1225737568218251306/1284195122078023734/IMG_20240914_015249_275.jpg?ex=66e5bf68&is=66e46de8&hm=361715dcdec2a1e412db19929430778e6c7f25534c9c2727919daadaa3c45ef4&=&format=webp&width=1228&height=1638",
+      image: "/estuary_token_sample1.webp",
       symbol: "KABA",
       description: "KABAトークンはカバDAOの非業務執行社員トークンです。",
       minPrice: 10000,
@@ -65,8 +62,7 @@ export const estuarySample: Estuary = {
       id: "2",
       name: "KABAトークン",
       isExecutive: false,
-      image:
-        "https://media.discordapp.net/attachments/1225737568218251306/1284195325027815464/IMG_20240914_015339_717.jpg?ex=66e5bf98&is=66e46e18&hm=3203a4e796362ee4983b64cff06e078d6293acdd94cb760f2e01f648511cc399&=&format=webp&width=1228&height=1638",
+      image: "/estuary_token_sample2.webp",
       symbol: "KABA",
       description: "KABAトークンはカバDAOの非業務執行社員トークンです。",
       minPrice: 30000,
@@ -76,8 +72,7 @@ export const estuarySample: Estuary = {
       id: "3",
       name: "KABAトークン",
       isExecutive: false,
-      image:
-        "https://media.discordapp.net/attachments/1225737568218251306/1284195762468552784/D770E3C6-9098-45D0-B9E8-E998AD8E4270.jpg?ex=66e5c000&is=66e46e80&hm=3048f4983b87c09b82e1f064adc1a6004719e53c1441351dadf1d41912212471&=&format=webp&width=526&height=700",
+      image: "/estuary_token_sample3.webp",
       symbol: "KABA",
       description: "KABAトークンはカバDAOの非業務執行社員トークンです。",
       minPrice: 100000,
@@ -88,11 +83,21 @@ export const estuarySample: Estuary = {
   endDate: new Date("2024-10-31"),
   softCap: undefined,
   termSheet: [
+    { id: "AoI", name: "定款", link: "https://estuary.xyz/AoI.pdf" },
     {
-      AoI: "https://estuary.xyz/AoI.pdf ",
-      tokenAgreement: "https://estuary.xyz/tokenAgreement.pdf",
-      governanceAgreement: "https://estuary.xyz/governanceAgreement.pdf",
-      operationAgreement: "https://estuary.xyz/operationAgreement.pdf",
+      id: "governanceAgreement",
+      name: "総会規定",
+      link: "https://estuary.xyz/GovernanceAgreement.pdf",
+    },
+    {
+      id: "tokenAgreement",
+      name: "トークン規定",
+      link: "https://estuary.xyz/TokenAgreement.pdf",
+    },
+    {
+      id: "operationAgreement",
+      name: "運営規定",
+      link: "https://estuary.xyz/OperationAgreement.pdf",
     },
   ],
   paymentMethod: ["crypto", "fiat"],
