@@ -60,6 +60,7 @@ const KYCSucceededPage: FC = () => {
           >
             {PRODUCT_TERMS.map((term, index) => (
               <TermCheckbox
+                key={term.id}
                 value={term.id}
                 termName={term.name}
                 href={term.url}

@@ -83,21 +83,21 @@ export const estuarySample: Estuary = {
   endDate: new Date("2024-10-31"),
   softCap: undefined,
   termSheet: [
-    { id: "AoI", name: "定款", link: "https://estuary.xyz/AoI.pdf" },
+    { id: "AoI", name: "定款", url: "https://estuary.xyz/AoI.pdf" },
     {
       id: "governanceAgreement",
       name: "総会規定",
-      link: "https://estuary.xyz/GovernanceAgreement.pdf",
+      url: "https://estuary.xyz/GovernanceAgreement.pdf",
     },
     {
       id: "tokenAgreement",
       name: "トークン規定",
-      link: "https://estuary.xyz/TokenAgreement.pdf",
+      url: "https://estuary.xyz/TokenAgreement.pdf",
     },
     {
       id: "operationAgreement",
       name: "運営規定",
-      link: "https://estuary.xyz/OperationAgreement.pdf",
+      url: "https://estuary.xyz/OperationAgreement.pdf",
     },
   ],
   paymentMethod: ["crypto", "fiat"],
