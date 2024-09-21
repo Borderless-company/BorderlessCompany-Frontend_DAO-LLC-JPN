@@ -8,7 +8,6 @@ import { useAtom } from "jotai";
 import { FC } from "react";
 import { client } from "@/utils/client";
 import { ConnectButton } from "@/components/estuary/ConnectButton";
-import { ConnectButton as TWConnectButton } from "thirdweb/react";
 
 export const EstuaryContainer: FC = () => {
   const [estuaryPage] = useAtom(estuaryPageAtom);

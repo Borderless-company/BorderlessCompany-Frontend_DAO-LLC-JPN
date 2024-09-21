@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { EstuaryContainer } from "../_components/EstuaryContainer";
+import { EstuaryContainer } from "../../../components/estuary/EstuaryContainer";
 import { ThirdwebProvider } from "thirdweb/react";
 
 type EstuaryProps = {
