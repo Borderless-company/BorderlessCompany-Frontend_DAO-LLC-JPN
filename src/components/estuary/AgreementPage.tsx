@@ -20,8 +20,8 @@ const AgreementPage: FC = () => {
   const onClickBack = () => {
     setEstuaryPage(estuaryPage - 1);
   };
-  const onClickKYCSucceeded = () => {
-    setEstuaryPage(estuaryPage + 1);
+  const onClickPay = () => {
+    window.open("https://buy.stripe.com/test_00gbINgoseSn9tC5kk", "_blank");
   };
 
   const isAllChecked = useMemo(() => {
@@ -91,7 +91,7 @@ const AgreementPage: FC = () => {
             size="lg"
             fullWidth
             startContent={<PiCreditCardFill size={24} />}
-            onClick={onClickKYCSucceeded}
+            onClick={onClickPay}
             isDisabled={!isAllChecked}
           >
             決済へ進む

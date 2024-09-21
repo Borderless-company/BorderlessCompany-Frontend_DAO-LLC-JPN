@@ -3,19 +3,30 @@ import { RadioGroup } from "@nextui-org/react";
 import { cn } from "@nextui-org/react";
 import Image from "next/image";
 import { Button } from "@nextui-org/react";
-import { PiArrowRight } from "react-icons/pi";
+import { PiArrowRight, PiSignIn } from "react-icons/pi";
 import { TokenCard } from "./TokenCard";
 import { estuarySample } from "@/types";
 import { estuaryPageAtom } from "@/atoms";
 import { useAtom } from "jotai";
+import { useActiveAccount, useConnectModal } from "thirdweb/react";
+import { client, wallets } from "@/utils/client";
 
 export const TokenSelection: FC = () => {
+  const account = useActiveAccount();
+  const { connect, isConnecting } = useConnectModal();
   const [estuaryPage, setEstuaryPage] = useAtom(estuaryPageAtom);
   const onClickNext = () => {
     setEstuaryPage(1);
   };
 
-  const [selectedTokenId, setSelectedTokenId] = useState<string>("");
+  const handleConnect = async () => {
+    const wallet = await connect({ client, wallets: wallets, size: "compact" });
+    console.log("Connected wallet: ", account);
+  };
+
+  const [selectedTokenId, setSelectedTokenId] = useState<string>(
+    estuarySample.token[0].id
+  );
   return (
     <>
       {/* Header */}
@@ -40,11 +51,12 @@ export const TokenSelection: FC = () => {
       {/* Content */}
       <div className="flex flex-col gap-4 flex-1 py-6">
         <p className="text-slate-800 text-lg font-semibold pl-6">
-          種類を選択してください。
+          種類を選択してください
         </p>
         <RadioGroup
           value={selectedTokenId}
           onValueChange={setSelectedTokenId}
+          defaultValue={estuarySample.token[0].id}
           orientation="horizontal"
           classNames={{
             wrapper: cn(
@@ -61,6 +73,7 @@ export const TokenSelection: FC = () => {
                 imageSrc={token.image || ""}
                 minPrice={token.minPrice || 0}
                 maxPrice={token.maxPrice || 0}
+                fixedPrice={token.fixedPrice}
               />
             );
           })}
@@ -76,17 +89,28 @@ export const TokenSelection: FC = () => {
               ¥
               {estuarySample.token
                 .find((token) => token.id === selectedTokenId)
-                ?.minPrice?.toLocaleString()}
+                ?.fixedPrice?.toLocaleString()}
             </p>
           </div>
-          <Button
-            className="w-full bg-yellow-700 text-white text-base font-semibold"
-            endContent={<PiArrowRight color="white" />}
-            onClick={onClickNext}
-            size="lg"
-          >
-            次に進む
-          </Button>
+          {account?.address ? (
+            <Button
+              className="w-full bg-yellow-700 text-white text-base font-semibold"
+              endContent={<PiArrowRight color="white" />}
+              onClick={onClickNext}
+              size="lg"
+            >
+              次に進む
+            </Button>
+          ) : (
+            <Button
+              startContent={<PiSignIn color="white" />}
+              className="w-full bg-purple-700 text-white text-base font-semibold"
+              onClick={handleConnect}
+              size="lg"
+            >
+              ログインする
+            </Button>
+          )}
         </div>
         <div className="w-full flex justify-end items-center gap-2 px-2">
           <div className="w-fit text-slate-600 text-xs leading-3 font-normal font-mono pt-[2px]">

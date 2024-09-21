@@ -7,6 +7,7 @@ type TokenCardProps = {
   imageSrc: string;
   minPrice: number;
   maxPrice?: number;
+  fixedPrice?: number;
 } & RadioProps;
 
 export const TokenCard: FC<TokenCardProps> = ({
@@ -14,6 +15,7 @@ export const TokenCard: FC<TokenCardProps> = ({
   imageSrc,
   minPrice,
   maxPrice,
+  fixedPrice,
   ...props
 }) => {
   const { isSelected } = useRadio(props);
@@ -47,7 +49,11 @@ export const TokenCard: FC<TokenCardProps> = ({
       <div className="flex flex-col gap-0 p-4 pt-3">
         <h3 className="text-slate-800 text-xl font-semibold">{name}</h3>
         <p className="text-slate-600 text-lg font-semibold">
-          {maxPrice ? `¥${minPrice} ~ ¥${maxPrice}` : `¥${minPrice}`}
+          {fixedPrice
+            ? `¥${fixedPrice}`
+            : maxPrice
+            ? `¥${minPrice} ~ ¥${maxPrice}`
+            : `¥${minPrice}`}
         </p>
       </div>
     </Radio>
