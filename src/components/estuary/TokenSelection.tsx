@@ -27,6 +27,7 @@ export const TokenSelection: FC = () => {
   const [selectedTokenId, setSelectedTokenId] = useState<string>(
     estuarySample.token[0].id
   );
+
   return (
     <>
       {/* Header */}
@@ -41,6 +42,7 @@ export const TokenSelection: FC = () => {
             width: "48px",
             height: "48px",
             flexShrink: 0,
+            borderRadius: "4px",
           }}
         />
         <h1 className="text-[28px] leading-8 font-bold text-slate-800">
