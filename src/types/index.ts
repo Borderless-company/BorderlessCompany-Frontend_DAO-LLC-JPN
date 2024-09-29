@@ -51,7 +51,7 @@ export const estuarySample: Estuary = {
       id: "1",
       name: "KABAトークン",
       isExecutive: false,
-      image: "/estuary_token_sample1.webp",
+      image: "/estuary_logo_sample.png",
       symbol: "KABA",
       description: "KABAトークンはカバDAOの非業務執行社員トークンです。",
       // minPrice: 10000,
