@@ -23,7 +23,7 @@ const KYCPage: FC = () => {
       const accessToken = await fetch("/api/kyc/accessToken", {
         method: "POST",
         body: JSON.stringify({
-          userId: "sample5",
+          userId: "sample6",
           levelName: "borderless-kyc-level",
         }),
       });

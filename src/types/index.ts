@@ -2,12 +2,13 @@ export type Token = {
   id: string;
   name: string;
   symbol: string;
-  isExecutive: boolean;
+  isExecutable: boolean;
   image?: string;
   description?: string;
   minPrice?: number; // YEN
   maxPrice?: number;
   fixedPrice?: number;
+  productID?: string;
 };
 
 export type TermSheet = {
@@ -50,7 +51,7 @@ export const estuarySample: Estuary = {
     {
       id: "1",
       name: "KABAトークン",
-      isExecutive: false,
+      isExecutable: false,
       image: "/estuary_logo_sample.png",
       symbol: "KABA",
       description: "KABAトークンはカバDAOの非業務執行社員トークンです。",
