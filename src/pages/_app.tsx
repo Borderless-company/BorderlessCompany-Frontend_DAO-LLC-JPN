@@ -7,21 +7,26 @@ import { NextUIProvider } from "@nextui-org/react";
 
 import WagmiWrapper from "@/components/provider/WagmiWrapper";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 import { Provider } from "jotai";
-import clsx from "clsx";
 import { Noto_Sans_JP } from "next/font/google";
 
 const notoSansJP = Noto_Sans_JP({
   subsets: ["latin"],
 });
 
+const queryClient = new QueryClient();
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <WagmiWrapper>
       <NextUIProvider>
-        <Provider>
-          <Component {...pageProps} />
-        </Provider>
+        <QueryClientProvider client={queryClient}>
+          <Provider>
+            <Component {...pageProps} />
+          </Provider>
+        </QueryClientProvider>
       </NextUIProvider>
     </WagmiWrapper>
   );

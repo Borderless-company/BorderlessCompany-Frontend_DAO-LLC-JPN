@@ -12,6 +12,8 @@ import { useAtom } from "jotai";
 import { TermCheckbox } from "./TermCheckbox";
 import { PRODUCT_TERMS } from "@/constants";
 import { useForm, Controller } from "react-hook-form";
+import { supabase } from "@/utils/supabase";
+import { useActiveAccount } from "thirdweb/react";
 
 type InputType = {
   name: string;
@@ -23,6 +25,7 @@ const KYCAgreementPage: FC = () => {
   const [estuaryPage, setEstuaryPage] = useAtom(estuaryPageAtom);
   const [termChecked, setTermChecked] = useState<string[]>([]);
   const { register, handleSubmit, control } = useForm<InputType>();
+  const account = useActiveAccount();
   const onClickBack = () => {
     setEstuaryPage(estuaryPage - 1);
   };
@@ -35,8 +38,16 @@ const KYCAgreementPage: FC = () => {
     return PRODUCT_TERMS.every((term) => termChecked.includes(term.id));
   }, [termChecked]);
 
-  const onSubmit = (data: InputType) => {
-    console.log(data);
+  const onSubmit = async (data: InputType) => {
+    const { data: user, error } = await supabase
+      .from("User")
+      .insert({
+        evmAddress: account?.address,
+        ...data,
+      })
+      .select();
+    console.log("user:", user);
+    console.log("error:", error);
   };
 
   return (
@@ -108,7 +119,7 @@ const KYCAgreementPage: FC = () => {
           <Button
             className="w-full bg-yellow-700 text-white text-base font-semibold"
             endContent={<PiArrowRight color="white" />}
-            onClick={onClickNext}
+            // onClick={onClickNext}
             size="lg"
             type="submit"
             form="user-info-form"

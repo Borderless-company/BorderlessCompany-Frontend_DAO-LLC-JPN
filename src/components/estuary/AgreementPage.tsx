@@ -1,6 +1,6 @@
 import { estuaryPageAtom } from "@/atoms";
 import { Button, CheckboxGroup } from "@nextui-org/react";
-import { FC, useState, useMemo } from "react";
+import { FC, useState, useMemo, useEffect } from "react";
 import {
   PiArrowLeft,
   PiCheckCircleFill,
@@ -10,18 +10,39 @@ import {
 import Image from "next/image";
 import { useAtom } from "jotai";
 import { estuarySample } from "@/types";
-import { Checkbox, cn } from "@nextui-org/react";
 import { TermCheckbox } from "./TermCheckbox";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import { PaymentForm } from "./PaymentForm";
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 
 const AgreementPage: FC = () => {
   const [estuaryPage, setEstuaryPage] = useAtom(estuaryPageAtom);
   const [termChecked, setTermChecked] = useState<string[]>([]);
+  const [clientSecret, setClientSecret] = useState<string>("aaa");
+
+  useEffect(() => {
+    const fetchClientSecret = async () => {
+      try {
+        const response = await fetch("/api/payment/createIntent", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ amount: 10000, title: "テストトークン" }),
+        });
+        const data = await response.json();
+        setClientSecret(data.clientSecret);
+      } catch (error) {
+        console.error("Error fetching client secret", error);
+      }
+    };
+    fetchClientSecret();
+  }, []);
 
   const onClickBack = () => {
     setEstuaryPage(estuaryPage - 1);
-  };
-  const onClickPay = () => {
-    window.open("https://buy.stripe.com/test_00gbINgoseSn9tC5kk", "_blank");
   };
 
   const isAllChecked = useMemo(() => {
@@ -31,7 +52,7 @@ const AgreementPage: FC = () => {
   return (
     <>
       {/* Header */}
-      <div className="flex flex-col gap-2 p-6 pb-0">
+      <div className="flex flex-col gap-2 p-6 pb-0 relative">
         <PiCheckCircleFill size={48} className="text-sky-600" />
         <h1 className="text-[28px] leading-8 font-bold text-slate-800">
           同意と確認
@@ -85,17 +106,13 @@ const AgreementPage: FC = () => {
           >
             戻る
           </Button>
-          <Button
-            variant="solid"
-            color="primary"
-            size="lg"
-            fullWidth
-            startContent={<PiCreditCardFill size={24} />}
-            onClick={onClickPay}
-            isDisabled={!isAllChecked}
-          >
-            決済へ進む
-          </Button>
+          {/* <Elements stripe={stripePromise} options={{ clientSecret }}>
+            <PaymentForm
+              amount={10000}
+              title={"テストトークン"}
+              isDisabled={!isAllChecked}
+            />
+          </Elements> */}
         </div>
         <div className="w-full flex justify-end items-center gap-2 px-2">
           <div className="w-fit text-slate-600 text-xs leading-3 font-normal font-mono pt-[2px]">
@@ -108,6 +125,10 @@ const AgreementPage: FC = () => {
             height={14}
           />
         </div>
+        <div
+          id="payment-element"
+          className="absolute top-0 right-0 bottom-0 left-0 w-full"
+        ></div>
       </div>
     </>
   );
