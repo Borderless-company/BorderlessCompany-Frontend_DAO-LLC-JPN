@@ -11,10 +11,12 @@ import { MessageHandler } from "@sumsub/websdk";
 import { useEstuaryContext } from "./EstuaryContext";
 import { v4 as uuidv4 } from "uuid";
 import { EventPayload } from "@sumsub/websdk/types/types";
+import { useActiveAccount } from "thirdweb/react";
 
 const KYCPage: FC = () => {
   const { page, setPage } = useEstuaryContext();
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const account = useActiveAccount();
 
   const onClickBack = () => {
     setPage((page) => page - 1);
@@ -27,7 +29,7 @@ const KYCPage: FC = () => {
           method: "POST",
           body: JSON.stringify({
             // TODO: ユーザーIDを取得する
-            userId: "sample3",
+            userId: account?.address,
             levelName: "borderless-kyc-level",
           }),
         });
@@ -45,7 +47,7 @@ const KYCPage: FC = () => {
     const accessToken = await fetch("/api/kyc/accessToken", {
       method: "POST",
       body: JSON.stringify({
-        userId: "sample3",
+        userId: account?.address,
         levelName: "borderless-kyc-level",
       }),
     });
