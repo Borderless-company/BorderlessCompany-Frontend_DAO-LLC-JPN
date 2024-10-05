@@ -33,11 +33,11 @@ const AgreementPage: FC = () => {
     const paymentLink = await createPaymentLink(token.productId, price);
     const user = await updateUser({
       evmAddress: account?.address,
-      paymentLink: paymentLink,
+      paymentLink: paymentLink.id,
     });
     console.log("updated user:", user);
     startPolling();
-    window.open(paymentLink, "_blank");
+    window.open(paymentLink.url, "_blank");
   };
 
   const onClickBack = () => {
@@ -63,6 +63,7 @@ const AgreementPage: FC = () => {
         .single();
 
       console.log("status:", status);
+      setPollingCount((count) => count + 1);
 
       if (status?.payment_status === "paid") {
         setPaymentStatus("success");

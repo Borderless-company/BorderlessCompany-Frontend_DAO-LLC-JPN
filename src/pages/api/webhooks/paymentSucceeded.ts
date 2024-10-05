@@ -19,8 +19,6 @@ export default async function handler(
     const buf = await buffer(req);
     const sig = req.headers["stripe-signature"] as string;
 
-    console.log("whsec:", endpointSecret);
-
     let event: Stripe.Event;
     try {
       event = stripe.webhooks.constructEvent(buf, sig, endpointSecret);
