@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { RadioGroup } from "@nextui-org/react";
 import { cn } from "@nextui-org/react";
 import Image from "next/image";
@@ -6,34 +6,45 @@ import { Button } from "@nextui-org/react";
 import { PiArrowRight, PiSignIn } from "react-icons/pi";
 import { TokenCard } from "./TokenCard";
 import { estuarySample } from "@/types";
-import { estuaryPageAtom } from "@/atoms";
-import { useAtom } from "jotai";
 import { useActiveAccount, useConnectModal } from "thirdweb/react";
 import { client, wallets } from "@/utils/client";
+import { useEstuaryContext } from "./EstuaryContext";
+import { useToken } from "@/hooks/useToken";
+import { useEstuary } from "@/hooks/useEstuary";
+import { useParams } from "next/navigation";
 
 export const TokenSelection: FC = () => {
   const account = useActiveAccount();
-  const { connect, isConnecting } = useConnectModal();
-  const [estuaryPage, setEstuaryPage] = useAtom(estuaryPageAtom);
+  const { connect } = useConnectModal();
+  const { setPage, setPrice, setToken } = useEstuaryContext();
+  const [selectedTokenId, setSelectedTokenId] = useState<string>();
+  const { token } = useToken(selectedTokenId);
+  const params = useParams();
+  const estId = params?.estId as string;
+  const estuary = useEstuary(estId);
+
   const onClickNext = () => {
-    setEstuaryPage(1);
+    setPrice(token?.fixedPrice || 0);
+    setToken(token);
+    setPage(1);
   };
+
+  useEffect(() => {
+    console.log("[DEBUG] selected token: ", token);
+    setSelectedTokenId(selectedTokenId);
+  }, [token, selectedTokenId]);
 
   const handleConnect = async () => {
     const wallet = await connect({ client, wallets: wallets, size: "compact" });
     console.log("Connected wallet: ", account);
   };
 
-  const [selectedTokenId, setSelectedTokenId] = useState<string>(
-    estuarySample.token[0].id
-  );
-
   return (
     <>
       {/* Header */}
       <div className="flex flex-col gap-2 p-6 pb-0">
         <Image
-          src={estuarySample.orgLogo}
+          src={(estuary?.orgLogo as string) || "/estuary_logo_sample.png"}
           alt="DAO LLC Logo"
           width={48}
           height={48}
@@ -46,7 +57,7 @@ export const TokenSelection: FC = () => {
           }}
         />
         <h1 className="text-[28px] leading-8 font-bold text-slate-800">
-          {estuarySample.orgName} に出資する
+          {estuary?.orgName} に出資する
         </h1>
       </div>
 
@@ -58,7 +69,6 @@ export const TokenSelection: FC = () => {
         <RadioGroup
           value={selectedTokenId}
           onValueChange={setSelectedTokenId}
-          defaultValue={estuarySample.token[0].id}
           orientation="horizontal"
           classNames={{
             wrapper: cn(
@@ -66,13 +76,13 @@ export const TokenSelection: FC = () => {
             ),
           }}
         >
-          {estuarySample.token.map((token) => {
+          {estuary?.tokens.map((token) => {
             return (
               <TokenCard
                 key={token.id}
                 name={token.name}
                 value={token.id}
-                imageSrc={token.image || ""}
+                imageSrc={token.image || "/estuary_logo_sample.png"}
                 minPrice={token.minPrice || 0}
                 maxPrice={token.maxPrice || 0}
                 fixedPrice={token.fixedPrice}
@@ -89,7 +99,7 @@ export const TokenSelection: FC = () => {
             <p className="text-slate-600 font-semibold text-2xl">金額</p>
             <p className="text-slate-700 font-semibold text-3xl">
               ¥
-              {estuarySample.token
+              {estuary?.tokens
                 .find((token) => token.id === selectedTokenId)
                 ?.fixedPrice?.toLocaleString()}
             </p>

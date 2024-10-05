@@ -1,39 +1,46 @@
-import { estuaryPageAtom } from "@/atoms";
 import { Button } from "@nextui-org/react";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   PiArrowRight,
   PiArrowLeft,
   PiIdentificationCardFill,
 } from "react-icons/pi";
 import Image from "next/image";
-import { useAtom } from "jotai";
 import SumsubWebSdk from "@sumsub/websdk-react";
 import { MessageHandler } from "@sumsub/websdk";
+import { useEstuaryContext } from "./EstuaryContext";
+import { v4 as uuidv4 } from "uuid";
+import { EventPayload } from "@sumsub/websdk/types/types";
 
 const KYCPage: FC = () => {
-  const [estuaryPage, setEstuaryPage] = useAtom(estuaryPageAtom);
+  const { page, setPage } = useEstuaryContext();
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
   const onClickBack = () => {
-    setEstuaryPage(estuaryPage - 1);
+    setPage((page) => page - 1);
   };
-  const onClickKYC = async () => {
-    try {
-      const accessToken = await fetch("/api/kyc/accessToken", {
-        method: "POST",
-        body: JSON.stringify({
-          userId: "sample6",
-          levelName: "borderless-kyc-level",
-        }),
-      });
-      const accessTokenJson = await accessToken.json();
-      console.log("accessToken: ", accessTokenJson);
-      setAccessToken(accessTokenJson.token);
-    } catch (error) {
-      console.error("Error: ", error);
-    }
-  };
+
+  useEffect(() => {
+    const getAccessToken = async () => {
+      try {
+        const accessToken = await fetch("/api/kyc/accessToken", {
+          method: "POST",
+          body: JSON.stringify({
+            // TODO: ユーザーIDを取得する
+            userId: "sample3",
+            levelName: "borderless-kyc-level",
+          }),
+        });
+        const accessTokenJson = await accessToken.json();
+        console.log("accessToken: ", accessTokenJson);
+        setAccessToken(accessTokenJson.token);
+      } catch (error) {
+        console.error("Error: ", error);
+      }
+    };
+    getAccessToken();
+  }, []);
+
   const expirationHandler = async () => {
     const accessToken = await fetch("/api/kyc/accessToken", {
       method: "POST",
@@ -47,11 +54,15 @@ const KYCPage: FC = () => {
   const kycMessageHandler: MessageHandler = (type, payload) => {
     if (type === "idCheck.onApplicantSubmitted") {
       console.log("onApplicantSubmitted: ", payload);
-      setEstuaryPage(estuaryPage + 1);
+      setPage((page) => page + 1);
     }
     if (type === "idCheck.onApplicantStatusChanged") {
       console.log("onApplicantStatusChanged: ", payload);
-      // payload.
+      const CastedPayload =
+        payload as EventPayload<"idCheck.onApplicantStatusChanged">;
+      if (CastedPayload.reviewStatus === "completed") {
+        setPage((page) => page + 1);
+      }
     }
     if (type === "idCheck.onModuleResultPresented") {
       console.log("onModuleResultPresented: ", payload);
@@ -67,16 +78,13 @@ const KYCPage: FC = () => {
   return (
     <>
       {accessToken ? (
-        <div className="h-[718px]">
-          <SumsubWebSdk
-            style={{ height: "720px", flex: 1 }}
-            onMessage={kycMessageHandler}
-            accessToken={accessToken}
-            expirationHandler={expirationHandler}
-            options={{ adaptIframeHeight: true, addViewportTag: false }}
-            config={{ lang: "ja" }}
-          />
-        </div>
+        <SumsubWebSdk
+          onMessage={kycMessageHandler}
+          accessToken={accessToken}
+          expirationHandler={expirationHandler}
+          options={{ adaptIframeHeight: true, addViewportTag: false }}
+          config={{ lang: "ja" }}
+        />
       ) : (
         <>
           {/* Header */}
@@ -105,7 +113,7 @@ const KYCPage: FC = () => {
                 size="sm"
                 variant="light"
                 color="primary"
-                onClick={onClickKYC}
+                // onClick={onClickKYC}
               >
                 読み取れない方はこちら
               </Button>

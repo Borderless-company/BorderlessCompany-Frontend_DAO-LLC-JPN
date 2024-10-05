@@ -1,53 +1,83 @@
-import { estuaryPageAtom } from "@/atoms";
 import { Button, CheckboxGroup } from "@nextui-org/react";
 import { FC, useState, useMemo, useEffect } from "react";
 import {
   PiArrowLeft,
   PiCheckCircleFill,
   PiCreditCardFill,
-  PiArrowSquareOutBold,
 } from "react-icons/pi";
 import Image from "next/image";
-import { useAtom } from "jotai";
 import { estuarySample } from "@/types";
 import { TermCheckbox } from "./TermCheckbox";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
-import { PaymentForm } from "./PaymentForm";
+import { useEstuaryContext } from "./EstuaryContext";
+import { createPaymentLink } from "@/utils/stripe";
+import { useActiveAccount } from "thirdweb/react";
+import { useUser } from "@/hooks/useUser";
+import { supabase } from "@/utils/supabase";
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
+const POLLING_INTERVAL = 3000;
+const MAX_POLLING_TIME = 600000;
 
 const AgreementPage: FC = () => {
-  const [estuaryPage, setEstuaryPage] = useAtom(estuaryPageAtom);
   const [termChecked, setTermChecked] = useState<string[]>([]);
-  const [clientSecret, setClientSecret] = useState<string>("aaa");
+  const [paymentStatus, setPaymentStatus] = useState<
+    "initial" | "pending" | "success" | "failed"
+  >("initial");
+  const { token, price, page, setPage } = useEstuaryContext();
+  const account = useActiveAccount();
+  const { updateUser } = useUser(account?.address);
+  const [pollingCount, setPollingCount] = useState(0);
 
-  useEffect(() => {
-    const fetchClientSecret = async () => {
-      try {
-        const response = await fetch("/api/payment/createIntent", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ amount: 10000, title: "テストトークン" }),
-        });
-        const data = await response.json();
-        setClientSecret(data.clientSecret);
-      } catch (error) {
-        console.error("Error fetching client secret", error);
-      }
-    };
-    fetchClientSecret();
-  }, []);
+  const onClickPay = async () => {
+    if (!token?.productId || !price) return;
+    setPaymentStatus("pending");
+    const paymentLink = await createPaymentLink(token.productId, price);
+    const user = await updateUser({
+      evmAddress: account?.address,
+      paymentLink: paymentLink,
+    });
+    console.log("updated user:", user);
+    startPolling();
+    window.open(paymentLink, "_blank");
+  };
 
   const onClickBack = () => {
-    setEstuaryPage(estuaryPage - 1);
+    setPage((page) => page - 1);
   };
 
   const isAllChecked = useMemo(() => {
     return termChecked.length === estuarySample.termSheet.length;
   }, [termChecked]);
+
+  useEffect(() => {
+    if (paymentStatus === "success") {
+      setPage((page) => page + 1);
+    }
+  }, [paymentStatus]);
+
+  const startPolling = () => {
+    const pollInterval = setInterval(async () => {
+      const { data: status } = await supabase
+        .from("USER")
+        .select("payment_status")
+        .eq("evm_address", account?.address)
+        .single();
+
+      console.log("status:", status);
+
+      if (status?.payment_status === "paid") {
+        setPaymentStatus("success");
+        clearInterval(pollInterval);
+      }
+
+      if (pollingCount * POLLING_INTERVAL >= MAX_POLLING_TIME) {
+        clearInterval(pollInterval);
+        setPaymentStatus("failed");
+      }
+    }, POLLING_INTERVAL);
+
+    // コンポーネントのアンマウント時にポーリングを停止
+    return () => clearInterval(pollInterval);
+  };
 
   return (
     <>
@@ -63,8 +93,8 @@ const AgreementPage: FC = () => {
       <div className="flex flex-col gap-4 flex-1 p-6 justify-start items-center overflow-y-scroll">
         <div className="flex flex-col gap-0 w-full">
           <div className="flex justify-between items-center w-full h-14 px-3 text-base font-semibold border-b-1 border-slate-200">
-            <p>{estuarySample.token[0].name}</p>
-            <p>¥{estuarySample.token[0].minPrice?.toLocaleString()}</p>
+            <p>{token?.name}</p>
+            <p>¥{price?.toLocaleString()}</p>
           </div>
           <div className="flex justify-between items-center w-full h-14 px-3 text-base font-semibold border-b-0 border-slate-200">
             <p>本人確認</p>
@@ -78,7 +108,9 @@ const AgreementPage: FC = () => {
           className="flex flex-col gap-2 w-full h-fit bg-stone-100 rounded-2xl px-4 py-1"
           value={termChecked}
           onValueChange={setTermChecked}
+          isDisabled={paymentStatus === "pending"}
         >
+          {/* TODO: TermsheetsのDB作成繋ぎ込み */}
           {estuarySample.termSheet.map((term, index) => (
             <TermCheckbox
               key={term.id}
@@ -106,13 +138,23 @@ const AgreementPage: FC = () => {
           >
             戻る
           </Button>
-          {/* <Elements stripe={stripePromise} options={{ clientSecret }}>
-            <PaymentForm
-              amount={10000}
-              title={"テストトークン"}
-              isDisabled={!isAllChecked}
-            />
-          </Elements> */}
+          <Button
+            className="w-fit text-base font-semibold"
+            startContent={
+              paymentStatus === "initial" && (
+                <PiCreditCardFill className="flex-shrink-0" />
+              )
+            }
+            onClick={onClickPay}
+            variant="solid"
+            color="primary"
+            size="lg"
+            isDisabled={!isAllChecked}
+            isLoading={paymentStatus === "pending"}
+            style={{ flex: 1 }}
+          >
+            {paymentStatus === "initial" ? "支払う" : "支払い処理中..."}
+          </Button>
         </div>
         <div className="w-full flex justify-end items-center gap-2 px-2">
           <div className="w-fit text-slate-600 text-xs leading-3 font-normal font-mono pt-[2px]">
@@ -125,10 +167,6 @@ const AgreementPage: FC = () => {
             height={14}
           />
         </div>
-        <div
-          id="payment-element"
-          className="absolute top-0 right-0 bottom-0 left-0 w-full"
-        ></div>
       </div>
     </>
   );

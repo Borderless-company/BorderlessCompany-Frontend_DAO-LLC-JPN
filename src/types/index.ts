@@ -1,3 +1,18 @@
+// MARK: USER
+export type User = {
+  id: string;
+  evmAddress?: string;
+  name?: string;
+  furigana?: string;
+  address?: string;
+  kycStatus?: string;
+  paymentLink?: string;
+  paymentStatus?: string;
+  price?: string;
+  dateOfEmployment?: string;
+};
+
+// MARK: Token
 export type Token = {
   id: string;
   name: string;
@@ -8,7 +23,7 @@ export type Token = {
   minPrice?: number; // YEN
   maxPrice?: number;
   fixedPrice?: number;
-  productID?: string;
+  productId?: string;
 };
 
 export type TermSheet = {
@@ -17,12 +32,13 @@ export type TermSheet = {
   url: string;
 };
 
+// MARK: Estuary
 export type Estuary = {
   id: string;
   orgName: string;
   orgLogo: string;
   isPublic: boolean;
-  token: Token[];
+  tokens: Token[];
   startDate: Date;
   endDate: Date;
   softCap?: number;
@@ -32,12 +48,13 @@ export type Estuary = {
   primaryColor?: string;
 };
 
+// MARK: Sample
 export const estuarySample: Estuary = {
   id: "1234-abcd-5678",
   orgName: "KABA DAO LLC",
   orgLogo: "/estuary_logo_sample.png",
   isPublic: true,
-  token: [
+  tokens: [
     // {
     //   id: "1234-abcd-5678",
     //   name: "DYNAMOトークン",
