@@ -67,7 +67,7 @@ const AgreementPage: FC = () => {
       console.log("status:", status);
       setPollingCount((count) => count + 1);
 
-      if (status?.payment_status === "paid") {
+      if (status?.payment_status === "done") {
         setPaymentStatus("success");
         clearInterval(pollInterval);
       }
