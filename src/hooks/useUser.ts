@@ -17,7 +17,6 @@ export const useUser = (evmAddress?: string) => {
         const { data, error } = await supabase
           .from("USER")
           .update({
-            id: props.id,
             evm_address: props.evmAddress,
             name: props.name,
             furigana: props.furigana,
@@ -50,7 +49,7 @@ export const useUser = (evmAddress?: string) => {
     mutationFn: async (props: Partial<User>) => {
       const { data, error } = await supabase
         .from("USER")
-        .insert({
+        .upsert({
           evm_address: props.evmAddress,
           name: props.name,
           furigana: props.furigana,
