@@ -10,9 +10,11 @@ import {
 import Image from "next/image";
 import { useAtom } from "jotai";
 import { estuarySample } from "@/types";
+import { useEstuaryContext } from "./EstuaryContext";
 
 const ReceivedPage: FC = () => {
   const [estuaryPage, setEstuaryPage] = useAtom(estuaryPageAtom);
+  const { token } = useEstuaryContext();
 
   const onClickBack = () => {
     setEstuaryPage(estuaryPage - 1);
@@ -27,7 +29,7 @@ const ReceivedPage: FC = () => {
       {/* Content */}
       <div className="flex flex-col gap-4 flex-1 py-6 justify-center items-center">
         <Image
-          src={estuarySample.token[0].image || ""}
+          src={token?.image || "/estuary_logo_sample.png"}
           alt="check"
           width={112}
           height={112}

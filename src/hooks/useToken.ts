@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { supabase } from "@/utils/supabase";
+import { supabase, camelizeDeeply } from "@/utils/supabase";
 import { Token } from "@/types";
 import stripe from "@/utils/stripe";
 
@@ -27,7 +27,7 @@ export const useToken = (id?: string) => {
     mutationFn: async (props: CreateTokenProps) => {
       const product = await _createProduct(props.name!, props.image);
       const { data, error } = await supabase
-        .from("Token")
+        .from("TOKEN")
         .insert({
           id: props.id,
           name: props.name,
@@ -55,12 +55,12 @@ export const useToken = (id?: string) => {
     },
   });
 
-  const { data: token } = useQuery<any, Error>({
+  const { data: tokenData } = useQuery<any, Error>({
     queryKey: ["token", id],
     queryFn: async () => {
       if (!id) return;
       const { data, error } = await supabase
-        .from("Token")
+        .from("TOKEN")
         .select()
         .eq("id", id)
         .single();
@@ -70,5 +70,7 @@ export const useToken = (id?: string) => {
       return data;
     },
   });
+
+  const token = camelizeDeeply(tokenData) as Token;
   return { createToken, token };
 };

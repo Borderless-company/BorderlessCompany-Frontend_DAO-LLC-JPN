@@ -1,4 +1,3 @@
-import { estuaryPageAtom } from "@/atoms";
 import { Button, CheckboxGroup, Input } from "@nextui-org/react";
 import { FC, useState, useMemo } from "react";
 import {
@@ -8,12 +7,13 @@ import {
   PiCheckCircleFill,
 } from "react-icons/pi";
 import Image from "next/image";
-import { useAtom } from "jotai";
 import { TermCheckbox } from "./TermCheckbox";
 import { PRODUCT_TERMS } from "@/constants";
 import { useForm, Controller } from "react-hook-form";
 import { supabase } from "@/utils/supabase";
 import { useActiveAccount } from "thirdweb/react";
+import { useEstuaryContext } from "./EstuaryContext";
+import { useUser } from "@/hooks/useUser";
 
 type InputType = {
   name: string;
@@ -22,32 +22,23 @@ type InputType = {
 };
 
 const KYCAgreementPage: FC = () => {
-  const [estuaryPage, setEstuaryPage] = useAtom(estuaryPageAtom);
+  const { setPage } = useEstuaryContext();
   const [termChecked, setTermChecked] = useState<string[]>([]);
-  const { register, handleSubmit, control } = useForm<InputType>();
+  const { register, handleSubmit } = useForm<InputType>();
   const account = useActiveAccount();
-  const onClickBack = () => {
-    setEstuaryPage(estuaryPage - 1);
-  };
-
-  const onClickNext = () => {
-    setEstuaryPage(estuaryPage + 1);
-  };
+  const { createUser } = useUser();
 
   const isAllChecked = useMemo(() => {
     return PRODUCT_TERMS.every((term) => termChecked.includes(term.id));
   }, [termChecked]);
 
   const onSubmit = async (data: InputType) => {
-    const { data: user, error } = await supabase
-      .from("User")
-      .insert({
-        evmAddress: account?.address,
-        ...data,
-      })
-      .select();
+    const user = await createUser({
+      evmAddress: account?.address,
+      ...data,
+    });
+    setPage((page) => page + 1);
     console.log("user:", user);
-    console.log("error:", error);
   };
 
   return (
@@ -67,21 +58,23 @@ const KYCAgreementPage: FC = () => {
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col gap-4 w-full"
         >
-          <div className="flex gap-4">
+          <div className="w-full flex flex-wrap gap-4 ">
             <Input
               label="氏名"
               labelPlacement="outside"
               placeholder="田中太郎"
               size="lg"
               isRequired
+              // style={{ minWidth: "200px", flexGrow: 1, flexShrink: 1 }}
               {...register("name", { required: "氏名を入力してください" })}
             />
             <Input
               label="ふりがな"
               labelPlacement="outside"
-              placeholder="タナカタロウ"
+              placeholder="たなかたろう"
               size="lg"
               isRequired
+              // style={{ minWidth: "200px", flexGrow: 1, flexShrink: 1 }}
               {...register("furigana", {
                 required: "ふりがなを入力してください",
               })}
