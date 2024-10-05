@@ -1,6 +1,5 @@
 // MARK: USER
 export type User = {
-  id: string;
   evmAddress?: string;
   name?: string;
   furigana?: string;
