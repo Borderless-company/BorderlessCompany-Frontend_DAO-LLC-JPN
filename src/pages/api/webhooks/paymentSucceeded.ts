@@ -33,12 +33,15 @@ export default async function handler(
       const session = event.data.object as Stripe.Checkout.Session;
       console.log("session:", session);
       if (session.payment_status === "paid") {
-        await supabase
+        const { data, error } = await supabase
           .from("USER")
           .update({
-            payment_status: "paid",
+            payment_status: "done",
           })
           .eq("payment_link", session.payment_link as string);
+        if (error) {
+          console.log("error:", error);
+        }
         resJson.sessionCompleted = session.payment_link as string;
         console.log(resJson);
       }

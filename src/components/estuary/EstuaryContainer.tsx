@@ -14,6 +14,7 @@ import { createPaymentLink } from "@/utils/stripe";
 import { useEstuaryContext } from "./EstuaryContext";
 import { useEstuary } from "@/hooks/useEstuary";
 import { useParams } from "next/navigation";
+import { supabase } from "@/utils/supabase";
 
 export const EstuaryContainer: FC = () => {
   const { page, setPage } = useEstuaryContext();
