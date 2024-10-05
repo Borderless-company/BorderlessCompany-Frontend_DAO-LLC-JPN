@@ -31,9 +31,11 @@ const AgreementPage: FC = () => {
     if (!token?.productId || !price) return;
     setPaymentStatus("pending");
     const paymentLink = await createPaymentLink(token.productId, price);
+    console.log("paymentLink:", paymentLink);
     const user = await updateUser({
       evmAddress: account?.address,
       paymentLink: paymentLink.id,
+      price: price.toString(),
     });
     console.log("updated user:", user);
     startPolling();
