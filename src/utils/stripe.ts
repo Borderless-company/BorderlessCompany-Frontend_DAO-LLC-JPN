@@ -32,7 +32,7 @@ export const createPaymentLink = async (productId: string, price: number) => {
         },
       ],
     });
-    return paymentLink.url;
+    return paymentLink;
   } catch (error) {
     console.log("[ERROR] Failed to create product: ", error);
     throw error;
