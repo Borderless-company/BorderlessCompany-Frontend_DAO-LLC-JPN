@@ -17,7 +17,7 @@ export default async function handler(
 
       // TokenテーブルにproductIdを書き込む
       const { data, error } = await supabase
-        .from("Token")
+        .from("TOKEN")
         .update({ product_id: product.id })
         .eq("id", req.body.tokenId); // tokenIdはリクエストボディから取得する必要があります
 
