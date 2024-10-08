@@ -44,9 +44,9 @@ const KYCAgreementPage: FC = () => {
   return (
     <>
       {/* Header */}
-      <div className="flex flex-col gap-2 p-6 pb-0">
+      <div className="flex flex-col gap-1 md:gap-2 p-6 pb-0">
         <PiIdentificationCardFill size={48} className="text-purple-600" />
-        <h1 className="text-[28px] leading-8 font-bold text-slate-800">
+        <h1 className="text-xl md:text-[28px] leading-8 font-bold text-slate-800">
           ユーザー情報を入力してください
         </h1>
       </div>
@@ -95,7 +95,7 @@ const KYCAgreementPage: FC = () => {
       <div className="flex flex-col gap-4 p-6 pt-0 pb-4">
         <div className="flex flex-col gap-4">
           <CheckboxGroup
-            className="flex flex-col gap-2 w-full h-fit bg-stone-100 rounded-2xl px-4 py-1"
+            className="flex flex-col gap-2 w-full h-fit bg-stone-100 rounded-2xl px-2 sm:px-4 py-1"
             value={termChecked}
             onValueChange={setTermChecked}
           >

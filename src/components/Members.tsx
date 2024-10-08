@@ -25,7 +25,10 @@ import {
   TableRow,
 } from "@nextui-org/react";
 import { useChainId, usePublicClient } from "wagmi";
-import { getBlockExplorerUrl } from "@/utils/contractAddress";
+import {
+  getBlockExplorerUrl,
+  getMembershipTokenFactoryStartBlockNumber,
+} from "@/utils/contractAddress";
 
 const columns = [
   { name: "お名前", uid: "name" },
@@ -167,6 +170,10 @@ const Members = ({ contractAddress }: { contractAddress: Address }) => {
   } = useMembershipTokens({
     daoContractAddress: contractAddress,
   });
+
+  useEffect(() => {
+    setStartBlockNumber(getMembershipTokenFactoryStartBlockNumber(chainId));
+  }, [chainId]);
 
   const fetchLogs = useCallback(
     async (contracts: any[]) => {

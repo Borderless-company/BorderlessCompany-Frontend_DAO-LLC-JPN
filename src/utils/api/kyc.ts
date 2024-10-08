@@ -35,21 +35,37 @@ function createSignature(
   //   "🍅🍅🍅original text: ",
   //   ts + (config.method?.toUpperCase() || "") + (config.url || "")
   // );
+  let url;
 
-  let url =
-    config.url +
-    "?" +
-    "userId=" +
-    encodeURIComponent(config.params.userId) +
-    "&levelName=" +
-    encodeURIComponent(config.params.levelName);
+  if (config.url == "/resources/accessTokens") {
+    url =
+      config.url +
+      "?" +
+      "userId=" +
+      encodeURIComponent(config.params.userId) +
+      "&levelName=" +
+      encodeURIComponent(config.params.levelName);
 
-  if (config.params.externalActionId) {
-    url +=
-      "&externalActionId=" + encodeURIComponent(config.params.externalActionId);
-  }
-  if (config.params.ttlInSecs) {
-    url += "&ttlInSecs=" + encodeURIComponent(config.params.ttlInSecs);
+    if (config.params.externalActionId) {
+      url +=
+        "&externalActionId=" +
+        encodeURIComponent(config.params.externalActionId);
+    }
+    if (config.params.ttlInSecs) {
+      url += "&ttlInSecs=" + encodeURIComponent(config.params.ttlInSecs);
+    }
+  } else if (config.url?.startsWith("/resources/sdkIntegrations/levels/")) {
+    url =
+      config.url +
+      "?" +
+      "externalUserId=" +
+      encodeURIComponent(config.params.externalUserId);
+    if (config.params.ttlInSecs) {
+      url += "&ttlInSecs=" + encodeURIComponent(config.params.ttlInSecs);
+    }
+    if (config.params.lang) {
+      url += "&lang=" + encodeURIComponent(config.params.lang);
+    }
   }
 
   signature.update(ts + (config.method?.toUpperCase() || "") + url);
@@ -104,6 +120,49 @@ export async function generateAccessToken(
     return response.data;
   } catch (error) {
     console.error("Error generating access token:", error);
+    throw error;
+  }
+}
+
+export type GenerateWebSDKLinkRequest = {
+  userId: string;
+  levelName: string;
+  ttlInSecs?: number;
+  lang?: string;
+};
+
+export type GenerateWebSDKLinkResponse = {
+  url: string;
+};
+
+export async function generateWebSDKLink(
+  req: GenerateWebSDKLinkRequest
+): Promise<GenerateWebSDKLinkResponse> {
+  const url = `/resources/sdkIntegrations/levels/${encodeURIComponent(
+    req.levelName
+  )}/websdkLink`;
+  console.log("url: ", url);
+  console.log("req: ", req);
+  const config: AxiosRequestConfig = {
+    method: "POST",
+    url,
+    params: {
+      externalUserId: encodeURIComponent(req.userId),
+      ttlInSecs: req.ttlInSecs,
+      lang: req.lang,
+    },
+    headers: {
+      "X-App-Token": SUMSUB_APP_TOKEN,
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  };
+
+  try {
+    const response = await sumsubApi(config);
+    return response.data;
+  } catch (error) {
+    console.error("Error generating WebSDK link:", error);
     throw error;
   }
 }

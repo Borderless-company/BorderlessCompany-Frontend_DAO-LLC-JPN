@@ -19,11 +19,12 @@ export const TermCheckbox: FC<TermCheckboxProps> = ({
       size="lg"
       classNames={{
         base: cn(
-          "w-full max-w-full h-14 flex-0 m-0 font-semibold flex-row-reverse justify-between",
+          "w-full max-w-full h-fit py-4 flex-0 m-0 font-semibold flex-row-reverse justify-between gap-4",
+          "sm:py-6",
           isBorder ? "border-b border-stone-200" : ""
           // "hover:bg-stone-200"
         ),
-        label: cn("flex-1"),
+        label: cn("flex-1 text-base md:text-lg"),
         wrapper: cn("hover:scale-125"),
       }}
       {...props}

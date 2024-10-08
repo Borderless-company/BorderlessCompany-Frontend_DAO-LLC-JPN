@@ -8,20 +8,20 @@ export const BlockExplorerUrl: { [chain: string]: string } = {
 export const RegisterBorderlessCompanyStartBlockNumber: {
   [chain: string]: number;
 } = {
-  Sepolia: 5701622,
-  Amoy: 5886234,
+  Sepolia: 6833052,
+  Amoy: 6833902,
 };
 
 export const MembershipTokenFactoryStartBlockNumber: {
   [chain: string]: number;
 } = {
-  Sepolia: 5735686,
-  Amoy: 5886234,
+  Sepolia: 6833902,
+  Amoy: 6833902,
 };
 
 // TODO: AmoyのWhitelistContractAddressを入れる
 export const WhitelistContractAddress: { [chain: string]: Address } = {
-  Sepolia: "0x15F8f9FEF076dE5EB7211E9a11c346B6bB957Cd7",
+  Sepolia: "0x9E6b1F2Db0b31d705993BAE80Fa622B904330b13",
   Amoy: "0xaFD8e809a7f7d7C6bcb67866938F721ff0D345C4",
 };
 
@@ -29,7 +29,8 @@ export const WhitelistContractAddress: { [chain: string]: Address } = {
 export const RegisterBorderlessCompanyContractAddress: {
   [chain: string]: Address;
 } = {
-  Sepolia: "0x3E60646B7Ea3F60750bf3e75008fdB48D6F6c521",
+  Sepolia: "0xE5f7fF8514C90e97aBc198B1B16cb979503D3EA9",
+  // Sepolia: "0x3E60646B7Ea3F60750bf3e75008fdB48D6F6c521",
   Amoy: "0x04E0240556Fd3673B7F1f4968ddB4B58475E208E",
 };
 
@@ -37,7 +38,7 @@ export const RegisterBorderlessCompanyContractAddress: {
 export const MembershipTokenFactoryContractAddress: {
   [chain: string]: Address;
 } = {
-  Sepolia: "0xBd05570A3eB660Df73d794F554C3011E1131d702",
+  Sepolia: "0xbf9eA099551090A07D4171C22804888a210b79D9",
   Amoy: "0xBd05570A3eB660Df73d794F554C3011E1131d702", // dummy
 };
 
