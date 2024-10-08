@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "supabase:type": "npx supabase gen types typescript --project-id vyocmhwkrvspeitnllty --schema public > src/types/schema.ts"
   },
   "dependencies": {
     "@nextui-org/react": "^2.3.4",
@@ -42,6 +43,7 @@
     "react-hook-form": "^7.53.0",
     "react-icons": "^5.3.0",
     "stripe": "^16.12.0",
+    "supabase": "^1.200.3",
     "thirdweb": "^5.57.3",
     "utf-8-validate": "^5.0.10",
     "uuid": "^10.0.0",

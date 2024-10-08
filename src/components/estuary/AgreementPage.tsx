@@ -13,6 +13,7 @@ import { createPaymentLink } from "@/utils/stripe";
 import { useActiveAccount } from "thirdweb/react";
 import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/utils/supabase";
+import { usePayment } from "@/hooks/usePayment";
 
 const POLLING_INTERVAL = 3000;
 const MAX_POLLING_TIME = 600000;
@@ -26,16 +27,20 @@ const AgreementPage: FC = () => {
   const account = useActiveAccount();
   const { updateUser } = useUser(account?.address);
   const [pollingCount, setPollingCount] = useState(0);
+  const { updatePayment } = usePayment();
 
   const onClickPay = async () => {
-    if (!token?.productId || !price) return;
+    if (!token?.product_id || !price) return;
     setPaymentStatus("pending");
-    const paymentLink = await createPaymentLink(token.productId, price);
+    const paymentLink = await createPaymentLink(token.product_id, price);
     console.log("paymentLink:", paymentLink);
     const user = await updateUser({
-      evmAddress: account?.address,
-      paymentLink: paymentLink.id,
-      price: price.toString(),
+      evm_address: account?.address,
+    });
+    const payment = await updatePayment({
+      user_id: account?.address,
+      payment_link: paymentLink.id,
+      price: price,
     });
     console.log("updated user:", user);
     startPolling();
@@ -58,10 +63,11 @@ const AgreementPage: FC = () => {
 
   const startPolling = () => {
     const pollInterval = setInterval(async () => {
+      if (!account?.address) return;
       const { data: status } = await supabase
-        .from("USER")
+        .from("PAYMENT")
         .select("payment_status")
-        .eq("evm_address", account?.address)
+        .eq("user_id", account?.address)
         .single();
 
       console.log("status:", status);

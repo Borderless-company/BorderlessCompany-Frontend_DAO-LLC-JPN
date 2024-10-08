@@ -34,7 +34,7 @@ export default async function handler(
       console.log("session:", session);
       if (session.payment_status === "paid") {
         const { data, error } = await supabase
-          .from("USER")
+          .from("PAYMENT")
           .update({
             payment_status: "done",
           })
