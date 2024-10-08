@@ -20,10 +20,20 @@ const MembershipToken: NextPage = () => {
     setIsReady(router.isReady);
   }, [router.isReady]);
 
+  useEffect(() => {
+    if (error) {
+      console.log("error: ", error);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    console.log("data: ", data);
+  }, [data]);
+
   // TODO: ログインしてなかったらウォレットログインを促す。
   return (
     <>
-      {!isReady || isPending ? (
+      {!isReady ? (
         <></>
       ) : (
         <DashboardLayout>

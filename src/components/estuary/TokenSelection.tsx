@@ -42,7 +42,7 @@ export const TokenSelection: FC = () => {
   return (
     <>
       {/* Header */}
-      <div className="flex flex-col gap-2 p-6 pb-0">
+      <div className="flex flex-col gap-1 md:gap-2 p-6 pb-0">
         <Image
           src={(estuary?.orgLogo as string) || "/estuary_logo_sample.png"}
           alt="DAO LLC Logo"
@@ -56,14 +56,14 @@ export const TokenSelection: FC = () => {
             borderRadius: "4px",
           }}
         />
-        <h1 className="text-[28px] leading-8 font-bold text-slate-800">
+        <h1 className="text-xl md:text-[28px] leading-8 font-bold text-slate-800">
           {estuary?.orgName} に出資する
         </h1>
       </div>
 
       {/* Content */}
-      <div className="flex flex-col gap-4 flex-1 py-6">
-        <p className="text-slate-800 text-lg font-semibold pl-6">
+      <div className="flex flex-col gap-2 md:gap-4 flex-1 py-2 md:py-6">
+        <p className="text-slate-800 text-base md:text-lg font-semibold pl-6">
           種類を選択してください
         </p>
         <RadioGroup
@@ -72,7 +72,7 @@ export const TokenSelection: FC = () => {
           orientation="horizontal"
           classNames={{
             wrapper: cn(
-              "flex gap-3 px-6 pt-0 pb-6 overflow-x-scroll flex-nowrap"
+              "flex gap-3 px-6 pt-1 pb-6 overflow-x-scroll flex-nowrap"
             ),
           }}
         >
@@ -94,10 +94,12 @@ export const TokenSelection: FC = () => {
 
       {/* Footer */}
       <div className="flex flex-col gap-4 p-6 pt-0 pb-4">
-        <div className="flex flex-col">
+        <div className="flex flex-col md:gap-2">
           <div className="flex justify-between items-center h-14 px-2">
-            <p className="text-slate-600 font-semibold text-2xl">金額</p>
-            <p className="text-slate-700 font-semibold text-3xl">
+            <p className="text-slate-600 font-semibold text-xl md:text-2xl">
+              金額
+            </p>
+            <p className="text-slate-700 font-semibold text-2xl md:text-3xl">
               ¥
               {estuary?.tokens
                 .find((token) => token.id === selectedTokenId)

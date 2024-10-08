@@ -23,12 +23,30 @@ const KYCPage: FC = () => {
   };
 
   useEffect(() => {
+    const generateSDKLink = async () => {
+      try {
+        const res = await fetch("/api/kyc/generateSDKLink", {
+          method: "POST",
+          body: JSON.stringify({
+            levelName: "borderless-kyc-level",
+            userId: account?.address,
+          }),
+        });
+        const sdkLink = await res.json();
+        console.log("sdkLink", sdkLink);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    generateSDKLink();
+  }, []);
+
+  useEffect(() => {
     const getAccessToken = async () => {
       try {
         const accessToken = await fetch("/api/kyc/accessToken", {
           method: "POST",
           body: JSON.stringify({
-            // TODO: ユーザーIDを取得する
             userId: account?.address,
             levelName: "borderless-kyc-level",
           }),
@@ -90,15 +108,15 @@ const KYCPage: FC = () => {
       ) : (
         <>
           {/* Header */}
-          <div className="flex flex-col gap-2 p-6 pb-0">
+          {/* <div className="flex flex-col gap-2 p-6 pb-0">
             <PiIdentificationCardFill size={48} className="text-purple-600" />
             <h1 className="text-[28px] leading-8 font-bold text-slate-800">
               本人確認をしてください
             </h1>
-          </div>
+          </div> */}
 
           {/* Content */}
-          <div className="flex flex-col gap-4 flex-1 py-6 justify-center items-center">
+          {/* <div className="flex flex-col gap-4 flex-1 py-6 justify-center items-center">
             <Image
               src={"/QR_sample.png"}
               alt="QR code"
@@ -120,10 +138,10 @@ const KYCPage: FC = () => {
                 読み取れない方はこちら
               </Button>
             </div>
-          </div>
+          </div> */}
 
           {/* Footer */}
-          <div className="flex flex-col gap-4 p-6 pt-0 pb-4">
+          {/* <div className="flex flex-col gap-4 p-6 pt-0 pb-4">
             <div className="flex flex-col">
               <Button
                 className="w-fit text-base font-semibold"
@@ -147,7 +165,7 @@ const KYCPage: FC = () => {
                 height={14}
               />
             </div>
-          </div>
+          </div> */}
         </>
       )}
     </>
