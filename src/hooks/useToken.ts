@@ -42,6 +42,7 @@ export const useToken = (id?: string) => {
           max_price: props.max_price,
           fixed_price: props.fixed_price,
           product_id: product.id,
+          dao_id: props.dao_id
         })
         .select();
       if (error) {
@@ -52,6 +53,34 @@ export const useToken = (id?: string) => {
     },
     onError: (error) => {
       console.error("[ERROR] Failed to create token: ", error);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tokens"] });
+    },
+  });
+
+  const { mutateAsync: updateToken } = useMutation<
+    Tables<"TOKEN">,
+    Error,
+    Partial<Tables<"TOKEN">>
+  >({
+    mutationFn: async (props: Partial<Tables<"TOKEN">>) => {
+      if (!props.id) {
+        throw new Error("Token ID is required for update");
+      }
+      const { data, error } = await supabase
+        .from("TOKEN")
+        .update(props)
+        .eq("id", props.id)
+        .select();
+      if (error) {
+        throw new Error(error.message);
+      }
+      console.log("[SUCCESS] Token updated: ", data);
+      return data[0];
+    },
+    onError: (error) => {
+      console.error("[ERROR] Failed to update token: ", error);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tokens"] });
@@ -74,5 +103,5 @@ export const useToken = (id?: string) => {
     },
   });
 
-  return { createToken, token: token };
+  return { createToken, updateToken, token: token };
 };

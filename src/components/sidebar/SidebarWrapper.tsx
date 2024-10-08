@@ -63,6 +63,14 @@ export const SidebarWrapper = () => {
                 href={`/dao/${daoId}/utility-token`}
               /> */}
             </SidebarMenu>
+            <SidebarMenu title="セール">
+              <SidebarItem
+                title="エスチャリー"
+                icon={<HomeIcon />}
+                isActive={pathname === `/dao/${daoId}/estuary`}
+                href={`/dao/${daoId}/estuary`}
+              />
+            </SidebarMenu>
           </div>
           <div className={Sidebar.Footer()}>
             <Link href={`/dao`}>
