@@ -14,6 +14,8 @@ import { supabase } from "@/utils/supabase";
 import { useActiveAccount } from "thirdweb/react";
 import { useEstuaryContext } from "./EstuaryContext";
 import { useUser } from "@/hooks/useUser";
+import { usePayment } from "@/hooks/usePayment";
+import { useRouter } from "next/router";
 
 type InputType = {
   name: string;
@@ -22,11 +24,13 @@ type InputType = {
 };
 
 const KYCAgreementPage: FC = () => {
-  const { setPage } = useEstuaryContext();
+  const { setPage, tokenId, price } = useEstuaryContext();
   const [termChecked, setTermChecked] = useState<string[]>([]);
   const { register, handleSubmit } = useForm<InputType>();
   const account = useActiveAccount();
   const { createUser } = useUser();
+  const { createPayment } = usePayment();
+  const router = useRouter();
 
   const isAllChecked = useMemo(() => {
     return PRODUCT_TERMS.every((term) => termChecked.includes(term.id));
@@ -34,11 +38,17 @@ const KYCAgreementPage: FC = () => {
 
   const onSubmit = async (data: InputType) => {
     const user = await createUser({
-      evmAddress: account?.address,
+      evm_address: account?.address,
       ...data,
     });
-    setPage((page) => page + 1);
     console.log("user:", user);
+    const payment = await createPayment({
+      user_id: user.evm_address,
+      estuary_id: router.query.estId as string,
+      price: price,
+    });
+    console.log("payment:", payment);
+    setPage((page) => page + 1);
   };
 
   return (

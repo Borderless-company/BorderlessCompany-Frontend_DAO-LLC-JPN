@@ -24,7 +24,7 @@ export const TokenSelection: FC = () => {
   const estuary = useEstuary(estId);
 
   const onClickNext = () => {
-    setPrice(token?.fixedPrice || 0);
+    setPrice(token?.fixed_price || 0);
     setToken(token);
     setPage(1);
   };
@@ -44,7 +44,7 @@ export const TokenSelection: FC = () => {
       {/* Header */}
       <div className="flex flex-col gap-1 md:gap-2 p-6 pb-0">
         <Image
-          src={(estuary?.orgLogo as string) || "/estuary_logo_sample.png"}
+          src={(estuary?.org_logo as string) || "/estuary_logo_sample.png"}
           alt="DAO LLC Logo"
           width={48}
           height={48}
@@ -57,7 +57,7 @@ export const TokenSelection: FC = () => {
           }}
         />
         <h1 className="text-xl md:text-[28px] leading-8 font-bold text-slate-800">
-          {estuary?.orgName} に出資する
+          {estuary?.org_name} に出資する
         </h1>
       </div>
 
@@ -80,12 +80,12 @@ export const TokenSelection: FC = () => {
             return (
               <TokenCard
                 key={token.id}
-                name={token.name}
+                name={token.name || ""}
                 value={token.id}
                 imageSrc={token.image || "/estuary_logo_sample.png"}
-                minPrice={token.minPrice || 0}
-                maxPrice={token.maxPrice || 0}
-                fixedPrice={token.fixedPrice}
+                minPrice={token.min_price || 0}
+                maxPrice={token.max_price || undefined}
+                fixedPrice={token.fixed_price || undefined}
               />
             );
           })}
@@ -103,7 +103,7 @@ export const TokenSelection: FC = () => {
               ¥
               {estuary?.tokens
                 .find((token) => token.id === selectedTokenId)
-                ?.fixedPrice?.toLocaleString()}
+                ?.fixed_price?.toLocaleString()}
             </p>
           </div>
           {account?.address ? (

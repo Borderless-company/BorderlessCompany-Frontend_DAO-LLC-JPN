@@ -10,6 +10,7 @@ import {
   Dispatch,
 } from "react";
 import { supabase } from "@/utils/supabase";
+import { Tables } from "@/types/schema";
 
 export type EstuaryContextType = {
   page: number;
@@ -18,8 +19,8 @@ export type EstuaryContextType = {
   setTokenId: Dispatch<SetStateAction<string | undefined>>;
   price?: number;
   setPrice: Dispatch<SetStateAction<number | undefined>>;
-  token?: Token;
-  setToken: Dispatch<SetStateAction<Token | undefined>>;
+  token?: Tables<"TOKEN">;
+  setToken: Dispatch<SetStateAction<Tables<"TOKEN"> | undefined>>;
 };
 
 const EstuaryContext = createContext<EstuaryContextType>({
@@ -46,7 +47,7 @@ export const EstuaryProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [page, setPage] = useState(0);
   const [tokenId, setTokenId] = useState<string | undefined>();
   const [price, setPrice] = useState<number | undefined>();
-  const [token, setToken] = useState<Token | undefined>();
+  const [token, setToken] = useState<Tables<"TOKEN"> | undefined>();
   return (
     <EstuaryContext.Provider
       value={{

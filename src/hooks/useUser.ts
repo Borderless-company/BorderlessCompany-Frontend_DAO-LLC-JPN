@@ -1,8 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase, camelizeDeeply } from "@/utils/supabase";
 import { User } from "@/types";
+import { Enums, Tables } from "@/types/schema";
 
-export type UpdateUserProps = Partial<User>;
+export type UpdateUserProps = Partial<Tables<"USER">>;
 
 export type UseUserProps = {
   evmAddress?: string;
@@ -11,23 +12,22 @@ export type UseUserProps = {
 export const useUser = (evmAddress?: string) => {
   const queryClient = useQueryClient();
 
-  const { mutateAsync: updateUser } = useMutation<User, Error, UpdateUserProps>(
-    {
-      mutationFn: async (props: UpdateUserProps) => {
+  const { mutateAsync: updateUser } = useMutation<
+    Tables<"USER">,
+    Error,
+    UpdateUserProps
+  >({
+    mutationFn: async (props: UpdateUserProps) => {
         const { data, error } = await supabase
           .from("USER")
           .update({
-            evm_address: props.evmAddress,
+            evm_address: props.evm_address,
             name: props.name,
             furigana: props.furigana,
             address: props.address,
-            kyc_status: props.kycStatus,
-            payment_link: props.paymentLink,
-            payment_status: props.paymentStatus,
-            price: props.price,
-            date_of_employment: props.dateOfEmployment,
+            kyc_status: props.kyc_status as Enums<"KycStatus">,
           })
-          .eq("evm_address", evmAddress)
+          .eq("evm_address", evmAddress!)
           .select();
 
         if (error) {
@@ -42,23 +42,23 @@ export const useUser = (evmAddress?: string) => {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["user", evmAddress] });
       },
-    }
-  );
+  });
 
-  const { mutateAsync: createUser } = useMutation<User, Error, Partial<User>>({
-    mutationFn: async (props: Partial<User>) => {
+  const { mutateAsync: createUser } = useMutation<
+    Tables<"USER">,
+    Error,
+    Partial<Tables<"USER">>
+  >({
+    mutationFn: async (props: Partial<Tables<"USER">>) => {
       const { data, error } = await supabase
         .from("USER")
         .upsert({
-          evm_address: props.evmAddress,
+          evm_address: props.evm_address,
           name: props.name,
           furigana: props.furigana,
           address: props.address,
-          kyc_status: props.kycStatus,
-          payment_link: props.paymentLink,
-          payment_status: props.paymentStatus,
-          price: props.price,
-          date_of_employment: props.dateOfEmployment,
+          kyc_status: props.kyc_status as Enums<"KycStatus">,
+
         })
         .select();
 
@@ -76,10 +76,10 @@ export const useUser = (evmAddress?: string) => {
     },
   });
 
-  const { data: userData } = useQuery<any, Error>({
+  const { data: user} = useQuery<Tables<"USER"> | undefined, Error>({
     queryKey: ["user", evmAddress],
     queryFn: async () => {
-      if (!evmAddress) return;
+      if (!evmAddress) return undefined;
       const { data, error } = await supabase
         .from("USER")
         .select()
@@ -91,7 +91,5 @@ export const useUser = (evmAddress?: string) => {
       return data;
     },
   });
-
-  const user = camelizeDeeply(userData) as User;
   return { updateUser, createUser, user };
 };

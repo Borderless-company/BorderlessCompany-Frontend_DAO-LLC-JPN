@@ -1,10 +1,11 @@
 import { Estuary, Token } from "@/types";
 import { camelizeDeeply, supabase } from "@/utils/supabase";
 import { useQuery } from "@tanstack/react-query";
+import { Tables } from "@/types/schema";
 
 export const useEstuary = (id: string) => {
   const fetchTokens = async () => {
-    const { data: estuaryRaw, error } = await supabase
+    const { data: estuary, error } = await supabase
       .from("ESTUARY")
       .select()
       .eq("id", id)
@@ -22,28 +23,25 @@ export const useEstuary = (id: string) => {
     }
     // console.log("estuaryTokenIds", estuaryTokenIds);
 
-    const { data: tokensRaw, error: tokensError } = await supabase
+    const { data: tokens, error: tokensError } = await supabase
       .from("TOKEN")
       .select()
-      .in(
-        "id",
-        estuaryTokenIds.map((idObject) => idObject.token_id)
+      .eq(
+        "estuary_id",
+        id
       );
     if (tokensError) {
       throw tokensError;
     }
-    // console.log("tokensRaw", tokensRaw);
-    const tokens = camelizeDeeply(tokensRaw) as Token[];
-    const estuary = camelizeDeeply(estuaryRaw) as Estuary;
-    estuary.tokens = tokens;
-    // console.log("estuary", estuary);
-    return estuary;
+    
+    return {...estuary, tokens};
   };
-
-  const { data: estuary } = useQuery<Estuary, Error>({
+  
+  const { data: estuary } = useQuery<Tables<"ESTUARY"> & {tokens: Tables<"TOKEN">[]} | undefined, Error>({
     queryKey: ["estuary", id],
     queryFn: fetchTokens,
   });
-
+  
+  console.log("estuary DB:", estuary);
   return estuary;
 };
