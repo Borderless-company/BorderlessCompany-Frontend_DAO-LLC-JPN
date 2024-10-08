@@ -15,6 +15,7 @@ export type Database = {
           company_id: string | null
           company_name: string | null
           created_at: string
+          dao_icon: string | null
           dao_name: string | null
           establishment_date: string | null
         }
@@ -23,6 +24,7 @@ export type Database = {
           company_id?: string | null
           company_name?: string | null
           created_at?: string
+          dao_icon?: string | null
           dao_name?: string | null
           establishment_date?: string | null
         }
@@ -31,6 +33,7 @@ export type Database = {
           company_id?: string | null
           company_name?: string | null
           created_at?: string
+          dao_icon?: string | null
           dao_name?: string | null
           establishment_date?: string | null
         }
@@ -39,6 +42,7 @@ export type Database = {
       ESTUARY: {
         Row: {
           created_at: string
+          dao_id: string | null
           end_date: string | null
           estuary_link: string | null
           id: string
@@ -50,6 +54,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          dao_id?: string | null
           end_date?: string | null
           estuary_link?: string | null
           id?: string
@@ -61,6 +66,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          dao_id?: string | null
           end_date?: string | null
           estuary_link?: string | null
           id?: string
@@ -70,7 +76,15 @@ export type Database = {
           payment_methods?: string[] | null
           start_date?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ESTUARY_dao_id_fkey"
+            columns: ["dao_id"]
+            isOneToOne: false
+            referencedRelation: "DAO"
+            referencedColumns: ["address"]
+          },
+        ]
       }
       ESTUARY_TOKENS: {
         Row: {

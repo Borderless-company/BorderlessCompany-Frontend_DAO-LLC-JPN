@@ -5,7 +5,6 @@ import Image from "next/image";
 import { Button } from "@nextui-org/react";
 import { PiArrowRight, PiSignIn } from "react-icons/pi";
 import { TokenCard } from "./TokenCard";
-import { estuarySample } from "@/types";
 import { useActiveAccount, useConnectModal } from "thirdweb/react";
 import { client, wallets } from "@/utils/client";
 import { useEstuaryContext } from "./EstuaryContext";
@@ -21,7 +20,7 @@ export const TokenSelection: FC = () => {
   const { token } = useToken(selectedTokenId);
   const params = useParams();
   const estId = params?.estId as string;
-  const estuary = useEstuary(estId);
+  const { estuary } = useEstuary(estId);
 
   const onClickNext = () => {
     setPrice(token?.fixed_price || 0);

@@ -14,6 +14,11 @@ import {
 } from "@/utils/contractAddress";
 import { decodeEventLog } from "viem";
 import Image from "next/image";
+import { useDAO } from "@/hooks/useDAO";
+import ImageUploader from "@/components/ImageUploader";
+import { useAtom } from "jotai";
+import { selectedFileAtom } from "@/atoms";
+import { uploadFile } from "@/utils/supabase";
 
 export function CreateBorderlessCompany() {
   const [isClient, setIsClient] = useState(false);
@@ -21,14 +26,17 @@ export function CreateBorderlessCompany() {
 
   const { data: hash, error, isPending, writeContract } = useWriteContract();
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const { createDAO } = useDAO();
 
   const [contractAddress, setContractAddress] = useState<Address>();
   const [blockExplorerUrl, setBlockExplorerUrl] = useState<string>();
   const [companyName, setCompanyName] = useState<string>("");
   const [companyId, setCompanyId] = useState<string>("");
+  const [establishmentDate, setEstablishmentDate] = useState<Date>();
   const [daoName, setDaoName] = useState<string>("");
   const [newCompanyAddress, setNewCompanyAddress] = useState<Address>();
   const [established, setEstablished] = useState(false);
+  const [selectedFile, setSelectedFile] = useAtom(selectedFileAtom);
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     if (!contractAddress) {
@@ -40,6 +48,11 @@ export function CreateBorderlessCompany() {
     const establishmentDateValue = formData.get("establishmentDate_") as string;
     const companyName_ = formData.get("companyName_") as string;
     const daoName_ = formData.get("daoName_") as string;
+
+    if (!selectedFile) {
+      alert("アイコンをアップロードしてください");
+      return;
+    }
 
     if (!daoName_) {
       alert("DAOの名称が未入力です");
@@ -65,15 +78,16 @@ export function CreateBorderlessCompany() {
       alert("設立日が未入力です。");
       return;
     }
+    setDaoName(daoName_);
+    setCompanyName(companyName_);
+    setCompanyId(companyID_);
+    setEstablishmentDate(new Date(establishmentDateValue));
+
     const establishmentDate_ = new Date(establishmentDateValue)
       .toISOString()
       .replace("T", " ")
       .substring(0, 19);
     const confirmedBool = isConfirmed;
-
-    setDaoName(daoName_);
-    setCompanyName(companyName_);
-    setCompanyId(companyID_);
 
     writeContract({
       address: contractAddress,
@@ -104,56 +118,57 @@ export function CreateBorderlessCompany() {
     setIsClient(true);
   }, []);
 
-  const addCompany = useCallback(
-    async (
-      companyAddress: Address,
-      daoName: string,
-      companyName: string,
-      companyId: string
-    ) => {
-      const res = await fetch(`/api/companies/${companyAddress}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ daoName, companyName, companyId }),
-      });
-      const data = await res.json();
-      console.log(data);
-      setEstablished(true);
-      return data;
-    },
-    []
-  );
-
   useEffect(() => {
     if (!isSuccess) return;
-    console.log("isSuccess", data);
+    const _createDAO = async () => {
+      console.log("isSuccess", data);
 
-    const logs: any[] = data.logs
-      .map((log) => {
-        try {
-          return decodeEventLog({
-            abi: RegisterBorderlessCompanyAbi,
-            data: log.data,
-            topics: (log as any).topics,
-          });
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean);
+      const logs: any[] = data.logs
+        .map((log) => {
+          try {
+            return decodeEventLog({
+              abi: RegisterBorderlessCompanyAbi,
+              data: log.data,
+              topics: (log as any).topics,
+            });
+          } catch {
+            return null;
+          }
+        })
+        .filter(Boolean);
 
-    // logs[0].args.founder_;
-    // logs[0].args.company_;
-    // logs[0].args.companyIndex_;
+      // logs[0].args.founder_;
+      // logs[0].args.company_;
+      // logs[0].args.companyIndex_;
 
-    if (logs.length > 0) {
-      console.log(logs[0].args);
-      setNewCompanyAddress(logs[0].args.company_);
-      addCompany(logs[0].args.company_, daoName, companyName, companyId);
-    }
-  }, [addCompany, companyId, companyName, daoName, data, isSuccess]);
+      if (logs.length > 0) {
+        console.log(logs[0].args);
+
+        const companyAddress = logs[0].args.company_;
+        console.log("companyAddres: ", companyAddress);
+        setNewCompanyAddress(companyAddress);
+
+        const { publicUrl } = await uploadFile(
+          "dao-icon",
+          companyAddress,
+          selectedFile!
+        );
+
+        createDAO({
+          address: companyAddress,
+          company_id: companyId,
+          company_name: companyName,
+          dao_icon: publicUrl,
+          dao_name: daoName,
+          establishment_date:
+            establishmentDate?.toISOString() || new Date().toISOString(),
+        });
+        setSelectedFile(undefined);
+        setEstablished(true);
+      }
+    };
+    _createDAO();
+  }, [isSuccess]);
   return (
     <>
       {isClient && (
@@ -367,6 +382,7 @@ export function CreateBorderlessCompany() {
                 </p>
               </div>
               <form onSubmit={submit} className="flex flex-col gap-6">
+                <ImageUploader label="DAOのアイコン" />
                 <div>
                   <label className="font-semibold text-lg">DAOの名称</label>
                   <Input
