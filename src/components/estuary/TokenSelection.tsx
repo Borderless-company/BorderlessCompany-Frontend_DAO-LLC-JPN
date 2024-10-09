@@ -11,6 +11,7 @@ import { useEstuaryContext } from "./EstuaryContext";
 import { useToken } from "@/hooks/useToken";
 import { useEstuary } from "@/hooks/useEstuary";
 import { useParams } from "next/navigation";
+import { useRouter } from "next/router";
 
 export const TokenSelection: FC = () => {
   const account = useActiveAccount();
@@ -18,9 +19,14 @@ export const TokenSelection: FC = () => {
   const { setPage, setPrice, setToken } = useEstuaryContext();
   const [selectedTokenId, setSelectedTokenId] = useState<string>();
   const { token } = useToken(selectedTokenId);
-  const params = useParams();
-  const estId = params?.estId as string;
-  const { estuary } = useEstuary(estId);
+  const router = useRouter();
+  const { estId } = router.query;
+  const { estuary } = useEstuary(estId as string);
+
+  useEffect(() => {
+    console.log("estID", estId);
+    console.log("estuary: ", estuary);
+  }, [estuary]);
 
   const onClickNext = () => {
     setPrice(token?.fixed_price || 0);
