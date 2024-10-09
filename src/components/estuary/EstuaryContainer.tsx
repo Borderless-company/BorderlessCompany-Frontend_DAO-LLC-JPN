@@ -34,6 +34,15 @@ export const EstuaryContainer: FC = () => {
     if (!account) {
       setPage(0);
     }
+    // const test = async () => {
+    //   const { data: status } = await supabase
+    //     .from("PAYMENT")
+    //     .select("payment_status")
+    //     .eq("user_id", account?.address as string);
+
+    //   console.log("status:", status);
+    // };
+    // test();
   }, [account]);
 
   return (

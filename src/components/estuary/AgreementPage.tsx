@@ -81,13 +81,12 @@ const AgreementPage: FC = () => {
       const { data: status } = await supabase
         .from("PAYMENT")
         .select("payment_status")
-        .eq("user_id", account?.address)
-        .single();
+        .eq("user_id", account?.address);
 
       console.log("status:", status);
       setPollingCount((count) => count + 1);
 
-      if (status?.payment_status === "done") {
+      if (status && status[0]?.payment_status === "done") {
         setPaymentStatus("success");
         clearInterval(pollInterval);
       }
