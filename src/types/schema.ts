@@ -130,6 +130,7 @@ export type Database = {
           id: string
           is_admin: boolean | null
           is_executive: boolean | null
+          token_id: string | null
           user_id: string | null
         }
         Insert: {
@@ -139,6 +140,7 @@ export type Database = {
           id?: string
           is_admin?: boolean | null
           is_executive?: boolean | null
+          token_id?: string | null
           user_id?: string | null
         }
         Update: {
@@ -148,6 +150,7 @@ export type Database = {
           id?: string
           is_admin?: boolean | null
           is_executive?: boolean | null
+          token_id?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -157,6 +160,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "DAO"
             referencedColumns: ["address"]
+          },
+          {
+            foreignKeyName: "MEMBER_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "TOKEN"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "MEMBER_user_id_fkey"
