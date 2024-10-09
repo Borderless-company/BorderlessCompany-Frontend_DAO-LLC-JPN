@@ -11,10 +11,16 @@ import Image from "next/image";
 import { useAtom } from "jotai";
 import { estuarySample } from "@/types";
 import { useEstuaryContext } from "./EstuaryContext";
+import { useEstuary } from "@/hooks/useEstuary";
+import { useRouter } from "next/router";
 
+// TODO: Context ではなくDBからToken情報取ってくる
 const ReceivedPage: FC = () => {
   const [estuaryPage, setEstuaryPage] = useAtom(estuaryPageAtom);
   const { token } = useEstuaryContext();
+  const router = useRouter();
+  const { estId } = router.query;
+  const { estuary } = useEstuary(estId as string);
 
   const onClickBack = () => {
     setEstuaryPage(estuaryPage - 1);
@@ -39,17 +45,17 @@ const ReceivedPage: FC = () => {
           <div className="flex gap-1 items-center">
             <PiCheckCircleFill size={32} className="text-success-600" />
             <p className=" text-success-600 text-2xl text-center font-semibold">
-              受け取りが完了しました
+              メンバー登録が完了しました。
             </p>
           </div>
           <p className="text-slate-500 text-base text-center font-medium">
-            今日から{estuarySample.orgName}の一員です
+            今日から{estuary?.org_name}の一員です
           </p>
         </div>
-        <div className="flex gap-2">
+        {/* <div className="flex gap-2">
           <Image src={"/etherscan.png"} alt="org logo" width={32} height={32} />
           <Image src={"/opensea.png"} alt="org logo" width={32} height={32} />
-        </div>
+        </div> */}
       </div>
 
       {/* Footer */}

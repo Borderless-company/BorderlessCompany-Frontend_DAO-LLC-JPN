@@ -14,6 +14,7 @@ import { useActiveAccount } from "thirdweb/react";
 import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/utils/supabase";
 import { usePayment } from "@/hooks/usePayment";
+import { useMember } from "@/hooks/useMember";
 
 const POLLING_INTERVAL = 3000;
 const MAX_POLLING_TIME = 600000;
@@ -28,6 +29,7 @@ const AgreementPage: FC = () => {
   const { updateUser } = useUser(account?.address);
   const [pollingCount, setPollingCount] = useState(0);
   const { updatePayment } = usePayment();
+  const { createMember } = useMember({});
 
   const onClickPay = async () => {
     if (!token?.product_id || !price) return;
@@ -56,7 +58,18 @@ const AgreementPage: FC = () => {
   }, [termChecked]);
 
   useEffect(() => {
+    const addMember = async () => {
+      await createMember({
+        dao_id: token?.dao_id,
+        user_id: account?.address,
+        date_of_employment: new Date().toISOString(),
+        is_admin: false,
+        is_executive: token?.is_executable,
+      });
+    };
+
     if (paymentStatus === "success") {
+      addMember();
       setPage((page) => page + 1);
     }
   }, [paymentStatus]);
