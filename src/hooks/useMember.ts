@@ -25,6 +25,7 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
           date_of_employment: props.date_of_employment,
           is_admin: props.is_admin,
           is_executive: props.is_executive,
+          "token_id": props.token_id
         })
         .eq("user_id", userId!)
         .eq("dao_id", daoId!)
@@ -58,6 +59,7 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
           date_of_employment: props.date_of_employment,
           is_admin: props.is_admin,
           is_executive: props.is_executive,
+          token_id: props.token_id
         })
         .select();
 

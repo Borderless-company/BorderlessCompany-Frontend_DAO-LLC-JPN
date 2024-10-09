@@ -65,6 +65,7 @@ const AgreementPage: FC = () => {
         date_of_employment: new Date().toISOString(),
         is_admin: false,
         is_executive: token?.is_executable,
+        token_id: token?.id,
       });
     };
 
