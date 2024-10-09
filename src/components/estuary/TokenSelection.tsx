@@ -8,7 +8,7 @@ import { TokenCard } from "./TokenCard";
 import { useActiveAccount, useConnectModal } from "thirdweb/react";
 import { client, wallets } from "@/utils/client";
 import { useEstuaryContext } from "./EstuaryContext";
-import { useToken } from "@/hooks/useToken";
+import { useToken, createProduct } from "@/hooks/useToken";
 import { useEstuary } from "@/hooks/useEstuary";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
@@ -18,7 +18,7 @@ export const TokenSelection: FC = () => {
   const { connect } = useConnectModal();
   const { setPage, setPrice, setToken } = useEstuaryContext();
   const [selectedTokenId, setSelectedTokenId] = useState<string>();
-  const { token } = useToken(selectedTokenId);
+  const { token, updateToken } = useToken(selectedTokenId);
   const router = useRouter();
   const { estId } = router.query;
   const { estuary } = useEstuary(estId as string);
@@ -28,7 +28,15 @@ export const TokenSelection: FC = () => {
     console.log("estuary: ", estuary);
   }, [estuary]);
 
-  const onClickNext = () => {
+  const onClickNext = async () => {
+    const product = await createProduct(
+      token?.name!,
+      token?.image || undefined
+    );
+    await updateToken({
+      id: token?.id,
+      product_id: product.id,
+    });
     setPrice(token?.fixed_price || 0);
     setToken(token);
     setPage(1);

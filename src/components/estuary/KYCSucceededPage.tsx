@@ -19,7 +19,7 @@ const KYCSucceededPage: FC = () => {
     setPage((page) => page - 1);
   };
 
-  const onClickNext = () => {
+  const onClickNext = async () => {
     setPage((page) => page + 1);
   };
 

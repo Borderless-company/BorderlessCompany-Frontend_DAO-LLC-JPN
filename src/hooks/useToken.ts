@@ -10,11 +10,12 @@ export type UseTokenProps = {
   id?: string;
 };
 
-const _createProduct = async (name: string, image?: string) => {
+export const createProduct = async (name: string, image?: string) => {
   const product = await stripe.products.create({
     name: name,
     images: image ? [image] : [],
   });
+  console.log("product_id", product)
   return product;
 };
 
@@ -26,10 +27,10 @@ export const useToken = (id?: string) => {
     CreateTokenProps
   >({
     mutationFn: async (props: CreateTokenProps) => {
-      const product = await _createProduct(
-        props.name!,
-        props.image ? props.image : undefined
-      );
+      // const product = await createProduct(
+      //   props.name!,
+      //   props.image ? props.image : undefined
+      // );
       const { data, error } = await supabase
         .from("TOKEN")
         .insert({
@@ -41,7 +42,7 @@ export const useToken = (id?: string) => {
           min_price: props.min_price,
           max_price: props.max_price,
           fixed_price: props.fixed_price,
-          product_id: product.id,
+          // product_id: product.id,
           dao_id: props.dao_id
         })
         .select();
