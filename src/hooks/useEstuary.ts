@@ -23,6 +23,8 @@ export const useEstuary = (id?: string) => {
           start_date: props.start_date,
           end_date: props.end_date,
           payment_methods: props.payment_methods,
+        
+          dao_id: props.dao_id
         })
         .eq("id", id!)
         .select();
@@ -50,6 +52,7 @@ export const useEstuary = (id?: string) => {
       const { data, error } = await supabase
         .from("ESTUARY")
         .insert({
+          id: props.id,
           org_name: props.org_name,
           org_logo: props.org_logo,
           estuary_link: props.estuary_link,
@@ -57,6 +60,7 @@ export const useEstuary = (id?: string) => {
           start_date: props.start_date,
           end_date: props.end_date,
           payment_methods: props.payment_methods,
+          dao_id: props.dao_id,
         })
         .select();
 
