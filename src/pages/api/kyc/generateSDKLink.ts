@@ -11,7 +11,7 @@ export default async function handler(
       const sdkLink = await generateWebSDKLink(JSON.parse(req.body));
       res.status(200).json(sdkLink);
     } catch (error) {
-      console.error("Error generating SDK link:", error);
+      
       res.status(500).json({ error: "Internal Server Error" });
     }
   }
