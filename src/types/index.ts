@@ -100,11 +100,11 @@ export const estuarySample: Estuary = {
   endDate: new Date("2024-10-31"),
   softCap: undefined,
   termSheet: [
-    { id: "AoI", name: "定款", url: "https://estuary.xyz/AoI.pdf" },
+    { id: "AoI", name: "定款", url: "https://drive.google.com/file/d/16YChRF9EE44oH8trxtS50FVpc8o7Dj1e/view?usp=drive_web" },
     {
       id: "governanceAgreement",
       name: "総会規定",
-      url: "https://estuary.xyz/GovernanceAgreement.pdf",
+      url: "hhttps://drive.google.com/file/d/1qN8YtwOrS6X7D_2yyqJqdTjz7ia7okB0/view?usp=drive_web",
     },
     {
       id: "tokenAgreement",
@@ -114,7 +114,7 @@ export const estuarySample: Estuary = {
     {
       id: "operationAgreement",
       name: "運営規定",
-      url: "https://estuary.xyz/OperationAgreement.pdf",
+      url: "https://drive.google.com/file/d/1t3iXlub1YkHNbxUyLxAH3-oCmaSi7_ZR/view?usp=drive_web",
     },
   ],
   paymentMethod: ["crypto", "fiat"],

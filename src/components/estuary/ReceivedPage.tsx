@@ -60,8 +60,9 @@ const ReceivedPage: FC = () => {
             endContent={<PiArrowRight color="white" />}
             onClick={onClickNext}
             size="lg"
+            isDisabled
           >
-            社員専用ページへ
+            社員専用ページ (Coming Soon...)
           </Button>
         </div>
         <div className="w-full flex justify-end items-center gap-2 px-2">

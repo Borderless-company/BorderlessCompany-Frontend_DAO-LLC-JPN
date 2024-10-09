@@ -105,7 +105,7 @@ const KYCAgreementPage: FC = () => {
       <div className="flex flex-col gap-4 p-6 pt-0 pb-4">
         <div className="flex flex-col gap-4">
           <CheckboxGroup
-            className="flex flex-col gap-2 w-full h-fit bg-stone-100 rounded-2xl px-2 sm:px-4 py-1"
+            className="flex flex-col gap-2 w-full h-fit bg-stone-100 rounded-2xl px-2 sm:px-2 py-1"
             value={termChecked}
             onValueChange={setTermChecked}
           >

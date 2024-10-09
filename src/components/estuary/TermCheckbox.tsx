@@ -19,8 +19,8 @@ export const TermCheckbox: FC<TermCheckboxProps> = ({
       size="lg"
       classNames={{
         base: cn(
-          "w-full max-w-full h-fit py-4 flex-0 m-0 font-semibold flex-row-reverse justify-between gap-4",
-          "sm:py-6",
+          "w-full max-w-full h-fit py-2 flex-0 m-0 font-semibold flex-row-reverse justify-between gap-4",
+          "sm:py-2",
           isBorder ? "border-b border-stone-200" : ""
           // "hover:bg-stone-200"
         ),
@@ -34,6 +34,8 @@ export const TermCheckbox: FC<TermCheckboxProps> = ({
           <a
             className=" text-primary inline-flex items-center gap-1 hover:scale-[1.04] transition-all"
             href={href}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             {termName}
             <PiArrowSquareOutBold size={16} />
