@@ -104,17 +104,17 @@ export const estuarySample: Estuary = {
     {
       id: "governanceAgreement",
       name: "総会規定",
-      url: "hhttps://drive.google.com/file/d/1qN8YtwOrS6X7D_2yyqJqdTjz7ia7okB0/view?usp=drive_web",
+      url: "https://kabadao.gitbook.io/kaba-dao/yokuaru/tmushto/zong-hui-gui-ding",
     },
     {
       id: "tokenAgreement",
       name: "トークン規定",
-      url: "https://estuary.xyz/TokenAgreement.pdf",
+      url: "https://kabadao.gitbook.io/kaba-dao/yokuaru/tmushto/tkun",
     },
     {
       id: "operationAgreement",
       name: "運営規定",
-      url: "https://drive.google.com/file/d/1t3iXlub1YkHNbxUyLxAH3-oCmaSi7_ZR/view?usp=drive_web",
+      url: "https://kabadao.gitbook.io/kaba-dao/yokuaru/tmushto/yun-yong-gui-ding",
     },
   ],
   paymentMethod: ["crypto", "fiat"],
