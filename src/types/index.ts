@@ -116,6 +116,11 @@ export const estuarySample: Estuary = {
       name: "運営規定",
       url: "https://kabadao.gitbook.io/kaba-dao/yokuaru/tmushto/yun-yong-gui-ding",
     },
+    {
+      id: "EmploymentContract",
+      name: "社員契約",
+      url: "https://kabadao.gitbook.io/kaba-dao/yokuaru/tmushto/she-yuan-qi-yue-fei-ye-wu-zhi-xing-she-yuan",
+    },
   ],
   paymentMethod: ["crypto", "fiat"],
   estuaryLink: "https://estuary.xyz",
