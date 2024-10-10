@@ -27,7 +27,7 @@ const ReceivedPage: FC = () => {
   };
 
   const onClickNext = () => {
-    setEstuaryPage(0);
+    window.open("https://kabadao.gitbook.io/kaba-dao", "_blank");
   };
 
   return (
@@ -66,9 +66,9 @@ const ReceivedPage: FC = () => {
             endContent={<PiArrowRight color="white" />}
             onClick={onClickNext}
             size="lg"
-            isDisabled
+            // isDisabled
           >
-            社員専用ページ (Coming Soon...)
+            社員専用ページへ
           </Button>
         </div>
         <div className="w-full flex justify-end items-center gap-2 px-2">
