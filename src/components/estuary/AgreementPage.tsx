@@ -129,7 +129,7 @@ const AgreementPage: FC = () => {
         <CheckboxGroup
           className="flex flex-col gap-2 w-full h-fit bg-stone-100 rounded-2xl px-4 py-1"
           value={termChecked}
-          onValueChange={setTermChecked}
+          // onValueChange={setTermChecked}
           isDisabled={paymentStatus === "pending"}
         >
           {/* TODO: TermsheetsのDB作成繋ぎ込み */}
@@ -139,6 +139,7 @@ const AgreementPage: FC = () => {
               value={term.id}
               termName={term.name}
               href={term.url}
+              isExternal={false}
               isBorder={index !== estuarySample.termSheet.length - 1}
             />
           ))}

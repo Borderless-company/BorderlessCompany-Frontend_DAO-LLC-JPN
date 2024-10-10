@@ -1,9 +1,11 @@
 import { FC } from "react";
-import { Checkbox, CheckboxProps, cn } from "@nextui-org/react";
+import { Checkbox, CheckboxProps, cn, useDisclosure } from "@nextui-org/react";
 import { PiArrowSquareOutBold } from "react-icons/pi";
+import { TermModal } from "./TermModal";
 
 export type TermCheckboxProps = CheckboxProps & {
   termName: string;
+  isExternal?: boolean;
   href: string;
   isBorder?: boolean;
 };
@@ -11,9 +13,12 @@ export type TermCheckboxProps = CheckboxProps & {
 export const TermCheckbox: FC<TermCheckboxProps> = ({
   termName,
   href,
+  isExternal = true,
   isBorder = true,
   ...props
 }) => {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
   return (
     <Checkbox
       size="lg"
@@ -27,6 +32,7 @@ export const TermCheckbox: FC<TermCheckboxProps> = ({
         label: cn("flex-1 text-base md:text-lg"),
         wrapper: cn("hover:scale-125"),
       }}
+      onClick={!isExternal ? onOpen : undefined}
       {...props}
     >
       <>
@@ -43,6 +49,7 @@ export const TermCheckbox: FC<TermCheckboxProps> = ({
           に同意する
         </p>
       </>
+      <TermModal isOpen={isOpen} onOpenChange={onOpenChange} />
     </Checkbox>
   );
 };
