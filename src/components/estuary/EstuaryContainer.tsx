@@ -13,36 +13,35 @@ import { useToken } from "@/hooks/useToken";
 import { createPaymentLink } from "@/utils/stripe";
 import { useEstuaryContext } from "./EstuaryContext";
 import { useEstuary } from "@/hooks/useEstuary";
-import { useParams } from "next/navigation";
+import { useRouter } from "next/router";
 import { supabase } from "@/utils/supabase";
+import AlreadyMember from "./AlreadyMemberPage";
 
 export const EstuaryContainer: FC = () => {
   const { page, setPage } = useEstuaryContext();
   const account = useActiveAccount();
-  const params = useParams();
-  const estId = params?.estId as string;
-
-  // テスト用
-  const estuary = useEstuary(estId);
-
-  // テスト用
-  const { createToken, token } = useToken(
-    "894e3030-eab9-4842-a6b0-4ae6c328b36c"
-  );
+  const router = useRouter();
+  const { estId } = router.query;
+  const { estuary } = useEstuary(estId as string);
 
   useEffect(() => {
+    const checkPaymentStatus = async () => {
+      if (account && estuary) {
+        const { data, error } = await supabase
+          .from("MEMBER")
+          .select()
+          .eq("user_id", account?.address)
+          .eq("dao_id", estuary?.dao_id as string);
+        if (data && data?.length > 0) {
+          setPage(6);
+        }
+      }
+    };
     if (!account) {
       setPage(0);
+    } else {
+      checkPaymentStatus();
     }
-    // const test = async () => {
-    //   const { data: status } = await supabase
-    //     .from("PAYMENT")
-    //     .select("payment_status")
-    //     .eq("user_id", account?.address as string);
-
-    //   console.log("status:", status);
-    // };
-    // test();
   }, [account]);
 
   return (
@@ -63,6 +62,11 @@ export const EstuaryContainer: FC = () => {
           <AgreementPage />
         ) : page === 5 ? (
           <ReceivedPage />
+        ) : page === 6 ? (
+          <AlreadyMember
+            orgLogo={estuary?.org_logo as string}
+            orgName={estuary?.org_name as string}
+          />
         ) : null}
       </div>
     </div>

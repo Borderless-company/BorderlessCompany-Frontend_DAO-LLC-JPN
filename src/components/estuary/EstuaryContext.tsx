@@ -21,6 +21,8 @@ export type EstuaryContextType = {
   setPrice: Dispatch<SetStateAction<number | undefined>>;
   token?: Tables<"TOKEN">;
   setToken: Dispatch<SetStateAction<Tables<"TOKEN"> | undefined>>;
+  daoId?: string;
+  setDaoId: Dispatch<SetStateAction<string | undefined>>;
 };
 
 const EstuaryContext = createContext<EstuaryContextType>({
@@ -32,6 +34,8 @@ const EstuaryContext = createContext<EstuaryContextType>({
   setPrice: () => {},
   token: undefined,
   setToken: () => {},
+  daoId: undefined,
+  setDaoId: () => {},
 });
 
 export const useEstuaryContext = () => {
@@ -48,6 +52,7 @@ export const EstuaryProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [tokenId, setTokenId] = useState<string | undefined>();
   const [price, setPrice] = useState<number | undefined>();
   const [token, setToken] = useState<Tables<"TOKEN"> | undefined>();
+  const [daoId, setDaoId] = useState<string | undefined>();
   return (
     <EstuaryContext.Provider
       value={{
@@ -59,6 +64,8 @@ export const EstuaryProvider: FC<{ children: ReactNode }> = ({ children }) => {
         setPrice,
         token,
         setToken,
+        daoId,
+        setDaoId,
       }}
     >
       {children}
