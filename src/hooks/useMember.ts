@@ -77,20 +77,32 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
     },
   });
 
-  const { data: member } = useQuery<Tables<"MEMBER"> | undefined, Error>({
+  const { data: member } = useQuery<
+    (Tables<"MEMBER"> & { token: Tables<"TOKEN"> }) | undefined,
+    Error
+  >({
     queryKey: ["member", userId, daoId],
     queryFn: async () => {
       if (!userId || !daoId) return undefined;
-      const { data, error } = await supabase
+      const { data: member, error: memberError } = await supabase
         .from("MEMBER")
         .select()
         .eq("user_id", userId)
         .eq("dao_id", daoId)
         .single();
-      if (error) {
-        throw new Error(error.message);
+      if (memberError) {
+        throw new Error(memberError.message);
       }
-      return data;
+
+      const { data: token, error: tokenError } = await supabase
+        .from("TOKEN")
+        .select()
+        .eq("id", member?.token_id!)
+        .single();
+      if (tokenError) {
+        throw new Error(tokenError.message);
+      }
+      return { ...member, token };
     },
   });
 

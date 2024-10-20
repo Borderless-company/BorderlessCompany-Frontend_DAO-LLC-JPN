@@ -224,6 +224,7 @@ export type Database = {
       }
       TOKEN: {
         Row: {
+          contract_address: string | null
           created_at: string
           dao_id: string | null
           estuary_id: string | null
@@ -238,6 +239,7 @@ export type Database = {
           symbol: string | null
         }
         Insert: {
+          contract_address?: string | null
           created_at?: string
           dao_id?: string | null
           estuary_id?: string | null
@@ -252,6 +254,7 @@ export type Database = {
           symbol?: string | null
         }
         Update: {
+          contract_address?: string | null
           created_at?: string
           dao_id?: string | null
           estuary_id?: string | null
