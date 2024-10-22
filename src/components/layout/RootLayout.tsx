@@ -13,6 +13,9 @@ export const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   useEffect(() => {
     console.log("address: ", address);
     console.log("establishedDAO: ", establishedDAO);
+    if (router.pathname.startsWith("/estuary")) {
+      return;
+    }
     if (!address) {
       router.push("/");
     }
