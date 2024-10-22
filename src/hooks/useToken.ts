@@ -42,6 +42,7 @@ export const useToken = (id?: string) => {
           min_price: props.min_price,
           max_price: props.max_price,
           fixed_price: props.fixed_price,
+          contract_address: props.contract_address,
           // product_id: product.id,
           dao_id: props.dao_id
         })

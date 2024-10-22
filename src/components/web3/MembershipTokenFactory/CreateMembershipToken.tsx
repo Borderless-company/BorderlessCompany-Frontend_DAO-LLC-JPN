@@ -15,6 +15,15 @@ import { useAtom } from "jotai";
 import { selectedFileAtom } from "@/atoms";
 import { useToken } from "@/hooks/useToken";
 import { uploadFile } from "@/utils/supabase";
+import { useForm } from "react-hook-form";
+import useMembershipTokens from "@/components/hooks/useMembershipTokens";
+
+type FormData = {
+  name_: string;
+  symbol_: string;
+  baseURI_: string;
+  price_: string;
+};
 
 export function CreateMembershipToken({
   contractAddress,
@@ -26,11 +35,31 @@ export function CreateMembershipToken({
   const router = useRouter();
   const { createToken } = useToken();
   const { daoId } = router.query;
+  const [imgUrl, setImgUrl] = useState<string | undefined>(undefined);
 
   const { data: hash, error, isPending, writeContract } = useWriteContract();
+  const {
+    data: receipt,
+    isLoading: isLoading,
+    isSuccess: isSuccess,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
+  const {
+    data: membershipTokenContracts,
+    error: membershipTokenError,
+    isPending: isMembershipTokenPending,
+    fetchLogs,
+  } = useMembershipTokens({ daoContractAddress: daoId as Address });
 
   const [blockExplorerUrl, setBlockExplorerUrl] = useState<string>();
 
+  const {
+    register,
+    formState: { errors },
+    getValues,
+    handleSubmit,
+  } = useForm<FormData>();
   const [selectedFile, setSelectedFile] = useAtom(selectedFileAtom);
   const [isSbt, setIsSbt] = useState(false);
 
@@ -38,49 +67,30 @@ export function CreateMembershipToken({
     console.log("daoId: ", daoId);
   }, [daoId]);
 
-  async function submit(e: FormEvent<HTMLFormElement>) {
+  async function submit(e: FormData) {
     if (!contractAddress) {
       return;
     }
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const name_ = formData.get("name_") as string;
-    const symbol_ = formData.get("symbol_") as string;
-    const baseURI_ = formData.get("baseURI_") as string;
-    const price_ = formData.get("price_") as string;
-    const sbt_ = isSbt;
 
     let imageUrl: string | undefined = undefined;
     if (selectedFile) {
       const { publicUrl } = await uploadFile(
         "token-image",
-        `${contractAddress}-${symbol_}`,
+        `${contractAddress}-${e.symbol_}`,
         selectedFile
       );
       imageUrl = publicUrl;
     }
 
-    await createToken({
-      name: name_,
-      symbol: symbol_,
-      is_executable: sbt_,
-      fixed_price: parseInt(price_),
-      dao_id: daoId as string,
-      image: imageUrl || undefined,
-    });
+    console.log(e);
 
     writeContract({
       address: contractAddress,
       abi: TokenServiceAbi,
       functionName: "activateStandard721Token",
-      args: [name_, symbol_, baseURI_, sbt_],
+      args: [e.name_, e.symbol_, e.baseURI_, isSbt],
     });
   }
-
-  const { isLoading: isLoading, isSuccess: isSuccess } =
-    useWaitForTransactionReceipt({
-      hash,
-    });
 
   useEffect(() => {
     setBlockExplorerUrl(getBlockExplorerUrl(chainId));
@@ -91,21 +101,42 @@ export function CreateMembershipToken({
   }, []);
 
   useEffect(() => {
-    if (isSuccess) {
+    const _createToken = async () => {
+      console.log(
+        "membershipTokenContracts: ",
+        membershipTokenContracts[membershipTokenContracts.length - 1]
+          .tokenAddress
+      );
+      const createdToken = await fetchLogs();
+      await createToken({
+        name: getValues("name_"),
+        symbol: getValues("symbol_"),
+        is_executable: isSbt,
+        fixed_price: parseInt(getValues("price_")),
+        dao_id: daoId as string,
+        image: imgUrl || undefined,
+        contract_address: createdToken?.[createdToken.length - 1].tokenAddress,
+      });
       router.reload();
+    };
+
+    if (isSuccess) {
+      _createToken();
     }
-  }, [isSuccess, router]);
+  }, [isSuccess, receipt?.contractAddress, router]);
 
   return (
     <>
       {isClient && (
         <div>
-          <form onSubmit={submit} className="flex flex-col gap-3">
+          <form
+            onSubmit={handleSubmit((e) => submit(e))}
+            className="flex flex-col gap-3"
+          >
             <ImageUploader label="トークンの画像" />
             <div>
               <label className="font-semibold text-md">トークンの名前</label>
               <Input
-                name="name_"
                 key="inside"
                 type="text"
                 label=""
@@ -114,6 +145,8 @@ export function CreateMembershipToken({
                 description="例) ビットコイン, Ethereum ※トークンのシンボルではありません。"
                 variant="bordered"
                 size="md"
+                isRequired
+                {...register("name_", { required: true })}
               />
             </div>
             <div>
@@ -121,7 +154,6 @@ export function CreateMembershipToken({
                 トークンのシンボル
               </label>
               <Input
-                name="symbol_"
                 key="inside"
                 type="text"
                 label=""
@@ -130,12 +162,13 @@ export function CreateMembershipToken({
                 description="例) BTC,ETH,BNB"
                 variant="bordered"
                 size="md"
+                isRequired
+                {...register("symbol_", { required: true })}
               />
             </div>
             <div>
               <label className="font-semibold text-md">トークンの価格</label>
               <Input
-                name="price_"
                 key="inside"
                 type="number"
                 label=""
@@ -144,6 +177,8 @@ export function CreateMembershipToken({
                 description="単位:円"
                 variant="bordered"
                 size="md"
+                isRequired
+                {...register("price_", { required: true })}
               />
             </div>
             <div>
@@ -151,7 +186,6 @@ export function CreateMembershipToken({
                 トークン情報の参照URL
               </label>
               <Input
-                name="baseURI_"
                 key="inside"
                 type="text"
                 label=""
@@ -160,6 +194,7 @@ export function CreateMembershipToken({
                 description="※ 現在は利用していません。"
                 variant="bordered"
                 size="md"
+                {...register("baseURI_", { required: false })}
               />
             </div>
             <div>

@@ -53,9 +53,12 @@ const AlreadyMember: FC<AlreadyMemberProps> = ({ orgLogo, orgName }) => {
             className="w-full bg-yellow-700 text-white text-base font-semibold"
             endContent={<PiArrowRight color="white" />}
             size="lg"
-            isDisabled
+            onPress={() => {
+              window.open("https://kabadao.gitbook.io/kaba-dao", "_blank");
+            }}
+            // isDisabled
           >
-            社員専用ページ (Coming Soon...)
+            社員専用ページへ
           </Button>
         </div>
         <div className="w-full flex justify-end items-center gap-2 px-2">

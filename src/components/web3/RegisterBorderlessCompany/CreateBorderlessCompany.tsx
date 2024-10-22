@@ -4,9 +4,10 @@ import {
   useWriteContract,
   BaseError,
   useChainId,
+  useAccount,
 } from "wagmi";
 import { RegisterBorderlessCompanyAbi } from "@/utils/abi/RegisterBorderlessCompany.sol/RegisterBorderlessCompany";
-import { Address, stringToHex } from "viem";
+import { AccountStateConflictError, Address, stringToHex } from "viem";
 import { Button, Checkbox, DatePicker, Input, Link } from "@nextui-org/react";
 import {
   getBlockExplorerUrl,
@@ -26,6 +27,7 @@ export function CreateBorderlessCompany() {
 
   const { data: hash, error, isPending, writeContract } = useWriteContract();
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const { address } = useAccount();
   const { createDAO } = useDAO();
 
   const [contractAddress, setContractAddress] = useState<Address>();
@@ -160,6 +162,7 @@ export function CreateBorderlessCompany() {
           company_name: companyName,
           dao_icon: publicUrl,
           dao_name: daoName,
+          established_by: address,
           establishment_date:
             establishmentDate?.toISOString() || new Date().toISOString(),
         });

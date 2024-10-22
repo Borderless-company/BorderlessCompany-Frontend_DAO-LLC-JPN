@@ -61,7 +61,7 @@ const useMembershipTokens = ({
         functionName: "getInfoStandard721token",
         args: [BigInt(i)],
       });
-      console.log(log);
+      // console.log(log);
       logs.push(log);
     }
 
@@ -74,6 +74,7 @@ const useMembershipTokens = ({
     }));
     setMembershipTokenContracts(tmp);
     setIsPending(false);
+    return tmp;
   }, [tokenServiceContractAddress, publicClient]);
 
   useEffect(() => {
@@ -82,7 +83,7 @@ const useMembershipTokens = ({
     }
   }, [fetchLogs, isPendingUseService]);
 
-  return { data: membershipTokenContracts, error, isPending };
+  return { data: membershipTokenContracts, error, isPending, fetchLogs };
 };
 
 export default useMembershipTokens;
