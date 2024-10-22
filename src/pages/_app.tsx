@@ -11,6 +11,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { Provider } from "jotai";
 import { Noto_Sans_JP } from "next/font/google";
+import { RootLayout } from "@/components/layout/RootLayout";
 
 const notoSansJP = Noto_Sans_JP({
   subsets: ["latin"],
@@ -24,7 +25,9 @@ export default function App({ Component, pageProps }: AppProps) {
       <NextUIProvider>
         <QueryClientProvider client={queryClient}>
           <Provider>
-            <Component {...pageProps} />
+            <RootLayout>
+              <Component {...pageProps} />
+            </RootLayout>
           </Provider>
         </QueryClientProvider>
       </NextUIProvider>
