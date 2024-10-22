@@ -58,6 +58,7 @@ export const useDAO = (address?: string) => {
           dao_name: props.dao_name,
           dao_icon: props.dao_icon,
           establishment_date: props.establishment_date,
+          established_by: props.established_by,
         })
         .select();
 
@@ -91,5 +92,23 @@ export const useDAO = (address?: string) => {
     },
   });
 
-  return { updateDAO, createDAO, dao };
+  const _getDAObyWalletAddress = async (address: string) => {
+    const { data, error } = await supabase
+      .from("DAO")
+      .select()
+      .eq("established_by", address)
+      .single();
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data;
+  };
+  const getDAObyWalletAddress = (address: string) =>
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useQuery<Tables<"DAO"> | undefined, Error>({
+      queryKey: ["daoByWallet", address],
+    queryFn: () => _getDAObyWalletAddress(address),
+  });
+
+  return { updateDAO, createDAO, dao, getDAObyWalletAddress };
 };
