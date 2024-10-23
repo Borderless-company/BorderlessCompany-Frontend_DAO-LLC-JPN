@@ -1,11 +1,4 @@
-import { Button } from "@nextui-org/react";
 import { FC, useEffect, useState } from "react";
-import {
-  PiArrowRight,
-  PiArrowLeft,
-  PiIdentificationCardFill,
-} from "react-icons/pi";
-import Image from "next/image";
 import SumsubWebSdk from "@sumsub/websdk-react";
 import { MessageHandler } from "@sumsub/websdk";
 import { useEstuaryContext } from "./EstuaryContext";
