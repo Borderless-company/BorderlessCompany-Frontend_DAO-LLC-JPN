@@ -106,5 +106,60 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
     },
   });
 
-  return { updateMember, createMember, member };
+  const getMembers = ({ daoId, userId }: { daoId?: string; userId?: string }) => {
+    if (daoId) {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      return useQuery({
+        queryKey: ["members", daoId],
+        queryFn: async () => {
+          const { data, error } = await supabase.from("MEMBER").select(`*, USER (*), TOKEN (*)`).eq("dao_id", daoId);
+          if (error) {
+            throw new Error(error.message);
+          }
+          return data;
+        }
+      });
+    } else if (userId) {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      return useQuery({
+        queryKey: ["members", userId],
+        queryFn: async () => {
+          const { data, error } = await supabase.from("MEMBER").select(`*, USER (*), TOKEN (*)`).eq("user_id", userId);
+          if (error) {
+            throw new Error(error.message);
+          }
+          return data;
+        }
+      });
+    } else if (userId && daoId) {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      return useQuery({
+        queryKey: ["members", userId, daoId],
+        queryFn: async () => {
+          const { data, error } = await supabase.from("MEMBER").select(`*, USER (*), TOKEN (*)`).eq("user_id", userId).eq("dao_id", daoId);
+          if (error) {
+            throw new Error(error.message);
+          }
+          return data;
+        }
+      });
+    } else {
+      return undefined;
+    }
+  };
+
+  const getMembersByDaoId = ({ daoId }: { daoId: string }) => 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useQuery({
+      queryKey: ["members", daoId],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("MEMBER").select(`*, USER (*), TOKEN (*)`).eq("dao_id", daoId);
+        if (error) {
+          throw new Error(error.message);
+        }
+        return data;
+      }
+    });
+
+  return { updateMember, createMember, member, getMembers, getMembersByDaoId };
 };
