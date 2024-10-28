@@ -66,6 +66,8 @@ const AgreementPage: FC = () => {
         is_admin: false,
         is_executive: token?.is_executable,
         token_id: token?.id,
+        invested_amount: price,
+        is_minted: false,
       });
     };
 

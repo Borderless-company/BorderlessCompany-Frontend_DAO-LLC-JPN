@@ -10,10 +10,24 @@ import { Address, stringToHex } from "viem";
 import { Button, Input } from "@nextui-org/react";
 import { getBlockExplorerUrl } from "@/utils/contractAddress";
 import { useRouter } from "next/router";
+import Link from "next/link";
+import { useMember } from "@/hooks/useMember";
 
-export function IssueToken({ contractAddress }: { contractAddress: Address }) {
+export function IssueToken({
+  daoId,
+  contractAddress,
+  mintTo,
+}: {
+  daoId: string;
+  contractAddress: Address;
+  mintTo: Address;
+}) {
   const [isClient, setIsClient] = useState(false);
   const chainId = useChainId();
+  const { updateMember } = useMember({
+    daoId: daoId,
+    userId: mintTo,
+  });
 
   const { data: hash, error, isPending, writeContract } = useWriteContract();
 
@@ -31,7 +45,7 @@ export function IssueToken({ contractAddress }: { contractAddress: Address }) {
       address: contractAddress,
       abi: NonFungibleTokenTYPE721Abi,
       functionName: "mint",
-      args: [to_],
+      args: [mintTo ? mintTo : to_],
     });
   }
 
@@ -53,6 +67,15 @@ export function IssueToken({ contractAddress }: { contractAddress: Address }) {
     console.log("hash", hash);
   }, [hash]);
 
+  useEffect(() => {
+    console.log("isSuccess", isSuccess);
+    if (isSuccess) {
+      updateMember({
+        is_minted: true,
+      });
+    }
+  }, [isSuccess]);
+
   return (
     <>
       {isClient && (
@@ -60,20 +83,31 @@ export function IssueToken({ contractAddress }: { contractAddress: Address }) {
           <form onSubmit={submit} className="flex flex-col gap-2">
             {/* // TODO: isAddressでアドレスかどうかの判定をする */}
             <div>
-              <label className="font-semibold text-md">
+              <label className="font-semibold text-sm">
                 受け取り先のアドレス
               </label>
-              <Input
-                name="to_"
-                key="inside"
-                type="text"
-                label=""
-                labelPlacement="inside"
-                placeholder="受け取り先のアドレスを入力"
-                description="0xから始まるアドレスを入力する"
-                variant="bordered"
-                size="md"
-              />
+              {mintTo ? (
+                <div className="text-md text-primary">
+                  <Link
+                    href={blockExplorerUrl + "/address/" + mintTo}
+                    target="_blank"
+                  >
+                    {mintTo}
+                  </Link>
+                </div>
+              ) : (
+                <Input
+                  name="to_"
+                  key="inside"
+                  type="text"
+                  label=""
+                  labelPlacement="inside"
+                  placeholder="受け取り先のアドレスを入力"
+                  description="0xから始まるアドレスを入力する"
+                  variant="bordered"
+                  size="md"
+                />
+              )}
             </div>
             <div className="mt-2">
               <Button type="submit" color="primary" size="md">
