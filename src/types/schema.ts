@@ -131,8 +131,10 @@ export type Database = {
           dao_id: string | null
           date_of_employment: string | null
           id: string
+          invested_amount: number | null
           is_admin: boolean | null
           is_executive: boolean | null
+          is_minted: boolean
           token_id: string | null
           user_id: string | null
         }
@@ -141,8 +143,10 @@ export type Database = {
           dao_id?: string | null
           date_of_employment?: string | null
           id?: string
+          invested_amount?: number | null
           is_admin?: boolean | null
           is_executive?: boolean | null
+          is_minted?: boolean
           token_id?: string | null
           user_id?: string | null
         }
@@ -151,8 +155,10 @@ export type Database = {
           dao_id?: string | null
           date_of_employment?: string | null
           id?: string
+          invested_amount?: number | null
           is_admin?: boolean | null
           is_executive?: boolean | null
+          is_minted?: boolean
           token_id?: string | null
           user_id?: string | null
         }

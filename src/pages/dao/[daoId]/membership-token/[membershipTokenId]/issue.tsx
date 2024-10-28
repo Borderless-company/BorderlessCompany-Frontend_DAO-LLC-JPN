@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { Address } from "viem";
 
 const MembershipTokenIssue: NextPage = () => {
-  const { daoId, membershipTokenId } = useRouter().query;
+  const { daoId, membershipTokenId, mintTo } = useRouter().query;
   return (
     <DashboardLayout>
       <div className="h-full lg:px-6">
@@ -17,7 +17,11 @@ const MembershipTokenIssue: NextPage = () => {
             </h3>
           </div>
           <div className="w-full flex flex-col gap-4">
-            <IssueToken contractAddress={membershipTokenId as Address} />
+            <IssueToken
+              daoId={daoId as string}
+              contractAddress={membershipTokenId as Address}
+              mintTo={mintTo as Address}
+            />
           </div>
         </div>
       </div>
