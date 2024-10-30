@@ -4,8 +4,6 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {
   apiVersion: "2024-06-20",
 });
 
-console.log("Stripe PUBLIC: ", process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY)
-
 export default stripe;
 
 /**
