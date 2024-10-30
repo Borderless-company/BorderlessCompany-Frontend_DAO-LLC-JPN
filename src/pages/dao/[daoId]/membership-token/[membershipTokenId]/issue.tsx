@@ -1,4 +1,3 @@
-"use client";
 import type { NextPage } from "next";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { IssueToken } from "@/components/web3/MembershipToken/IssueToken";

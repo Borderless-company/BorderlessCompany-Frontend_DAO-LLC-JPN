@@ -10,6 +10,7 @@ export const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { getDAObyWalletAddress } = useDAO();
   const router = useRouter();
   const { data: establishedDAO } = getDAObyWalletAddress(address as string);
+
   useEffect(() => {
     console.log("address: ", address);
     console.log("establishedDAO: ", establishedDAO);
@@ -19,11 +20,11 @@ export const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
     if (!address) {
       router.push("/");
     }
-    if (establishedDAO) {
+    if (establishedDAO && router.pathname === "/") {
       router.push(`/dao/${establishedDAO.address}`);
-    } else if (address && !establishedDAO) {
+    } else if (address && !establishedDAO && router.pathname === "/") {
       router.push("/dao/register");
     }
-  }, [address, establishedDAO]);
+  }, [address, establishedDAO, router]);
   return <>{children}</>;
 };
