@@ -75,9 +75,9 @@ const Dashboard: NextPage = () => {
                   </Link>
                 </div>
               </div>
-              <div className="grid grid-flow-row-dense grid-cols-12 mt-6 gap-6 w-full">
+              {/* <div className="grid grid-flow-row-dense grid-cols-12 mt-6 gap-6 w-full">
                 <div className="col-span-12 lg:col-span-7">
-                  {/* Chart */}
+        
                   <div className="flex flex-col h-full gap-2">
                     <h3 className="text-xl font-semibold"></h3>
                     <div className="w-full bg-default-50 shadow-lg rounded-2xl p-6">
@@ -86,7 +86,6 @@ const Dashboard: NextPage = () => {
                   </div>
                 </div>
                 <div className="col-span-12 lg:col-span-5">
-                  {/* Card Section */}
                   <div className="flex flex-col gap-2">
                     <h3 className="text-xl font-semibold"></h3>
                     <div className="flex flex-col">
@@ -94,7 +93,7 @@ const Dashboard: NextPage = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Members */}
               <div className="flex flex-col justify-center w-full py-5 px-4 lg:px-0  max-w-[90rem] mx-auto gap-3">
