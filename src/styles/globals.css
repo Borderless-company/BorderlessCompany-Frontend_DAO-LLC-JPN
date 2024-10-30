@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --bls-neutral: #57534e;
+    --bls-neutral-foreground: #fafaf9;
+    --bls-neutral-backing: #e7e5e4;
+    --bls-neutral-minor: #78716c;
+    --bls-primary: #006361;
+    --bls-primary-backing: #cff4ee;
+    --bls-primary-outline: #6ebfb8;
+    --bls-secondary: #886821;
+    --bls-secondary-backing: #f3e8d3;
+    --bls-success: #12a150;
+    --bls-success-backing: #e8faf0;
+    --bls-warning: #d97706;
+    --bls-warning-backing: #fffbeb;
+    --bls-danger: #f31260;
+    --bls-danger-backing: #fee7ef;
+  }
+}
