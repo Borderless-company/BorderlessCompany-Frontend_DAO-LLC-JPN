@@ -21,10 +21,10 @@ export const usePayment = (userId?: string) => {
         .from("PAYMENT")
         .update({
           estuary_id: props.estuary_id,
+          user_id: props.user_id,
           payment_link: props.payment_link,
           payment_status: props.payment_status as Enums<"PaymentStatus">,
           price: props.price,
-          user_id: props.user_id,
         })
         .eq("user_id", props.user_id!)
         .select();
@@ -57,9 +57,10 @@ export const usePayment = (userId?: string) => {
           payment_status: props.payment_status as Enums<"PaymentStatus">,
           price: props.price,
           user_id: props.user_id,
+        },
+        {
+          onConflict: "id",
         })
-        .eq("user_id", props.user_id!) 
-        .eq("estuary_id", props.estuary_id!)
         .select();
 
       if (error) {

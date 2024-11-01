@@ -41,9 +41,6 @@ const AgreementPage: FC = () => {
     setPaymentStatus("pending");
     const paymentLink = await createPaymentLink(token.product_id, price);
     console.log("paymentLink:", paymentLink);
-    const user = await updateUser({
-      evm_address: account?.address,
-    });
     const payment = await updatePayment({
       user_id: account?.address,
       payment_link: paymentLink.id,
