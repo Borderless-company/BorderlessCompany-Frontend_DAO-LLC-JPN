@@ -3,9 +3,6 @@ import type { NextPage } from "next";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 
 import dynamic from "next/dynamic";
-import { TableWrapper } from "@/components/table/table";
-import { CardBalance } from "@/components/home/CardBalance";
-import { CardTransactions } from "@/components/home/CardTransactions";
 import { useRouter } from "next/router";
 import { Address } from "viem";
 import Members from "@/components/Members";
@@ -15,7 +12,6 @@ import { Footer } from "@/components/Footer";
 import { Button, Link } from "@nextui-org/react";
 import { getBlockExplorerUrl } from "@/utils/contractAddress";
 import { useChainId } from "wagmi";
-import UpdateCompanyForm from "@/components/UpdateCompanyForm";
 
 const Chart = dynamic(
   () => import("@/components/charts/pie").then((mod) => mod.Pie),
@@ -32,12 +28,6 @@ const Dashboard: NextPage = () => {
   const chainId = useChainId();
   const [companyInfo, setCompanyInfo] = useState<any>({});
 
-  const getCompanyInfo = useCallback(async (contractAddress: string) => {
-    const res = await fetch(`/api/companies/${contractAddress}`);
-    const data = await res.json();
-    setCompanyInfo(data);
-  }, []);
-
   useEffect(() => {
     setBlockExplorerUrl(getBlockExplorerUrl(chainId));
   }, [chainId]);
@@ -45,8 +35,7 @@ const Dashboard: NextPage = () => {
   useEffect(() => {
     setIsReady(router.isReady);
     if (!daoId) return;
-    getCompanyInfo(daoId as string);
-  }, [getCompanyInfo, router.isReady, daoId]);
+  }, [router.isReady, daoId]);
 
   return (
     <>
