@@ -58,6 +58,8 @@ export const usePayment = (userId?: string) => {
           price: props.price,
           user_id: props.user_id,
         })
+        .eq("user_id", props.user_id!) 
+        .eq("estuary_id", props.estuary_id!)
         .select();
 
       if (error) {

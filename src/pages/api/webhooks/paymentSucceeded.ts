@@ -43,7 +43,7 @@ export default async function handler(
           console.log("error:", error);
         }
         await supabase.from("USER").update({
-          email: session.customer_email,
+          email: session.customer_email || session.customer_details?.email,
         }).eq("evm_address", payments?.[0].user_id as string);
         resJson.sessionCompleted = session.payment_link as string;
         console.log(resJson);
