@@ -51,7 +51,7 @@ export const usePayment = (userId?: string) => {
     mutationFn: async (props: Partial<Tables<"PAYMENT">>) => {
       const { data, error } = await supabase
         .from("PAYMENT")
-        .insert({
+        .upsert({
           estuary_id: props.estuary_id,
           payment_link: props.payment_link,
           payment_status: props.payment_status as Enums<"PaymentStatus">,
