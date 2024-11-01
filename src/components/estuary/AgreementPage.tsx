@@ -92,24 +92,6 @@ const AgreementPage: FC = () => {
 
       if (status && status[0]?.payment_status === "done") {
         setPaymentStatus("success");
-        try {
-          await fetch("/api/mail/paymentSucceeded", {
-            method: "POST",
-            body: JSON.stringify({
-              orgName: estuary?.org_name,
-              tokenName: token?.name,
-              symbol: token?.symbol,
-              tokenType: token?.is_executable
-                ? "業務執行社員"
-                : "非業務執行社員",
-              price: price,
-              to: user?.email,
-              replyTo: "info@borderless.company",
-            }),
-          });
-        } catch (error) {
-          console.error(error);
-        }
         clearInterval(pollInterval);
       }
 

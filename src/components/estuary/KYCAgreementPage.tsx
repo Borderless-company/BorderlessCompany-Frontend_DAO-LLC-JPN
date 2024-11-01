@@ -29,8 +29,12 @@ const KYCAgreementPage: FC = () => {
   const { register, handleSubmit } = useForm<InputType>();
   const account = useActiveAccount();
   const { createUser } = useUser();
-  const { createPayment } = usePayment();
+  const { createPayment, getPayments } = usePayment();
   const router = useRouter();
+  const { data: payments } = getPayments({
+    userId: account?.address as string,
+    estId: router.query.estId as string,
+  });
 
   const isAllChecked = useMemo(() => {
     return PRODUCT_TERMS.every((term) => termChecked.includes(term.id));
@@ -43,6 +47,7 @@ const KYCAgreementPage: FC = () => {
     });
     console.log("user:", user);
     const payment = await createPayment({
+      id: payments && payments?.length != 0 ? payments[0].id : undefined,
       user_id: user.evm_address,
       estuary_id: router.query.estId as string,
       price: price,
