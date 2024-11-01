@@ -51,7 +51,9 @@ const KYCAgreementPage: FC = () => {
       user_id: user.evm_address,
       estuary_id: router.query.estId as string,
       price: price,
+      payment_status: "yet",
     });
+    console.log("original payment:", payments);
     console.log("payment:", payment);
     setPage((page) => page + 1);
   };
