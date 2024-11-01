@@ -12,6 +12,7 @@ import { Footer } from "@/components/Footer";
 import { Button, Link } from "@nextui-org/react";
 import { getBlockExplorerUrl } from "@/utils/contractAddress";
 import { useChainId } from "wagmi";
+import { supabase } from "@/utils/supabase";
 
 const Chart = dynamic(
   () => import("@/components/charts/pie").then((mod) => mod.Pie),

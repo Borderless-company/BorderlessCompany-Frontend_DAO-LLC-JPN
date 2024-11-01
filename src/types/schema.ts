@@ -231,6 +231,27 @@ export type Database = {
           },
         ]
       }
+      TEST: {
+        Row: {
+          age: number | null
+          created_at: string
+          id: number
+          name: string | null
+        }
+        Insert: {
+          age?: number | null
+          created_at?: string
+          id?: number
+          name?: string | null
+        }
+        Update: {
+          age?: number | null
+          created_at?: string
+          id?: number
+          name?: string | null
+        }
+        Relationships: []
+      }
       TOKEN: {
         Row: {
           contract_address: string | null

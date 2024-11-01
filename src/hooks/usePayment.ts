@@ -51,16 +51,18 @@ export const usePayment = (userId?: string) => {
     mutationFn: async (props: Partial<Tables<"PAYMENT">>) => {
       const { data, error } = await supabase
         .from("PAYMENT")
-        .upsert({
-          estuary_id: props.estuary_id,
-          payment_link: props.payment_link,
-          payment_status: props.payment_status as Enums<"PaymentStatus">,
-          price: props.price,
-          user_id: props.user_id,
-        },
-        {
-          onConflict: "id",
-        })
+        .upsert(
+          {
+            estuary_id: props.estuary_id,
+            payment_link: props.payment_link,
+            payment_status: props.payment_status as Enums<"PaymentStatus">,
+            price: props.price,
+            user_id: props.user_id,
+          },
+          {
+            onConflict: "id",
+          }
+        )
         .select();
 
       if (error) {
@@ -76,6 +78,22 @@ export const usePayment = (userId?: string) => {
       queryClient.invalidateQueries({ queryKey: ["payments", userId] });
     },
   });
+  const getPayments = ({ userId, estId }: { userId: string; estId: string }) =>
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useQuery<Tables<"PAYMENT">[] | undefined, Error>({
+      queryKey: ["payments", userId, estId],
+      queryFn: async () => {
+        const { data, error } = await supabase
+          .from("PAYMENT")
+          .select()
+          .eq("user_id", userId)
+          .eq("estuary_id", estId);
+        if (error) {
+          throw new Error(error.message);
+        }
+        return data;
+      },
+    });
 
   const { data: payments } = useQuery<Tables<"PAYMENT">[] | undefined, Error>({
     queryKey: ["payments", userId],
@@ -92,5 +110,5 @@ export const usePayment = (userId?: string) => {
     },
   });
 
-  return { updatePayment, createPayment, payments };
+  return { updatePayment, createPayment, payments, getPayments };
 };
