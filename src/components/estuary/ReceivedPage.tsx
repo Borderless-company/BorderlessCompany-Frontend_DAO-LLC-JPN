@@ -1,6 +1,6 @@
 import { estuaryPageAtom } from "@/atoms";
 import { Button } from "@nextui-org/react";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import {
   PiArrowRight,
   PiArrowLeft,
@@ -13,14 +13,40 @@ import { estuarySample } from "@/types";
 import { useEstuaryContext } from "./EstuaryContext";
 import { useEstuary } from "@/hooks/useEstuary";
 import { useRouter } from "next/router";
+import { useActiveAccount } from "thirdweb/react";
+import { useUser } from "@/hooks/useUser";
 
 // TODO: Context ではなくDBからToken情報取ってくる
 const ReceivedPage: FC = () => {
   const [estuaryPage, setEstuaryPage] = useAtom(estuaryPageAtom);
-  const { token } = useEstuaryContext();
+  const { token, price } = useEstuaryContext();
   const router = useRouter();
   const { estId } = router.query;
   const { estuary } = useEstuary(estId as string);
+  const account = useActiveAccount();
+  const { user } = useUser(account?.address);
+
+  useEffect(() => {
+    const sendEmail = async () => {
+      try {
+        await fetch("/api/mail/paymentSucceeded", {
+          method: "POST",
+          body: JSON.stringify({
+            orgName: estuary?.org_name,
+            tokenName: token?.name,
+            symbol: token?.symbol,
+            tokenType: token?.is_executable ? "業務執行社員" : "非業務執行社員",
+            price: price,
+            to: user?.email,
+            replyTo: "info@borderless.company",
+          }),
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    sendEmail();
+  }, []);
 
   const onClickBack = () => {
     setEstuaryPage(estuaryPage - 1);
