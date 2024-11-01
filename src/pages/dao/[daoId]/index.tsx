@@ -12,7 +12,7 @@ import Members from "@/components/Members";
 import ListMembershipTokens from "@/components/web3/MembershipTokenFactory/ListMembershipTokens";
 import { useCallback, useEffect, useState } from "react";
 import { Footer } from "@/components/Footer";
-import { Link } from "@nextui-org/react";
+import { Button, Link } from "@nextui-org/react";
 import { getBlockExplorerUrl } from "@/utils/contractAddress";
 import { useChainId } from "wagmi";
 import UpdateCompanyForm from "@/components/UpdateCompanyForm";

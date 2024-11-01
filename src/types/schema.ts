@@ -298,6 +298,7 @@ export type Database = {
         Row: {
           address: string | null
           created_at: string
+          email: string | null
           evm_address: string
           furigana: string | null
           kyc_status: Database["public"]["Enums"]["KycStatus"]
@@ -306,6 +307,7 @@ export type Database = {
         Insert: {
           address?: string | null
           created_at?: string
+          email?: string | null
           evm_address?: string
           furigana?: string | null
           kyc_status?: Database["public"]["Enums"]["KycStatus"]
@@ -314,6 +316,7 @@ export type Database = {
         Update: {
           address?: string | null
           created_at?: string
+          email?: string | null
           evm_address?: string
           furigana?: string | null
           kyc_status?: Database["public"]["Enums"]["KycStatus"]

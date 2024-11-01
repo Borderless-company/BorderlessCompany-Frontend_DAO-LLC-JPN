@@ -26,6 +26,7 @@ export const useUser = (evmAddress?: string) => {
             furigana: props.furigana,
             address: props.address,
             kyc_status: props.kyc_status as Enums<"KycStatus">,
+            email: props.email,
           })
           .eq("evm_address", evmAddress!)
           .select();
@@ -58,7 +59,7 @@ export const useUser = (evmAddress?: string) => {
           furigana: props.furigana,
           address: props.address,
           kyc_status: props.kyc_status as Enums<"KycStatus">,
-
+          email: props.email,
         })
         .select();
 
