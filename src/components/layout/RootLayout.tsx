@@ -5,6 +5,8 @@ import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { Tables } from "@/types/schema";
 
+const initialPages = ["/dao/register", "/"];
+
 export const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { address } = useAccount();
   const { getDAObyWalletAddress } = useDAO();
@@ -20,11 +22,15 @@ export const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
     if (!address) {
       router.push("/");
     }
-    if (establishedDAO && router.pathname === "/") {
+    if (establishedDAO && initialPages.includes(router.pathname)) {
       router.push(`/dao/${establishedDAO.address}`);
-    } else if (address && !establishedDAO && router.pathname === "/") {
+    } else if (
+      address &&
+      !establishedDAO &&
+      initialPages.includes(router.pathname)
+    ) {
       router.push("/dao/register");
     }
-  }, [address, establishedDAO, router]);
+  }, [address, establishedDAO]);
   return <>{children}</>;
 };

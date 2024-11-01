@@ -14,6 +14,9 @@ dependencies:
   '@rainbow-me/rainbowkit':
     specifier: ^2.0.5
     version: 2.0.5(@types/react@18.2.79)(react-dom@18.2.0)(react@18.2.0)(viem@2.9.21)(wagmi@2.5.20)
+  '@sendgrid/mail':
+    specifier: ^8.1.4
+    version: 8.1.4
   '@stripe/react-stripe-js':
     specifier: ^2.8.0
     version: 2.8.0(@stripe/stripe-js@4.5.0)(react-dom@18.2.0)(react@18.2.0)
@@ -7583,6 +7586,33 @@ packages:
     dependencies:
       '@noble/hashes': 1.5.0
       '@scure/base': 1.1.9
+    dev: false
+
+  /@sendgrid/client@8.1.4:
+    resolution: {integrity: sha512-VxZoQ82MpxmjSXLR3ZAE2OWxvQIW2k2G24UeRPr/SYX8HqWLV/8UBN15T2WmjjnEb5XSmFImTJOKDzzSeKr9YQ==}
+    engines: {node: '>=12.*'}
+    dependencies:
+      '@sendgrid/helpers': 8.0.0
+      axios: 1.7.7
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /@sendgrid/helpers@8.0.0:
+    resolution: {integrity: sha512-Ze7WuW2Xzy5GT5WRx+yEv89fsg/pgy3T1E3FS0QEx0/VvRmigMZ5qyVGhJz4SxomegDkzXv/i0aFPpHKN8qdAA==}
+    engines: {node: '>= 12.0.0'}
+    dependencies:
+      deepmerge: 4.3.1
+    dev: false
+
+  /@sendgrid/mail@8.1.4:
+    resolution: {integrity: sha512-MUpIZykD9ARie8LElYCqbcBhGGMaA/E6I7fEcG7Hc2An26QJyLtwOaKQ3taGp8xO8BICPJrSKuYV4bDeAJKFGQ==}
+    engines: {node: '>=12.*'}
+    dependencies:
+      '@sendgrid/client': 8.1.4
+      '@sendgrid/helpers': 8.0.0
+    transitivePeerDependencies:
+      - debug
     dev: false
 
   /@sideway/address@4.1.5:

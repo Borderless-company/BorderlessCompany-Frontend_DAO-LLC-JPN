@@ -15,21 +15,26 @@ import { useUser } from "@/hooks/useUser";
 import { supabase } from "@/utils/supabase";
 import { usePayment } from "@/hooks/usePayment";
 import { useMember } from "@/hooks/useMember";
+import { useEstuary } from "@/hooks/useEstuary";
+import { useRouter } from "next/router";
 
 const POLLING_INTERVAL = 3000;
 const MAX_POLLING_TIME = 600000;
 
 const AgreementPage: FC = () => {
+  const router = useRouter();
+  const { estId } = router.query;
   const [termChecked, setTermChecked] = useState<string[]>([]);
   const [paymentStatus, setPaymentStatus] = useState<
     "initial" | "pending" | "success" | "failed"
   >("initial");
   const { token, price, page, setPage } = useEstuaryContext();
   const account = useActiveAccount();
-  const { updateUser } = useUser(account?.address);
+  const { updateUser, user } = useUser(account?.address);
   const [pollingCount, setPollingCount] = useState(0);
   const { updatePayment } = usePayment();
   const { createMember } = useMember({});
+  const { estuary } = useEstuary(estId as string);
 
   const onClickPay = async () => {
     if (!token?.product_id || !price) return;
@@ -45,7 +50,7 @@ const AgreementPage: FC = () => {
       price: price,
     });
     console.log("updated user:", user);
-    startPolling();
+    await startPolling();
     window.open(paymentLink.url, "_blank");
   };
 
@@ -77,7 +82,7 @@ const AgreementPage: FC = () => {
     }
   }, [paymentStatus]);
 
-  const startPolling = () => {
+  const startPolling = async () => {
     const pollInterval = setInterval(async () => {
       if (!account?.address) return;
       const { data: status } = await supabase
@@ -90,6 +95,24 @@ const AgreementPage: FC = () => {
 
       if (status && status[0]?.payment_status === "done") {
         setPaymentStatus("success");
+        try {
+          await fetch("/api/mail/paymentSucceeded", {
+            method: "POST",
+            body: JSON.stringify({
+              orgName: estuary?.org_name,
+              tokenName: token?.name,
+              symbol: token?.symbol,
+              tokenType: token?.is_executable
+                ? "業務執行社員"
+                : "非業務執行社員",
+              price: price,
+              to: user?.email,
+              replyTo: "info@borderless.company",
+            }),
+          });
+        } catch (error) {
+          console.error(error);
+        }
         clearInterval(pollInterval);
       }
 
