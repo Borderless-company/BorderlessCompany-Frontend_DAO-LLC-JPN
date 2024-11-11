@@ -13,6 +13,8 @@ import { Button, Link } from "@nextui-org/react";
 import { getBlockExplorerUrl } from "@/utils/contractAddress";
 import { useChainId } from "wagmi";
 import { supabase } from "@/utils/supabase";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next";
 
 const Chart = dynamic(
   () => import("@/components/charts/pie").then((mod) => mod.Pie),
@@ -21,6 +23,14 @@ const Chart = dynamic(
   }
 );
 
+export const getServerSideProps = async ({ locale }: { locale: string }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ["common"])),
+    },
+  };
+};
+
 const Dashboard: NextPage = () => {
   const router = useRouter();
   const { daoId } = router.query;
@@ -28,6 +38,7 @@ const Dashboard: NextPage = () => {
   const [blockExplorerUrl, setBlockExplorerUrl] = useState<string>();
   const chainId = useChainId();
   const [companyInfo, setCompanyInfo] = useState<any>({});
+  const { t, i18n } = useTranslation("common");
 
   useEffect(() => {
     setBlockExplorerUrl(getBlockExplorerUrl(chainId));
@@ -89,7 +100,7 @@ const Dashboard: NextPage = () => {
               <div className="flex flex-col justify-center w-full py-5 px-4 lg:px-0  max-w-[90rem] mx-auto gap-3">
                 <div className="flex  flex-wrap justify-between">
                   <h3 className="text-center text-xl font-semibold">
-                    メンバーシップトークン
+                    {t("Membership")}
                   </h3>
                 </div>
                 <ListMembershipTokens contractAddress={daoId as Address} />
@@ -99,7 +110,7 @@ const Dashboard: NextPage = () => {
               <div className="flex flex-col justify-center w-full py-5 px-4 lg:px-0  max-w-[90rem] mx-auto gap-3">
                 <div className="flex  flex-wrap justify-between">
                   <h3 className="text-center text-xl font-semibold">
-                    メンバー
+                    {t("Members")}
                   </h3>
                 </div>
                 <Members contractAddress={daoId as Address} />

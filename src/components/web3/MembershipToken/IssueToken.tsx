@@ -12,6 +12,7 @@ import { getBlockExplorerUrl } from "@/utils/contractAddress";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { useMember } from "@/hooks/useMember";
+import { useTranslation } from "next-i18next";
 
 export function IssueToken({
   daoId,
@@ -28,6 +29,7 @@ export function IssueToken({
     daoId: daoId,
     userId: mintTo,
   });
+  const { t } = useTranslation("common");
 
   const { data: hash, error, isPending, writeContract } = useWriteContract();
 
@@ -83,9 +85,7 @@ export function IssueToken({
           <form onSubmit={submit} className="flex flex-col gap-2">
             {/* // TODO: isAddressでアドレスかどうかの判定をする */}
             <div>
-              <label className="font-semibold text-sm">
-                受け取り先のアドレス
-              </label>
+              <label className="font-semibold text-sm">{t("To")}</label>
               {mintTo ? (
                 <div className="text-md text-primary">
                   <Link
@@ -102,8 +102,8 @@ export function IssueToken({
                   type="text"
                   label=""
                   labelPlacement="inside"
-                  placeholder="受け取り先のアドレスを入力"
-                  description="0xから始まるアドレスを入力する"
+                  placeholder="0x1234..."
+                  description={t("Enter recipient's wallet address")}
                   variant="bordered"
                   size="md"
                 />
@@ -111,7 +111,7 @@ export function IssueToken({
             </div>
             <div className="mt-2">
               <Button type="submit" color="primary" size="md">
-                {isPending ? "Confirming..." : "トークンを発行する"}
+                {isPending ? t("Confirming...") : t("Issue Token")}
               </Button>
             </div>
           </form>

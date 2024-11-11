@@ -11,9 +11,11 @@ import { useSidebarContext } from "@/components/layout/DashboardLayoutContext";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { useTranslation } from "next-i18next";
 
 export const SidebarWrapper = () => {
   const pathname = usePathname();
+  const { t } = useTranslation("common");
   const { collapsed, setCollapsed } = useSidebarContext();
   const router = useRouter();
   const { daoId } = router.query;
@@ -35,24 +37,24 @@ export const SidebarWrapper = () => {
         </div>
         <div className="flex flex-col justify-between h-full">
           <div className={Sidebar.Body()}>
-            <SidebarMenu title="一般">
+            <SidebarMenu title={t("General")}>
               <SidebarItem
-                title="ホーム"
+                title={t("Home")}
                 icon={<HomeIcon />}
                 isActive={pathname === `/dao/${daoId}`}
                 href={`/dao/${daoId}`}
               />
               <SidebarItem
                 isActive={pathname === `/dao/${daoId}/members`}
-                title="メンバー一覧"
+                title={t("Members")}
                 icon={<AccountsIcon />}
                 href={`/dao/${daoId}/members`}
               />
             </SidebarMenu>
-            <SidebarMenu title="トークン">
+            <SidebarMenu title={t("Token")}>
               <SidebarItem
                 isActive={pathname === `/dao/${daoId}/membership-token`}
-                title="メンバーシップトークン"
+                title={t("Membership Tokens")}
                 icon={<AccountsIcon />}
                 href={`/dao/${daoId}/membership-token`}
               />
@@ -63,9 +65,9 @@ export const SidebarWrapper = () => {
                 href={`/dao/${daoId}/utility-token`}
               /> */}
             </SidebarMenu>
-            <SidebarMenu title="セール">
+            <SidebarMenu title={t("Sale")}>
               <SidebarItem
-                title="エスチャリー"
+                title={t("Estuary")}
                 icon={<HomeIcon />}
                 isActive={pathname === `/dao/${daoId}/estuary`}
                 href={`/dao/${daoId}/estuary`}
@@ -74,7 +76,9 @@ export const SidebarWrapper = () => {
           </div>
           <div className={Sidebar.Footer()}>
             <Link href={`/dao`}>
-              <div className="text-sm font-semibold">DAO一覧に戻る</div>
+              <div className="text-sm font-semibold">
+                {t("Back to DAO list")}
+              </div>
             </Link>
           </div>
         </div>

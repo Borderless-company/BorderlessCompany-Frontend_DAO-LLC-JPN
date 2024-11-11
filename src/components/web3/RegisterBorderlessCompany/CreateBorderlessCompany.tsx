@@ -20,8 +20,10 @@ import ImageUploader from "@/components/ImageUploader";
 import { useAtom } from "jotai";
 import { selectedFileAtom } from "@/atoms";
 import { uploadFile } from "@/utils/supabase";
+import { useTranslation } from "next-i18next";
 
 export function CreateBorderlessCompany() {
+  const { t } = useTranslation("common");
   const [isClient, setIsClient] = useState(false);
   const chainId = useChainId();
 
@@ -52,32 +54,27 @@ export function CreateBorderlessCompany() {
     const daoName_ = formData.get("daoName_") as string;
 
     if (!selectedFile) {
-      alert("アイコンをアップロードしてください");
+      alert(t("Please upload an icon"));
       return;
     }
 
     if (!daoName_) {
-      alert("DAOの名称が未入力です");
+      alert(t("Please enter your DAO name"));
       return;
     }
 
     if (!companyID_) {
-      alert("法人番号が未入力です");
+      alert(t("Please enter your company ID"));
       return;
     }
 
     if (!companyName_) {
-      alert("会社名が未入力です");
-      return;
-    }
-
-    if (!companyID_) {
-      alert("会社IDが未入力です");
+      alert(t("Please enter your company name"));
       return;
     }
 
     if (establishmentDateValue === "") {
-      alert("設立日が未入力です。");
+      alert(t("Please enter establishment date of your company"));
       return;
     }
     setDaoName(daoName_);
@@ -89,7 +86,7 @@ export function CreateBorderlessCompany() {
       .toISOString()
       .replace("T", " ")
       .substring(0, 19);
-    const confirmedBool = isConfirmed;
+    const confirmedBool = true;
 
     writeContract({
       address: contractAddress,
@@ -354,11 +351,13 @@ export function CreateBorderlessCompany() {
                   </div>
                   <div className="mt-3 text-center sm:mt-5">
                     <h3 className="text-4xl font-bold leading-6 text-gray-900">
-                      DAOが起動しました！
+                      {t("DAO has been activated.")}
                     </h3>
                     <div className="mt-4">
                       <p className="text-md text-gray-600">
-                        これでDAOの起動は完了です。次にDAOのダッシュボードからメンバーシップトークンを発行して、メンバーを追加してみましょう。
+                        {t(
+                          "Let's create your first membership token on the dashboard"
+                        )}
                       </p>
                     </div>
                   </div>
@@ -371,7 +370,7 @@ export function CreateBorderlessCompany() {
                     color="secondary"
                     size="lg"
                   >
-                    DAOのダッシュボードへ
+                    {t("Go to Dashboard")}
                   </Button>
                 </div>
               </div>
@@ -379,69 +378,77 @@ export function CreateBorderlessCompany() {
           ) : (
             <div className="max-w-xl mx-auto">
               <div className="mb-8">
-                <h2 className="text-4xl font-bold mb-2">DAOの起動</h2>
+                <h2 className="text-4xl font-bold mb-2">
+                  {t("Activate your DAO")}
+                </h2>
                 <p className="text-sm text-gray-600">
-                  ホワイトリストに登録されたユーザーのみこのフォームからDAOを起動できます。
+                  {t(
+                    "Only users registered on the whitelist can activate DAO from this form."
+                  )}
                 </p>
               </div>
               <form onSubmit={submit} className="flex flex-col gap-6">
-                <ImageUploader label="DAOのアイコン" />
+                <ImageUploader label={t("Icon")} />
                 <div>
-                  <label className="font-semibold text-lg">DAOの名称</label>
+                  <label className="font-semibold text-lg">
+                    {t("DAO Name")}
+                  </label>
                   <Input
                     name="daoName_"
                     key="inside"
                     type="text"
                     label=""
                     labelPlacement="inside"
-                    placeholder="DAOの名称を入力"
-                    description="DAOの名称です。"
+                    placeholder={t("Enter your DAO name")}
                     variant="bordered"
                     size="lg"
                   />
                 </div>
                 <div>
-                  <label className="font-semibold text-lg">合同会社名称</label>
+                  <label className="font-semibold text-lg">
+                    {t("Company Name")}
+                  </label>
                   <Input
                     name="companyName_"
                     key="inside"
                     type="text"
                     label=""
                     labelPlacement="inside"
-                    placeholder="会社名を入力"
-                    description="合同会社の名前です。"
+                    placeholder={t("e.g.Alice inc.")}
                     variant="bordered"
                     size="lg"
                   />
                 </div>
                 <div>
-                  <label className="font-semibold text-lg">法人番号</label>
+                  <label className="font-semibold text-lg">
+                    {t("Company ID")}
+                  </label>
                   <Input
                     name="companyID_"
                     key="inside"
                     type="text"
                     label=""
                     labelPlacement="inside"
-                    placeholder="法人番号を入力"
-                    description="会社の法人番号です。DAOの設立時に利用するIDにも用います。"
+                    placeholder={t("Enter your company ID")}
                     variant="bordered"
                     size="lg"
                   />
                 </div>
                 <div>
-                  <label className="font-semibold text-lg">DAO設立日</label>
+                  <label className="font-semibold text-lg">
+                    {t("Establishment Date")}
+                  </label>
                   <DatePicker
                     name="establishmentDate_"
                     label=""
                     className="max-w-[284px]"
-                    description="DAOの設立日です。"
                     labelPlacement="inside"
                     variant="bordered"
                     size="lg"
                   />
                 </div>
 
-                <div className="flex flex-col gap-2">
+                {/* <div className="flex flex-col gap-2">
                   <label className="font-semibold text-lg">利用規約</label>
                   <div className="overflow-y-scroll h-40 border-2 p-2 rounded-md">
                     <p>
@@ -479,16 +486,16 @@ export function CreateBorderlessCompany() {
                       利用規約に同意する
                     </Checkbox>
                   </div>
-                </div>
+                </div> */}
                 <div className="max-w-[284px] w-full mx-auto mt-6">
                   <Button
-                    isDisabled={isConfirmed !== true}
+                    // isDisabled={isConfirmed !== true}
                     type="submit"
                     color="primary"
                     size="lg"
                     className="font-semibold w-full bg-gradient-to-tr from-pink-500 to-yellow-500 text-white shadow-lg"
                   >
-                    {isPending ? "Confirming..." : "DAOを起動"}
+                    {isPending ? t("Confirming...") : t("Activate your DAO")}
                   </Button>
                 </div>
               </form>

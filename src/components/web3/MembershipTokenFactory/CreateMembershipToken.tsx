@@ -17,6 +17,7 @@ import { useToken } from "@/hooks/useToken";
 import { uploadFile } from "@/utils/supabase";
 import { useForm } from "react-hook-form";
 import useMembershipTokens from "@/components/hooks/useMembershipTokens";
+import { useTranslation } from "next-i18next";
 
 type FormData = {
   name_: string;
@@ -36,6 +37,7 @@ export function CreateMembershipToken({
   const { createToken } = useToken();
   const { daoId } = router.query;
   const [imgUrl, setImgUrl] = useState<string | undefined>(undefined);
+  const { t } = useTranslation("common");
 
   const { data: hash, error, isPending, writeContract } = useWriteContract();
   const {
@@ -133,16 +135,16 @@ export function CreateMembershipToken({
             onSubmit={handleSubmit((e) => submit(e))}
             className="flex flex-col gap-3"
           >
-            <ImageUploader label="トークンの画像" />
+            <ImageUploader label={t("Token Image")} />
             <div>
-              <label className="font-semibold text-md">トークンの名前</label>
+              <label className="font-semibold text-md">{t("Token Name")}</label>
               <Input
                 key="inside"
                 type="text"
                 label=""
                 labelPlacement="inside"
-                placeholder="トークンの名前を入力"
-                description="例) ビットコイン, Ethereum ※トークンのシンボルではありません。"
+                placeholder={t("Enter Token Name")}
+                description={t("e.g. Bitcoin, Ethereum")}
                 variant="bordered"
                 size="md"
                 isRequired
@@ -151,15 +153,15 @@ export function CreateMembershipToken({
             </div>
             <div>
               <label className="font-semibold text-md">
-                トークンのシンボル
+                {t("Token Symbol")}
               </label>
               <Input
                 key="inside"
                 type="text"
                 label=""
                 labelPlacement="inside"
-                placeholder="トークンのシンボルを入力"
-                description="例) BTC,ETH,BNB"
+                placeholder={t("Enter Token Symbol")}
+                description={t("e.g. BTC, ETH, BNB")}
                 variant="bordered"
                 size="md"
                 isRequired
@@ -167,21 +169,21 @@ export function CreateMembershipToken({
               />
             </div>
             <div>
-              <label className="font-semibold text-md">トークンの価格</label>
+              <label className="font-semibold text-md">{t("Price")}</label>
               <Input
                 key="inside"
                 type="number"
                 label=""
                 labelPlacement="inside"
                 placeholder="0"
-                description="単位:円"
+                description={t("Unit: JPY")}
                 variant="bordered"
                 size="md"
                 isRequired
                 {...register("price_", { required: true })}
               />
             </div>
-            <div>
+            {/* <div>
               <label className="font-semibold text-md">
                 トークン情報の参照URL
               </label>
@@ -196,7 +198,7 @@ export function CreateMembershipToken({
                 size="md"
                 {...register("baseURI_", { required: false })}
               />
-            </div>
+            </div> */}
             <div>
               <Checkbox
                 isSelected={isSbt}
@@ -206,13 +208,13 @@ export function CreateMembershipToken({
                   label: "font-semibold",
                 }}
               >
-                業務執行社員トークンにする
+                {t("Make it executive")}
               </Checkbox>
             </div>
 
             <div className="mt-2">
               <Button type="submit" color="primary" size="md">
-                {isPending ? "Confirming..." : "トークンを作成する"}
+                {isPending ? t("Confirming...") : t("Create Token")}
               </Button>
             </div>
           </form>

@@ -1,13 +1,14 @@
 import SimpleLayout from "@/components/layout/SimpleLayout";
-import WalletLogin from "@/components/wallet/WalletLogin";
-
 import { CreateBorderlessCompany } from "@/components/web3/RegisterBorderlessCompany/CreateBorderlessCompany";
-import ListCompanies from "@/components/web3/RegisterBorderlessCompany/ListCompanies";
-import { CurrentAddressIsWhitelisted } from "@/components/web3/Whitelist/CurrentAddressIsWhitelisted";
-import { FormIsWhitelisted } from "@/components/web3/Whitelist/FormIsWhitelisted";
-import { IsWhitelisted } from "@/components/web3/Whitelist/IsWhitelisted";
-import { Button } from "@nextui-org/react";
-import router from "next/router";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+
+export const getServerSideProps = async ({ locale }: { locale: string }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ["common"])),
+    },
+  };
+};
 
 export default function Home() {
   return (
