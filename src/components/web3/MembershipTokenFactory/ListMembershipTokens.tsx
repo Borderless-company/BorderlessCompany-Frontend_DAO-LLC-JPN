@@ -27,13 +27,14 @@ import Image from "next/image";
 import { NonFungibleTokenTYPE721Abi } from "@/utils/abi/NonFungibleTokenTYPE721.sol/NonFungibleTokenTYPE721";
 import { TokenServiceAbi } from "@/utils/abi/TokenService.sol/TokenService";
 import useMembershipTokens from "@/components/hooks/useMembershipTokens";
+import { useTranslation } from "next-i18next";
 
 const columns = [
-  { name: "トークンシンボル", uid: "symbol" },
-  { name: "トークン名", uid: "name" },
-  { name: "トークンアドレス", uid: "tokenAddress" },
-  { name: "トークン種別", uid: "sbt" },
-  { name: "ACTIONS", uid: "actions" },
+  { name: "Symbol", uid: "symbol" },
+  { name: "Name", uid: "name" },
+  { name: "Contract Address", uid: "tokenAddress" },
+  { name: "Type", uid: "sbt" },
+  { name: "More", uid: "actions" },
 ];
 
 type MembershipToken = {
@@ -54,6 +55,8 @@ export const RenderCell = ({ item, columnKey }: Props) => {
   const { daoId } = router.query;
   const chainId = useChainId();
   const [blockExplorerUrl, setBlockExplorerUrl] = useState<string>();
+  const { t } = useTranslation("common");
+
   useEffect(() => {
     setBlockExplorerUrl(getBlockExplorerUrl(chainId));
   }, [chainId]);
@@ -84,7 +87,7 @@ export const RenderCell = ({ item, columnKey }: Props) => {
           color={cellValue ? "success" : "warning"}
         >
           <span className="text-xs font-semibold">
-            {cellValue ? "業務執行社員トークン" : "非業務執行社員トークン"}
+            {cellValue ? t("Executive") : t("Non-executive")}
           </span>
         </Chip>
       );
@@ -98,7 +101,7 @@ export const RenderCell = ({ item, columnKey }: Props) => {
             size="sm"
             className="text-sm"
           >
-            詳細
+            {t("More")}
           </Button>
           <Button
             href={`/dao/${daoId}/membership-token/${item.tokenAddress}/issue`}
@@ -107,7 +110,7 @@ export const RenderCell = ({ item, columnKey }: Props) => {
             size="sm"
             className="text-sm"
           >
-            発行
+            {t("Issue")}
           </Button>
         </div>
       );
@@ -124,7 +127,7 @@ const ListMembershipTokens = ({
   const { data, isPending, error } = useMembershipTokens({
     daoContractAddress: contractAddress,
   });
-
+  const { t } = useTranslation("common");
   return (
     <>
       {isPending ? (
@@ -140,7 +143,7 @@ const ListMembershipTokens = ({
                 hideHeader={column.uid === "actions"}
                 align={column.uid === "actions" ? "center" : "start"}
               >
-                {column.name}
+                {t(column.name)}
               </TableColumn>
             )}
           </TableHeader>

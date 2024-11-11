@@ -1,5 +1,6 @@
 import { useEstuary } from "@/hooks/useEstuary";
 import { Link } from "@nextui-org/react";
+import { useTranslation } from "next-i18next";
 import React, { FC } from "react";
 
 export type EstuaryLinkDisplayProps = {
@@ -7,6 +8,7 @@ export type EstuaryLinkDisplayProps = {
 };
 
 export const EstuaryLinkDisplay: FC<EstuaryLinkDisplayProps> = ({ estId }) => {
+  const { t } = useTranslation("common");
   const { estuary } = useEstuary(estId);
 
   return (
@@ -20,7 +22,7 @@ export const EstuaryLinkDisplay: FC<EstuaryLinkDisplayProps> = ({ estId }) => {
         {estuary?.estuary_link}
       </Link>
       <div className="flex flex-col gap-2">
-        <h2 className="text-md font-semibold">埋め込みコード</h2>
+        <h2 className="text-md font-semibold">{t("Embed Code")}</h2>
         <div className="p-4 rounded-2xl bg-stone-100 border-1 border-stone-300">
           <p className="font-mono text-sm">
             &lt;iframe style=&quot;border: 0px solid rgba(0, 0, 0, 0.1);
@@ -30,7 +32,7 @@ export const EstuaryLinkDisplay: FC<EstuaryLinkDisplayProps> = ({ estId }) => {
           </p>
         </div>
         <p className=" text-[14px] font-sans font-medium">
-          このコードをコピーして自社サイトへ貼り付けてください。
+          {t("Paste this code to your website")}
         </p>
       </div>
     </div>

@@ -12,6 +12,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "jotai";
 import { Noto_Sans_JP } from "next/font/google";
 import { RootLayout } from "@/components/layout/RootLayout";
+import { appWithTranslation } from "next-i18next";
 
 const notoSansJP = Noto_Sans_JP({
   subsets: ["latin"],
@@ -19,7 +20,7 @@ const notoSansJP = Noto_Sans_JP({
 
 const queryClient = new QueryClient();
 
-export default function App({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps }: AppProps) {
   return (
     <WagmiWrapper>
       <NextUIProvider>
@@ -34,3 +35,5 @@ export default function App({ Component, pageProps }: AppProps) {
     </WagmiWrapper>
   );
 }
+
+export default appWithTranslation(App);

@@ -29,14 +29,15 @@ import {
   getBlockExplorerUrl,
   getMembershipTokenFactoryStartBlockNumber,
 } from "@/utils/contractAddress";
+import { useTranslation } from "next-i18next";
 
 const columns = [
-  { name: "お名前", uid: "name" },
+  { name: "Name", uid: "name" },
   // { name: "トークン名", uid: "tokenName" },
-  { name: "トークンシンボル", uid: "symbol" },
-  { name: "社員種別", uid: "sbt" },
-  { name: "トークンID", uid: "id" },
-  { name: "アカウント", uid: "holderAddress" },
+  { name: "Symbol", uid: "symbol" },
+  { name: "Type", uid: "sbt" },
+  { name: "Token ID", uid: "id" },
+  { name: "Wallet Address", uid: "holderAddress" },
 ];
 
 type MembershipTokenHolder = {
@@ -64,6 +65,7 @@ export const RenderCell = ({ item, columnKey }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentName, setCurrentName] = useState<string>(item.name);
   const [newName, setNewName] = useState<string>(item.name);
+  const { t } = useTranslation("common");
 
   const handleEdit = () => {
     setCurrentName(currentName);
@@ -147,7 +149,7 @@ export const RenderCell = ({ item, columnKey }: Props) => {
       return (
         <Chip size="sm" variant="flat" color={item.sbt ? "success" : "warning"}>
           <span className="text-xs font-semibold">
-            {item.sbt ? "業務執行社員" : "非業務執行社員"}
+            {item.sbt ? t("Executive") : t("Non-executive")}
           </span>
         </Chip>
       );
@@ -163,6 +165,7 @@ const Members = ({ contractAddress }: { contractAddress: Address }) => {
   const [isPending, setIsPending] = useState<boolean>(true);
   const [startBlockNumber, setStartBlockNumber] = useState<number>();
   const [tableData, setTableData] = useState<any[]>([]);
+  const { t } = useTranslation("common");
   const {
     data: membershipTokenContractAddresses,
     isPending: isPendingMembershipTokens,
@@ -281,7 +284,7 @@ const Members = ({ contractAddress }: { contractAddress: Address }) => {
                   hideHeader={column.uid === "actions"}
                   align={column.uid === "actions" ? "center" : "start"}
                 >
-                  {column.name}
+                  {t(column.name)}
                 </TableColumn>
               )}
             </TableHeader>

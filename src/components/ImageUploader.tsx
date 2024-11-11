@@ -1,5 +1,6 @@
 import { selectedFileAtom } from "@/atoms";
 import { useAtom } from "jotai";
+import { useTranslation } from "next-i18next";
 import React, { FC, useState } from "react";
 import { FileTrigger, Button } from "react-aria-components";
 
@@ -10,6 +11,7 @@ export type ImageUploaderProps = {
 const ImageUploader: FC<ImageUploaderProps> = ({ label }) => {
   const [selectedFile, setSelectedFile] = useAtom(selectedFileAtom);
   const [preview, setPreview] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const handleSelect = (files: FileList | null) => {
     if (files && files.length > 0) {
@@ -50,9 +52,7 @@ const ImageUploader: FC<ImageUploaderProps> = ({ label }) => {
         onSelect={handleSelect}
       >
         <Button className="h-12 w-fit px-4 bg-primary text-white rounded-xl text-sm hover:scale-[1.02] transition-all font-semibold">
-          {selectedFile
-            ? "画像を再アップロード"
-            : "画像をアップロード(PNG/JPG)"}
+          {selectedFile ? t("Upload Image again") : t("Upload Image")}
         </Button>
       </FileTrigger>
     </div>

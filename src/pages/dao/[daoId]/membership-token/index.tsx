@@ -8,8 +8,19 @@ import { GetService } from "@/components/web3/BorderlessCompany/GetService";
 import { useEffect, useState } from "react";
 import { Address } from "viem";
 import { useGetService } from "@/components/hooks/useGetService";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next";
+
+export const getServerSideProps = async ({ locale }: { locale: string }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ["common"])),
+    },
+  };
+};
 
 const MembershipToken: NextPage = () => {
+  const { t } = useTranslation("common");
   const router = useRouter();
   const { daoId } = router.query;
   const [isReady, setIsReady] = useState<boolean>(false);
@@ -41,7 +52,7 @@ const MembershipToken: NextPage = () => {
               <div className="flex flex-col justify-center w-full mx-auto gap-4">
                 <div className="flex flex-wrap justify-between">
                   <h3 className="text-center text-xl font-semibold">
-                    メンバーシップトークン一覧
+                    {t("Membership Tokens")}
                   </h3>
                 </div>
                 <div className="w-full flex flex-col gap-4">
@@ -51,7 +62,7 @@ const MembershipToken: NextPage = () => {
               <div className="flex flex-col justify-center w-full mx-auto gap-4">
                 <div className="flex flex-wrap justify-between">
                   <h3 className="text-center text-xl font-semibold">
-                    メンバーシップトークン作成
+                    {t("Create New Membership Token")}
                   </h3>
                 </div>
                 <div className="w-full flex flex-col gap-4">

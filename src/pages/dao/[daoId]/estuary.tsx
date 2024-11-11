@@ -13,6 +13,17 @@ import { supabase } from "@/utils/supabase";
 import { useToken } from "@/hooks/useToken";
 import { EstuaryLinkDisplay } from "@/components/estuary/EstuaryLinkDisplay";
 
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next";
+
+export const getServerSideProps = async ({ locale }: { locale: string }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ["common"])),
+    },
+  };
+};
+
 const EstuaryPage: NextPage = () => {
   const router = useRouter();
   const { daoId } = router.query;
@@ -20,6 +31,7 @@ const EstuaryPage: NextPage = () => {
   const { dao } = useDAO(daoId as string);
   const { updateToken } = useToken();
   const [estuaryId, setEstuaryId] = useState<string>();
+  const { t } = useTranslation("common");
 
   useEffect(() => {
     const fetchEstuaryId = async () => {
@@ -75,13 +87,13 @@ const EstuaryPage: NextPage = () => {
           <div className="flex flex-col justify-center w-full mx-auto gap-4">
             <div className="flex flex-col items-start justify-between gap-4">
               <h3 className="text-center text-xl font-semibold">
-                エスチャリー
+                {t("Estuary")}
               </h3>
               {estuaryId ? (
                 <EstuaryLinkDisplay estId={estuaryId} />
               ) : (
                 <Button color="primary" onPress={onPressCreate}>
-                  エスチャリーを作成
+                  {t("Create Estuary")}
                 </Button>
               )}
             </div>

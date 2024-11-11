@@ -18,16 +18,17 @@ import { useMember } from "@/hooks/useMember";
 import { downloadCsv } from "@/utils/csv";
 import { shortenAddress } from "@/utils/web3";
 import { useRouter } from "next/router";
+import { useTranslation } from "next-i18next";
 const columns = [
-  { name: "氏名", uid: "name" },
-  { name: "住所", uid: "address" },
-  { name: "ウォレットアドレス", uid: "walletAddress" },
-  { name: "入社日", uid: "dateOfEmployment" },
-  { name: "出資金", uid: "investedAmount" },
-  { name: "ステータス", uid: "status" },
-  { name: "アクション", uid: "actions" },
-  // { name: "受領証", uid: "receipt" },
-  // { name: "メールアドレス", uid: "email" },
+  { name: "Name", uid: "name" },
+  { name: "Address", uid: "address" },
+  { name: "Wallet Address", uid: "walletAddress" },
+  { name: "Date of Employment", uid: "dateOfEmployment" },
+  { name: "Invested Amount", uid: "investedAmount" },
+  { name: "Status", uid: "status" },
+  { name: "Actions", uid: "actions" },
+  // { name: "Receipt", uid: "receipt" },
+  // { name: "Email", uid: "email" },
 ];
 
 type MemberRow = {
@@ -57,6 +58,7 @@ export const RenderCell = ({ item, columnKey }: Props) => {
     console.log("columnKey:", columnKey);
   }, [item, columnKey]);
   const cellValue = item[columnKey as keyof MemberRow];
+  const { t } = useTranslation("common");
 
   switch (columnKey) {
     case "name":
@@ -78,7 +80,7 @@ export const RenderCell = ({ item, columnKey }: Props) => {
         <Chip
           size="sm"
           variant="flat"
-          color={item.status === "発行済" ? "success" : "warning"}
+          color={item.status === t("Issued") ? "success" : "warning"}
         >
           <span className="text-xs font-semibold">{item.status}</span>
         </Chip>
@@ -98,7 +100,7 @@ export const RenderCell = ({ item, columnKey }: Props) => {
             );
           }}
         >
-          <span className="text-xs font-semibold">発行</span>
+          <span className="text-xs font-semibold">{t("Issue")}</span>
         </Button>
       );
     default:
@@ -109,6 +111,7 @@ export const RenderCell = ({ item, columnKey }: Props) => {
 const MemberList = ({ contractAddress }: { contractAddress: Address }) => {
   const { getMembersByDaoId } = useMember({});
   const { data: members } = getMembersByDaoId({ daoId: contractAddress });
+  const { t, i18n } = useTranslation("common");
 
   const memberData = useMemo(() => {
     return members?.map((member) => {
@@ -121,7 +124,7 @@ const MemberList = ({ contractAddress }: { contractAddress: Address }) => {
           member.date_of_employment ?? ""
         ).toLocaleDateString("ja-JP"),
         investedAmount: member.invested_amount?.toString() ?? "",
-        status: member.is_minted ? "発行済" : "未発行",
+        status: member.is_minted ? t("Issued") : t("Not issued"),
         actions: {
           daoId: contractAddress,
           contractAddress: member.TOKEN?.contract_address ?? "",
@@ -156,7 +159,7 @@ const MemberList = ({ contractAddress }: { contractAddress: Address }) => {
                   downloadCsv(columns.slice(0, -1), dataWithoutActions);
                 }}
               >
-                CSVダウンロード
+                {t("Download as CSV")}
               </Button>
               <Table aria-label="MembershipTokenHolders">
                 <TableHeader columns={columns}>
@@ -166,7 +169,7 @@ const MemberList = ({ contractAddress }: { contractAddress: Address }) => {
                       hideHeader={column.uid === "actions"}
                       align={column.uid === "actions" ? "center" : "start"}
                     >
-                      {column.name}
+                      {t(column.name)}
                     </TableColumn>
                   )}
                 </TableHeader>
