@@ -20,7 +20,7 @@ export const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
       return;
     }
     if (!address) {
-      router.push("/");
+      router.push("/login");
     }
     if (establishedDAO && initialPages.includes(router.pathname)) {
       router.push(`/dao/${establishedDAO.address}`);

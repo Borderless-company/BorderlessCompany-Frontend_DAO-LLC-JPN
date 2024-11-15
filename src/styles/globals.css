@@ -21,3 +21,10 @@
     --bls-danger-backing: #fee7ef;
   }
 }
+
+@layer components {
+  .typo-headline-sm {
+    @apply text-2xl font-bold;
+    line-height: 28px;
+  }
+}
