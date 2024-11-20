@@ -39,6 +39,8 @@ const AgreementPage: FC = () => {
   const { estuary } = useEstuary(estId as string);
 
   const onClickPay = async () => {
+    console.log("product ID: ", token?.product_id);
+    console.log("price: ", price);
     if (!token?.product_id || !price) return;
     setPaymentStatus("pending");
     const paymentLink = await createPaymentLink(token.product_id, price);
