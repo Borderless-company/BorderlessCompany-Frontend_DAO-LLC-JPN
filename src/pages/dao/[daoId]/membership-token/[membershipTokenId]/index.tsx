@@ -7,6 +7,15 @@ import ListMembershipTokenHolders from "@/components/web3/MembershipToken/ListMe
 import ListMembershipTokenHistory from "@/components/web3/MembershipToken/ListMembershipTokenHistory";
 import { Button } from "@nextui-org/react";
 import { Address } from "viem";
+import { serverSideTranslations } from "next-i18next/dist/types/serverSideTranslations";
+
+export const getServerSideProps = async ({ locale }: { locale: string }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ["common"])),
+    },
+  };
+};
 
 const MembershipTokenDetail: NextPage = () => {
   const { daoId, membershipTokenId } = useRouter().query;

@@ -66,5 +66,10 @@
   "e.g.Alice inc.": "例) 株式会社Alice",
   "Company ID": "法人番号",
   "Enter your company ID": "法人番号を入力",
-  "Establishment Date": "設立日"
+  "Establishment Date": "設立日",
+  "Borderless Tag line": "DAOで始める、境界線のない会社へ",
+  "Connect Wallet": "ウォレットログイン",
+  "Select Wallet": "ウォレットを選択",
+  "Sign In": "ログインする",
+  "Invest": "に出資する"
 }

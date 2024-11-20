@@ -12,12 +12,23 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import clsx from "clsx";
 import { Noto_Sans_JP } from "next/font/google";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const notoSansJP = Noto_Sans_JP({
   subsets: ["latin"],
 });
 
+export const getServerSideProps = async ({ locale }: { locale: string }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ["common"])),
+    },
+  };
+};
+
 export default function Home() {
+  const { t } = useTranslation("common");
   return (
     <div className={clsx(notoSansJP.className, "font-sans")}>
       <Header />
@@ -27,7 +38,7 @@ export default function Home() {
       >
         <div className="flex-row gap-4 justify-between max-w-[1024px] px-6 relative w-full">
           <div className="my-12">
-            <section className="bg-white dark:bg-gray-900">
+            <section className="bg-background dark:bg-gray-900">
               <div className="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-0 xl:gap-0 lg:py-16 md:grid-cols-12">
                 <div className="mx-auto place-self-center md:col-span-8">
                   <h1 className="max-w-2xl mb-4">
@@ -39,10 +50,11 @@ export default function Home() {
                     />
                   </h1>
                   <p className="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-2xl">
-                    DAOで始める、境界線のない会社へ
+                    {t("Borderless Tag line")}
                   </p>
                   <div className="flex gap-4">
-                    <button
+                    <WalletLogin />
+                    {/* <button
                       onClick={() => {
                         router.push("/dao/register");
                       }}
@@ -58,7 +70,7 @@ export default function Home() {
                       className="border-2 bg-white hover:bg-sky-200 text-sky-700 font-bold py-2 px-4 rounded"
                     >
                       DAO一覧を見る
-                    </button>
+                    </button> */}
                   </div>
                 </div>
                 <div className="hidden justify-center md:col-span-4 md:flex lg:mt-0 my-10 max-w-sm mx-auto">

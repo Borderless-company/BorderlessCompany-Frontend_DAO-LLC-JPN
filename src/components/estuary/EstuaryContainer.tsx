@@ -13,8 +13,10 @@ import { useEstuary } from "@/hooks/useEstuary";
 import { useRouter } from "next/router";
 import { supabase } from "@/utils/supabase";
 import AlreadyMember from "./AlreadyMemberPage";
+import { useTranslation } from "next-i18next";
 
 export const EstuaryContainer: FC = () => {
+  const { t } = useTranslation("estuary");
   const { page, setPage } = useEstuaryContext();
   const account = useActiveAccount();
   const router = useRouter();
@@ -35,7 +37,7 @@ export const EstuaryContainer: FC = () => {
       }
     };
     if (!account) {
-      setPage(0);
+      setPage(6);
     } else {
       checkPaymentStatus();
     }

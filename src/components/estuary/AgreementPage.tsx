@@ -17,11 +17,13 @@ import { usePayment } from "@/hooks/usePayment";
 import { useMember } from "@/hooks/useMember";
 import { useEstuary } from "@/hooks/useEstuary";
 import { useRouter } from "next/router";
+import { useTranslation } from "next-i18next";
 
 const POLLING_INTERVAL = 3000;
 const MAX_POLLING_TIME = 600000;
 
 const AgreementPage: FC = () => {
+  const { t } = useTranslation("estuary");
   const router = useRouter();
   const { estId } = router.query;
   const [termChecked, setTermChecked] = useState<string[]>([]);
@@ -111,7 +113,7 @@ const AgreementPage: FC = () => {
       <div className="flex flex-col gap-2 p-6 pb-0 relative">
         <PiCheckCircleFill size={48} className="text-sky-600" />
         <h1 className="text-[28px] leading-8 font-bold text-slate-800">
-          同意と確認
+          {t("Confirmation")}
         </h1>
       </div>
 
@@ -123,10 +125,10 @@ const AgreementPage: FC = () => {
             <p>¥{price?.toLocaleString()}</p>
           </div>
           <div className="flex justify-between items-center w-full h-14 px-3 text-base font-semibold border-b-0 border-slate-200">
-            <p>本人確認</p>
+            <p>{t("Identity")}</p>
             <div className="flex items-center gap-1">
               <PiCheckCircleFill size={20} className="text-success-600" />
-              <p className="text-success-600">確認済み</p>
+              <p className="text-success-600">{t("Verified")}</p>
             </div>
           </div>
         </div>
@@ -162,7 +164,7 @@ const AgreementPage: FC = () => {
             color="primary"
             size="lg"
           >
-            戻る
+            {t("Back")}
           </Button>
           <Button
             className="w-fit text-base font-semibold"
@@ -179,7 +181,9 @@ const AgreementPage: FC = () => {
             isLoading={paymentStatus === "pending"}
             style={{ flex: 1 }}
           >
-            {paymentStatus === "initial" ? "支払う" : "支払い処理中..."}
+            {paymentStatus === "initial"
+              ? t("Check Out")
+              : t("Processing Payment")}
           </Button>
         </div>
         <div className="w-full flex justify-end items-center gap-2 px-2">

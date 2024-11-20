@@ -12,8 +12,10 @@ import { useToken, createProduct } from "@/hooks/useToken";
 import { useEstuary } from "@/hooks/useEstuary";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
+import { useTranslation } from "next-i18next";
 
 export const TokenSelection: FC = () => {
+  const { t, i18n } = useTranslation("estuary");
   const account = useActiveAccount();
   const { connect } = useConnectModal();
   const { setPage, setPrice, setToken } = useEstuaryContext();
@@ -51,6 +53,7 @@ export const TokenSelection: FC = () => {
     const wallet = await connect({ client, wallets: wallets, size: "compact" });
     console.log("Connected wallet: ", account);
   };
+  console.log("language: ", i18n.language);
 
   return (
     <>
@@ -70,14 +73,16 @@ export const TokenSelection: FC = () => {
           }}
         />
         <h1 className="text-xl md:text-[28px] leading-8 font-bold text-slate-800">
-          {estuary?.org_name} に出資する
+          {i18n.language === "ja"
+            ? `${estuary?.org_name} ${t("Invest")}`
+            : `${t("Invest")} ${estuary?.org_name}`}
         </h1>
       </div>
 
       {/* Content */}
       <div className="flex flex-col gap-2 md:gap-4 flex-1 py-2 md:py-6">
         <p className="text-slate-800 text-base md:text-lg font-semibold pl-6">
-          種類を選択してください
+          {t("Select Token")}
         </p>
         <RadioGroup
           value={selectedTokenId}
@@ -110,7 +115,7 @@ export const TokenSelection: FC = () => {
         <div className="flex flex-col md:gap-2">
           <div className="flex justify-between items-center h-14 px-2">
             <p className="text-slate-600 font-semibold text-xl md:text-2xl">
-              金額
+              {t("Price")}
             </p>
             <p className="text-slate-700 font-semibold text-2xl md:text-3xl">
               ¥
@@ -126,7 +131,7 @@ export const TokenSelection: FC = () => {
               onClick={onClickNext}
               size="lg"
             >
-              次に進む
+              {t("Next")}
             </Button>
           ) : (
             <Button
@@ -135,7 +140,7 @@ export const TokenSelection: FC = () => {
               onClick={handleConnect}
               size="lg"
             >
-              ログインする
+              {t("Sign In")}
             </Button>
           )}
         </div>

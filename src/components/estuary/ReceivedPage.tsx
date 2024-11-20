@@ -15,9 +15,10 @@ import { useEstuary } from "@/hooks/useEstuary";
 import { useRouter } from "next/router";
 import { useActiveAccount } from "thirdweb/react";
 import { useUser } from "@/hooks/useUser";
-
+import { useTranslation } from "next-i18next";
 // TODO: Context ではなくDBからToken情報取ってくる
 const ReceivedPage: FC = () => {
+  const { t, i18n } = useTranslation();
   const [estuaryPage, setEstuaryPage] = useAtom(estuaryPageAtom);
   const { token, price } = useEstuaryContext();
   const router = useRouter();
@@ -71,11 +72,13 @@ const ReceivedPage: FC = () => {
           <div className="flex gap-1 items-center">
             <PiCheckCircleFill size={32} className="text-success-600" />
             <p className=" text-success-600 text-2xl text-center font-semibold">
-              メンバー登録が完了しました。
+              {t("Registered as a Member")}
             </p>
           </div>
           <p className="text-slate-500 text-base text-center font-medium">
-            今日から{estuary?.org_name}の一員です
+            {i18n.language === "ja"
+              ? `今日から${estuary?.org_name}の一員です`
+              : `Now, you are a member of ${estuary?.org_name}`}
           </p>
         </div>
         {/* <div className="flex gap-2">
@@ -94,7 +97,7 @@ const ReceivedPage: FC = () => {
             size="lg"
             // isDisabled
           >
-            社員専用ページへ
+            {t("Dive into the member's page")}
           </Button>
         </div>
         <div className="w-full flex justify-end items-center gap-2 px-2">

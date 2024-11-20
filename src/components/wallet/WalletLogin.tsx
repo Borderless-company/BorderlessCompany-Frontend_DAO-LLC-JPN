@@ -11,12 +11,14 @@ import {
 } from "@nextui-org/react";
 import { LoggedInMenu } from "@/components/wallet/LoggedInMenu";
 import { WalletIcon } from "../icons/WalletIcon";
+import { useTranslation } from "next-i18next";
 
 export default function WalletLogin() {
   const { isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const [isClient, setIsClient] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { t } = useTranslation("common");
 
   useEffect(() => {
     setIsClient(true);
@@ -30,13 +32,13 @@ export default function WalletLogin() {
             <LoggedInMenu />
           ) : (
             <div className="">
-              <Button onPress={onOpen}>ウォレットログイン</Button>
+              <Button onPress={onOpen}>{t("Connect Wallet")}</Button>
               <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
                   {(onClose) => (
                     <>
                       <ModalHeader className="flex flex-col gap-1">
-                        ウォレットログインを選択
+                        {t("Select Wallet")}
                       </ModalHeader>
                       <ModalBody>
                         <div className="flex flex-col gap-1">
