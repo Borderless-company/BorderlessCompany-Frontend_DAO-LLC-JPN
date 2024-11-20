@@ -10,8 +10,15 @@ import { useEffect, useState } from "react";
 import { Address } from "viem";
 import { useGetService } from "@/components/hooks/useGetService";
 import { Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+
+export const getStaticProps = async ({ locale }: { locale: string }) => ({
+  props: await serverSideTranslations(locale, ["common"]),
+});
 
 const MembershipTokenCreate: NextPage = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { daoId } = router.query;
   const [isReady, setIsReady] = useState<boolean>(false);
@@ -32,7 +39,7 @@ const MembershipTokenCreate: NextPage = () => {
               <div className="w-full flex flex-col gap-4">
                 <div className="flex flex-wrap justify-between">
                   <h3 className="text-center text-xl font-semibold">
-                    メンバーシップトークン作成
+                    {t("Create New Membership Token")}
                   </h3>
                 </div>
                 <div className="w-full flex flex-col gap-4">

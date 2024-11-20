@@ -4,7 +4,7 @@ import { IssueToken } from "@/components/web3/MembershipToken/IssueToken";
 import { useRouter } from "next/router";
 import { Address } from "viem";
 import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/dist/types/serverSideTranslations";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export const getServerSideProps = async ({ locale }: { locale: string }) => {
   return {
