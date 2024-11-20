@@ -74,14 +74,13 @@ export function CreateMembershipToken({
       return;
     }
 
-    let imageUrl: string | undefined = undefined;
     if (selectedFile) {
       const { publicUrl } = await uploadFile(
         "token-image",
         `${contractAddress}-${e.symbol_}`,
         selectedFile
       );
-      imageUrl = publicUrl;
+      setImgUrl(publicUrl);
     }
 
     console.log(e);
@@ -110,6 +109,7 @@ export function CreateMembershipToken({
           .tokenAddress
       );
       const createdToken = await fetchLogs();
+
       await createToken({
         name: getValues("name_"),
         symbol: getValues("symbol_"),
@@ -119,6 +119,7 @@ export function CreateMembershipToken({
         image: imgUrl || undefined,
         contract_address: createdToken?.[createdToken.length - 1].tokenAddress,
       });
+      setSelectedFile(undefined);
       router.reload();
     };
 
