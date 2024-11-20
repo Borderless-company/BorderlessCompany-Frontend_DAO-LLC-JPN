@@ -42,6 +42,7 @@ export function CreateBorderlessCompany() {
   const [established, setEstablished] = useState(false);
   const [selectedFile, setSelectedFile] = useAtom(selectedFileAtom);
 
+  console.log("chainId: ", chainId);
   async function submit(e: FormEvent<HTMLFormElement>) {
     if (!contractAddress) {
       return;
