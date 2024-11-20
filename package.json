@@ -52,7 +52,7 @@
     "utf-8-validate": "^5.0.10",
     "uuid": "^10.0.0",
     "viem": "~2.9.21",
-    "wagmi": "^2.5.20",
+    "wagmi": "^2.12.33",
     "web3": "^4.8.0"
   },
   "devDependencies": {

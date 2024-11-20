@@ -52,7 +52,7 @@ const EstuaryPage: NextPage = () => {
   const onPressCreate = async () => {
     if (!dao) return;
     const estId = uuidv4();
-    const estLink = `https://apps.borderless.company/estuary/${estId}`;
+    const estLink = `${process.env.NEXT_PUBLIC_BASE_URL}/estuary/${estId}`;
 
     console.log("pre-estId: ", estId);
     const { data: tokens, error } = await supabase
