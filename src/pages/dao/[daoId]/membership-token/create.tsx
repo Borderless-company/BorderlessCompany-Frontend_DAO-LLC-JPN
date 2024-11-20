@@ -13,7 +13,7 @@ import { Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
-export const getStaticProps = async ({ locale }: { locale: string }) => ({
+export const getServerSideProps = async ({ locale }: { locale: string }) => ({
   props: await serverSideTranslations(locale, ["common"]),
 });
 
