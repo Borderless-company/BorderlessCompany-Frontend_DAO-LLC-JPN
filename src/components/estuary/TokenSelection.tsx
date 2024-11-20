@@ -129,6 +129,7 @@ export const TokenSelection: FC = () => {
               className="w-full bg-yellow-700 text-white text-base font-semibold"
               endContent={<PiArrowRight color="white" />}
               onClick={onClickNext}
+              isDisabled={!token || !selectedTokenId}
               size="lg"
             >
               {t("Next")}

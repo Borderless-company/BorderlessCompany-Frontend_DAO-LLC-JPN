@@ -37,7 +37,7 @@ export const EstuaryContainer: FC = () => {
       }
     };
     if (!account) {
-      setPage(6);
+      setPage(0);
     } else {
       checkPaymentStatus();
     }

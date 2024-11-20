@@ -28,6 +28,7 @@ export const ConnectButton: FC<ConnectButtonProps> = ({ ...props }) => {
       client,
       wallets: wallets,
       size: "compact",
+      chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
     });
     console.log("Connected wallet: ", account);
   };
