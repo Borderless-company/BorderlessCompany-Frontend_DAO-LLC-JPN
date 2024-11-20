@@ -21,14 +21,6 @@ export const DashboardNavbar = ({ children }: Props) => {
           <HamburgerButton />
         </NavbarContent>
         <NavbarContent className="w-full max-md:hidden"></NavbarContent>
-        <NavbarContent
-          justify="end"
-          className="w-fit data-[justify=end]:flex-grow-0"
-        >
-          <NavbarContent>
-            <WalletLogin />
-          </NavbarContent>
-        </NavbarContent>
       </Navbar>
       {children}
     </div>

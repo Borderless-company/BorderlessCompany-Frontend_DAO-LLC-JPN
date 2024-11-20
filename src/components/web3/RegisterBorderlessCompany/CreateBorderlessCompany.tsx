@@ -1,13 +1,7 @@
-import { FormEvent, useCallback, useEffect, useState } from "react";
-import {
-  useWaitForTransactionReceipt,
-  useWriteContract,
-  BaseError,
-  useChainId,
-  useAccount,
-} from "wagmi";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { BaseError, useAccount } from "wagmi";
 import { RegisterBorderlessCompanyAbi } from "@/utils/abi/RegisterBorderlessCompany.sol/RegisterBorderlessCompany";
-import { AccountStateConflictError, Address, stringToHex } from "viem";
+import { Address, stringToHex } from "viem";
 import { Button, Checkbox, DatePicker, Input, Link } from "@nextui-org/react";
 import {
   getBlockExplorerUrl,
@@ -21,17 +15,55 @@ import { useAtom } from "jotai";
 import { selectedFileAtom } from "@/atoms";
 import { uploadFile } from "@/utils/supabase";
 import { useTranslation } from "next-i18next";
+import {
+  useActiveAccount,
+  useActiveWalletChain,
+  useSendTransaction,
+  useWaitForReceipt,
+} from "thirdweb/react";
+import { prepareContractCall, getContract } from "thirdweb";
+import { defineChain } from "thirdweb";
+import { client } from "@/utils/client";
 
 export function CreateBorderlessCompany() {
   const { t } = useTranslation("common");
   const [isClient, setIsClient] = useState(false);
-  const chainId = useChainId();
+  const acount = useActiveAccount();
+  const activeChain = useActiveWalletChain();
 
-  const { data: hash, error, isPending, writeContract } = useWriteContract();
-  const [isConfirmed, setIsConfirmed] = useState(false);
-  const { address } = useAccount();
+  // for transaction
+  const {
+    mutate: sendTransaction,
+    isPending: isSendingTransaction,
+    isIdle,
+    data: transactionData,
+    error,
+  } = useSendTransaction();
+  const registrationContract = useMemo(() => {
+    if (!activeChain) return;
+    return getContract({
+      client: client,
+      chain: defineChain(activeChain?.id),
+      address: getRegisterBorderlessCompanyContractAddress(activeChain?.id),
+    });
+  }, [activeChain]);
+
+  const {
+    data: receipt,
+    isLoading,
+    isSuccess,
+  } = useWaitForReceipt({
+    client: client,
+    chain:
+      transactionData?.chain ||
+      defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID!)),
+    transactionHash: transactionData?.transactionHash! || "0x12",
+  });
+
+  // for DB
   const { createDAO } = useDAO();
 
+  // for Form
   const [contractAddress, setContractAddress] = useState<Address>();
   const [blockExplorerUrl, setBlockExplorerUrl] = useState<string>();
   const [companyName, setCompanyName] = useState<string>("");
@@ -88,30 +120,26 @@ export function CreateBorderlessCompany() {
       .substring(0, 19);
     const confirmedBool = true;
 
-    writeContract({
-      address: contractAddress,
-      abi: RegisterBorderlessCompanyAbi,
-      functionName: "createBorderlessCompany",
-      args: [
+    if (!registrationContract) return;
+    const transaction = prepareContractCall({
+      contract: registrationContract,
+      method:
+        "function createBorderlessCompany(bytes companyID_, bytes establishmentDate_, bool confirmed_)",
+      params: [
         stringToHex(companyID_),
         stringToHex(establishmentDate_),
         confirmedBool,
       ],
     });
+    sendTransaction(transaction);
   }
 
-  const {
-    data,
-    isLoading: isLoading,
-    isSuccess: isSuccess,
-  } = useWaitForTransactionReceipt({
-    hash,
-  });
-
   useEffect(() => {
-    setContractAddress(getRegisterBorderlessCompanyContractAddress(chainId));
-    setBlockExplorerUrl(getBlockExplorerUrl(chainId));
-  }, [chainId]);
+    setContractAddress(
+      getRegisterBorderlessCompanyContractAddress(activeChain?.id || 11155111)
+    );
+    setBlockExplorerUrl(getBlockExplorerUrl(activeChain?.id || 11155111));
+  }, [activeChain]);
 
   useEffect(() => {
     setIsClient(true);
@@ -120,15 +148,16 @@ export function CreateBorderlessCompany() {
   useEffect(() => {
     if (!isSuccess) return;
     const _createDAO = async () => {
-      console.log("isSuccess", data);
+      console.log("isSuccess", receipt);
 
-      const logs: any[] = data.logs
+      if (!receipt) return;
+      const logs: any[] = receipt?.logs
         .map((log) => {
           try {
             return decodeEventLog({
               abi: RegisterBorderlessCompanyAbi,
               data: log.data,
-              topics: (log as any).topics,
+              topics: log.topics,
             });
           } catch {
             return null;
@@ -159,16 +188,17 @@ export function CreateBorderlessCompany() {
           company_name: companyName,
           dao_icon: publicUrl,
           dao_name: daoName,
-          established_by: address,
+          established_by: acount?.address,
           establishment_date:
             establishmentDate?.toISOString() || new Date().toISOString(),
         });
-        setSelectedFile(undefined);
-        setEstablished(true);
       }
+      setSelectedFile(undefined);
+      setEstablished(true);
     };
     _createDAO();
   }, [isSuccess]);
+
   return (
     <>
       {isClient && (
@@ -495,21 +525,27 @@ export function CreateBorderlessCompany() {
                     size="lg"
                     className="font-semibold w-full bg-gradient-to-tr from-pink-500 to-yellow-500 text-white shadow-lg"
                   >
-                    {isPending ? t("Confirming...") : t("Activate your DAO")}
+                    {isSendingTransaction
+                      ? t("Confirming...")
+                      : t("Activate your DAO")}
                   </Button>
                 </div>
               </form>
-              {hash && (
+              {transactionData?.transactionHash && (
                 <a
                   className="text-blue-500"
-                  href={blockExplorerUrl + "/tx/" + hash}
+                  href={
+                    blockExplorerUrl + "/tx/" + transactionData?.transactionHash
+                  }
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Transaction Hash: {hash}
+                  Transaction Hash: {transactionData?.transactionHash}
                 </a>
               )}
-              {isLoading && <div>Waiting for confirmation...</div>}
+              {isSendingTransaction && isLoading && (
+                <div>Waiting for confirmation...</div>
+              )}
               {isSuccess && <div>Transaction confirmed.</div>}
               {error && (
                 <div className="text-red-500">

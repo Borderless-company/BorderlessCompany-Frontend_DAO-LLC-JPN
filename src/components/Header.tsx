@@ -7,7 +7,7 @@ import {
   Button,
 } from "@nextui-org/react";
 import { Logo } from "@/components/Logo";
-import WalletLogin from "./wallet/WalletLogin";
+import { AccountPlate } from "@/components/wallet/AccountPlate";
 
 export const Header = () => {
   return (
@@ -19,7 +19,7 @@ export const Header = () => {
       </NavbarBrand>
       <NavbarContent justify="end">
         <NavbarItem>
-          <WalletLogin />
+          <AccountPlate />
         </NavbarItem>
       </NavbarContent>
     </Navbar>

@@ -1,29 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Address, hexToString, stringToHex } from "viem";
-import { useAccount, useChainId, usePublicClient } from "wagmi";
-import router, { useRouter } from "next/router";
-import {
-  getBlockExplorerUrl,
-  getMembershipTokenFactoryContractAddress,
-  getMembershipTokenFactoryStartBlockNumber,
-} from "@/utils/contractAddress";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-  Link,
-  Tooltip,
-  Chip,
-  Button,
-} from "@nextui-org/react";
-import Image from "next/image";
-import { NonFungibleTokenTYPE721Abi } from "@/utils/abi/NonFungibleTokenTYPE721.sol/NonFungibleTokenTYPE721";
+import { Address } from "viem";
+import { usePublicClient } from "wagmi";
 import { TokenServiceAbi } from "@/utils/abi/TokenService.sol/TokenService";
 import { useGetService } from "@/components/hooks/useGetService";
 
@@ -51,6 +28,7 @@ const useMembershipTokens = ({
       abi: TokenServiceAbi,
       functionName: "getLastIndexStandard721Token",
     });
+    console.log("lastIndex: ", lastIndex);
 
     let logs: any[] = [];
 
@@ -61,7 +39,7 @@ const useMembershipTokens = ({
         functionName: "getInfoStandard721token",
         args: [BigInt(i)],
       });
-      // console.log(log);
+      console.log("log: ", log);
       logs.push(log);
     }
 
@@ -74,6 +52,7 @@ const useMembershipTokens = ({
     }));
     setMembershipTokenContracts(tmp);
     setIsPending(false);
+    console.log("tmp: ", tmp);
     return tmp;
   }, [tokenServiceContractAddress, publicClient]);
 

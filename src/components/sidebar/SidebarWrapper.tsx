@@ -12,6 +12,8 @@ import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { useTranslation } from "next-i18next";
+import { AccountPlate } from "../wallet/AccountPlate";
+import clsx from "clsx";
 
 export const SidebarWrapper = () => {
   const pathname = usePathname();
@@ -74,12 +76,8 @@ export const SidebarWrapper = () => {
               />
             </SidebarMenu>
           </div>
-          <div className={Sidebar.Footer()}>
-            <Link href={`/dao`}>
-              <div className="text-sm font-semibold">
-                {t("Back to DAO list")}
-              </div>
-            </Link>
+          <div className={clsx(Sidebar.Footer(), "w-full md:p-0")}>
+            <AccountPlate fullWidth />
           </div>
         </div>
       </div>

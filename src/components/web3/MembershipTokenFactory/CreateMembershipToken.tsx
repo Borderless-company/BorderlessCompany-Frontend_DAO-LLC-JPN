@@ -1,9 +1,11 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState, useMemo } from "react";
 import {
   useWaitForTransactionReceipt,
   useWriteContract,
   BaseError,
   useChainId,
+  usePublicClient,
+  useAccount,
 } from "wagmi";
 import { TokenServiceAbi } from "@/utils/abi/TokenService.sol/TokenService";
 import { Address } from "viem";
@@ -18,6 +20,16 @@ import { uploadFile } from "@/utils/supabase";
 import { useForm } from "react-hook-form";
 import useMembershipTokens from "@/components/hooks/useMembershipTokens";
 import { useTranslation } from "next-i18next";
+import {
+  useActiveAccount,
+  useActiveWalletChain,
+  useSendTransaction,
+  useWaitForReceipt,
+} from "thirdweb/react";
+import { prepareContractCall, getContract } from "thirdweb";
+import { defineChain } from "thirdweb";
+import { client } from "@/utils/client";
+import { useGetService } from "@/components/hooks/useGetService";
 
 type FormData = {
   name_: string;
@@ -39,14 +51,35 @@ export function CreateMembershipToken({
   const [imgUrl, setImgUrl] = useState<string | undefined>(undefined);
   const { t } = useTranslation("common");
 
-  const { data: hash, error, isPending, writeContract } = useWriteContract();
+  const activeChain = useActiveWalletChain();
+  const {
+    mutate: sendTransaction,
+    isPending,
+    data: transactionData,
+    error,
+  } = useSendTransaction();
+
+  const tokenServiceContract = useMemo(() => {
+    if (!activeChain) return;
+    return getContract({
+      client: client,
+      chain: defineChain(activeChain?.id),
+      address: contractAddress,
+    });
+  }, [activeChain, contractAddress]);
+
   const {
     data: receipt,
-    isLoading: isLoading,
-    isSuccess: isSuccess,
-  } = useWaitForTransactionReceipt({
-    hash,
+    isLoading,
+    isSuccess,
+  } = useWaitForReceipt({
+    client: client,
+    chain:
+      transactionData?.chain ||
+      defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID!)),
+    transactionHash: transactionData?.transactionHash! || "0x",
   });
+
   const {
     data: membershipTokenContracts,
     error: membershipTokenError,
@@ -70,9 +103,7 @@ export function CreateMembershipToken({
   }, [daoId]);
 
   async function submit(e: FormData) {
-    if (!contractAddress) {
-      return;
-    }
+    if (!contractAddress || !tokenServiceContract) return;
 
     let imageUrl: string | undefined = undefined;
     if (selectedFile) {
@@ -84,14 +115,13 @@ export function CreateMembershipToken({
       imageUrl = publicUrl;
     }
 
-    console.log(e);
-
-    writeContract({
-      address: contractAddress,
-      abi: TokenServiceAbi,
-      functionName: "activateStandard721Token",
-      args: [e.name_, e.symbol_, e.baseURI_, isSbt],
+    const transaction = prepareContractCall({
+      contract: tokenServiceContract,
+      method:
+        "function activateStandard721Token(string name_, string symbol_, string baseURI_, bool sbt_)",
+      params: [e.name_, e.symbol_, e.baseURI_ || "", isSbt],
     });
+    sendTransaction(transaction);
   }
 
   useEffect(() => {
@@ -218,21 +248,22 @@ export function CreateMembershipToken({
               </Button>
             </div>
           </form>
-          {hash && (
+          {transactionData?.transactionHash && (
             <a
               className="text-blue-500"
-              href={blockExplorerUrl + "/tx/" + hash}
+              href={blockExplorerUrl + "/tx/" + transactionData.transactionHash}
               target="_blank"
               rel="noopener noreferrer"
             >
-              Transaction Hash: {hash}
+              Transaction Hash: {transactionData.transactionHash}
             </a>
           )}
-          {isLoading && <div>Waiting for confirmation...</div>}
-          {isSuccess && <div>Transaction confirmed.</div>}
+          {isPending && isLoading && (
+            <div>{t("Waiting for confirmation...")}</div>
+          )}
+          {isSuccess && <div>{t("Transaction confirmed.")}</div>}
           {error && (
             <div className="text-red-500">
-              {error.message}
               {(error as BaseError).shortMessage || error.message}
             </div>
           )}
