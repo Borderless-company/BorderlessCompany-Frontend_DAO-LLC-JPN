@@ -103,11 +103,12 @@ export function CreateMembershipToken({
 
   useEffect(() => {
     const _createToken = async () => {
-      console.log(
-        "membershipTokenContracts: ",
-        membershipTokenContracts[membershipTokenContracts.length - 1]
-          .tokenAddress
-      );
+      console.log("membershipTokenContracts: ", membershipTokenContracts);
+      // console.log(
+      //   "membershipTokenContracts: ",
+      //   membershipTokenContracts[membershipTokenContracts.length - 1]
+      //     .tokenAddress
+      // );
       const createdToken = await fetchLogs();
 
       await createToken({
