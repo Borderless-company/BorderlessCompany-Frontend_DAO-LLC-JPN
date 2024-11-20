@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { Checkbox, CheckboxProps, cn } from "@nextui-org/react";
 import { PiArrowSquareOutBold } from "react-icons/pi";
+import { useTranslation } from "next-i18next";
 
 export type TermCheckboxProps = CheckboxProps & {
   termName: string;
@@ -14,6 +15,7 @@ export const TermCheckbox: FC<TermCheckboxProps> = ({
   isBorder = true,
   ...props
 }) => {
+  const { t, i18n } = useTranslation("estuary");
   return (
     <Checkbox
       size="lg"
@@ -31,16 +33,17 @@ export const TermCheckbox: FC<TermCheckboxProps> = ({
     >
       <>
         <p>
+          {i18n.language === "en" && t("Agree")}
           <a
             className=" text-primary inline-flex items-center gap-1 hover:scale-[1.04] transition-all"
             href={href}
             target="_blank"
             rel="noopener noreferrer"
           >
-            {termName}
+            {t(termName)}
             <PiArrowSquareOutBold size={16} />
           </a>{" "}
-          に同意する
+          {i18n.language === "ja" && t("Agree")}
         </p>
       </>
     </Checkbox>

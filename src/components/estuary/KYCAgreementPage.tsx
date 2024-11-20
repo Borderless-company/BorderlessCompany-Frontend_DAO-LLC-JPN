@@ -16,6 +16,7 @@ import { useEstuaryContext } from "./EstuaryContext";
 import { useUser } from "@/hooks/useUser";
 import { usePayment } from "@/hooks/usePayment";
 import { useRouter } from "next/router";
+import { useTranslation } from "next-i18next";
 
 type InputType = {
   name: string;
@@ -24,6 +25,7 @@ type InputType = {
 };
 
 const KYCAgreementPage: FC = () => {
+  const { t } = useTranslation("estuary");
   const { setPage, tokenId, price } = useEstuaryContext();
   const [termChecked, setTermChecked] = useState<string[]>([]);
   const { register, handleSubmit } = useForm<InputType>();
@@ -64,7 +66,7 @@ const KYCAgreementPage: FC = () => {
       <div className="flex flex-col gap-1 md:gap-2 p-6 pb-0">
         <PiIdentificationCardFill size={48} className="text-purple-600" />
         <h1 className="text-xl md:text-[28px] leading-8 font-bold text-slate-800">
-          ユーザー情報を入力してください
+          {t("Enter Your Information")}
         </h1>
       </div>
 
@@ -77,33 +79,35 @@ const KYCAgreementPage: FC = () => {
         >
           <div className="w-full flex flex-wrap gap-4 ">
             <Input
-              label="氏名"
+              label={t("Name")}
               labelPlacement="outside"
               placeholder="田中太郎"
               size="lg"
               isRequired
               // style={{ minWidth: "200px", flexGrow: 1, flexShrink: 1 }}
-              {...register("name", { required: "氏名を入力してください" })}
+              {...register("name", { required: t("Enter Your Name") })}
             />
             <Input
-              label="ふりがな"
+              label={t("Furigana")}
               labelPlacement="outside"
               placeholder="たなかたろう"
               size="lg"
               isRequired
               // style={{ minWidth: "200px", flexGrow: 1, flexShrink: 1 }}
               {...register("furigana", {
-                required: "ふりがなを入力してください",
+                required: t("Please Enter Your Furigana"),
               })}
             />
           </div>
           <Input
-            label="住所"
+            label={t("Address")}
             labelPlacement="outside"
             placeholder="東京都千代田区千代田1-1-1"
             size="lg"
             isRequired
-            {...register("address", { required: "住所を入力してください" })}
+            {...register("address", {
+              required: t("Please Enter Your Address"),
+            })}
           />
         </form>
       </div>
@@ -135,7 +139,7 @@ const KYCAgreementPage: FC = () => {
             form="user-info-form"
             isDisabled={!isAllChecked}
           >
-            次に進む
+            {t("Next")}
           </Button>
         </div>
         <div className="w-full flex justify-end items-center gap-2 px-2">

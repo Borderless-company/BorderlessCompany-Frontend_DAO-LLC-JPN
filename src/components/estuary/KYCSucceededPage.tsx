@@ -11,10 +11,12 @@ import { useAtom } from "jotai";
 import { TermCheckbox } from "./TermCheckbox";
 import { PRODUCT_TERMS } from "@/constants";
 import { useEstuaryContext } from "./EstuaryContext";
+import { useTranslation } from "next-i18next";
 
 const KYCSucceededPage: FC = () => {
   const { page, setPage } = useEstuaryContext();
   const [termChecked, setTermChecked] = useState<string[]>([]);
+  const { t } = useTranslation("estuary");
   const onClickBack = () => {
     setPage((page) => page - 1);
   };
@@ -33,7 +35,7 @@ const KYCSucceededPage: FC = () => {
       <div className="flex flex-col gap-2 p-6 pb-0">
         <PiIdentificationCardFill size={48} className="text-purple-600" />
         <h1 className="text-[28px] leading-8 font-bold text-slate-800">
-          本人確認をしてください
+          {t("Verify Your Identity")}
         </h1>
       </div>
 
@@ -42,10 +44,10 @@ const KYCSucceededPage: FC = () => {
         <PiCheckCircleFill size={112} className="text-success-600" />
         <div className="flex flex-col gap-2 items-center">
           <p className=" text-success-600 text-2xl text-center font-semibold">
-            本人確認が完了しました
+            {t("Verification Succeeded")}
           </p>
           <p className="text-slate-500 text-base text-center font-medium">
-            トークン購入確認ページへお進みください。
+            {t("Go to the token purchase confirmation page")}
           </p>
         </div>
       </div>
@@ -75,7 +77,7 @@ const KYCSucceededPage: FC = () => {
             size="lg"
             // isDisabled={!isAllChecked}
           >
-            次に進む
+            {t("Next")}
           </Button>
         </div>
         <div className="w-full flex justify-end items-center gap-2 px-2">

@@ -8,10 +8,13 @@ import {
   useWalletDetailsModal,
 } from "thirdweb/react";
 import { PiSignIn } from "react-icons/pi";
+import { defineChain } from "thirdweb";
+import { useTranslation } from "next-i18next";
 
 type ConnectButtonProps = {} & ButtonProps;
 
 export const ConnectButton: FC<ConnectButtonProps> = ({ ...props }) => {
+  const { t } = useTranslation("estuary");
   const { connect, isConnecting } = useConnectModal();
   const account = useActiveAccount();
   const { data: socialProfiles } = useSocialProfiles({
@@ -21,7 +24,11 @@ export const ConnectButton: FC<ConnectButtonProps> = ({ ...props }) => {
   const walletDetail = useWalletDetailsModal();
 
   const handleConnect = async () => {
-    const wallet = await connect({ client, wallets: wallets, size: "compact" });
+    const wallet = await connect({
+      client,
+      wallets: wallets,
+      size: "compact",
+    });
     console.log("Connected wallet: ", account);
   };
 
@@ -66,7 +73,7 @@ export const ConnectButton: FC<ConnectButtonProps> = ({ ...props }) => {
           className="bg-purple-200 text-purple-900 border-1 border-purple-300"
           {...props}
         >
-          ログインする
+          {t("Sign In")}
         </Button>
       )}
     </>

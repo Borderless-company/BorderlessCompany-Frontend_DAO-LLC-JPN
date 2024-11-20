@@ -14,13 +14,14 @@ import { v4 as uuidv4 } from "uuid";
 import { EventPayload } from "@sumsub/websdk/types/types";
 import { useActiveAccount } from "thirdweb/react";
 import { useToken } from "@/hooks/useToken";
-
+import { useTranslation } from "next-i18next";
 export type AlreadyMemberProps = {
   orgLogo?: string;
   orgName?: string;
 };
 
 const AlreadyMember: FC<AlreadyMemberProps> = ({ orgLogo, orgName }) => {
+  const { t, i18n } = useTranslation("estuary");
   const { page, setPage } = useEstuaryContext();
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const account = useActiveAccount();
@@ -40,7 +41,9 @@ const AlreadyMember: FC<AlreadyMemberProps> = ({ orgLogo, orgName }) => {
           <div className="flex gap-1 items-center">
             <PiCheckCircleFill size={32} className="text-success-600" />
             <p className=" text-success-600 text-xl text-center font-semibold">
-              すでに{orgName || "このDAO"}のメンバーです
+              {i18n.language === "ja"
+                ? `すでに${orgName || "このDAO"}のメンバーです`
+                : `You are already a member of ${orgName || "this DAO"}`}
             </p>
           </div>
         </div>
@@ -58,7 +61,7 @@ const AlreadyMember: FC<AlreadyMemberProps> = ({ orgLogo, orgName }) => {
             }}
             // isDisabled
           >
-            社員専用ページへ
+            {t("Dive into the member's page")}
           </Button>
         </div>
         <div className="w-full flex justify-end items-center gap-2 px-2">
