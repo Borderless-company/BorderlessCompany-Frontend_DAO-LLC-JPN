@@ -5,5 +5,6 @@ module.exports = {
     locales: ["ja", "en"],
     localeDetection: true,
   },
-  localePath: "./public/locales",
+  localePath:
+    process.env.NODE_ENV === "development" ? "./public/locales" : "./locales",
 };
