@@ -22,7 +22,7 @@ const notoSansJP = Noto_Sans_JP({
 export const getServerSideProps = async ({ locale }: { locale: string }) => {
   console.log("locale: ", locale);
   const translations = await serverSideTranslations(locale, ["common"]);
-  console.log("translations: ", translations._nextI18Next?.initialI18nStore.ja);
+  console.log("translations: ", translations._nextI18Next?.ns);
   return {
     props: {
       ...translations,
