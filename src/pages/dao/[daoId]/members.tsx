@@ -1,5 +1,5 @@
 "use client";
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 
 import { useRouter } from "next/router";
@@ -13,10 +13,10 @@ import MemberList from "@/components/members/MemberList";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
 
-export const getServerSideProps = async ({ locale }: { locale: string }) => {
+export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ["common"])),
+      ...(await serverSideTranslations(locale ?? "ja", ["common"])),
     },
   };
 };

@@ -32,7 +32,9 @@ export default function WalletLogin() {
             <LoggedInMenu />
           ) : (
             <div className="">
-              <Button onPress={onOpen}>{t("Connect Wallet")}</Button>
+              <Button color="primary" onPress={onOpen}>
+                {t("Connect Wallet")}
+              </Button>
               <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
                   {(onClose) => (

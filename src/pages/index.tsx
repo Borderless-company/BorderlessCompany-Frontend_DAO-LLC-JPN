@@ -20,9 +20,7 @@ const notoSansJP = Noto_Sans_JP({
 });
 
 export const getServerSideProps = async ({ locale }: { locale: string }) => {
-  console.log("locale: ", locale);
   const translations = await serverSideTranslations(locale, ["common"]);
-  console.log("translations: ", translations._nextI18Next?.ns);
   return {
     props: {
       ...translations,
@@ -55,8 +53,18 @@ export default function Home() {
                   <p className="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-2xl">
                     {t("Borderless Tag line")}
                   </p>
-                  <div className="flex gap-4">
+                  <div className="flex gap-2">
                     <WalletLogin />
+                    <Button
+                      onPress={() =>
+                        window.open(
+                          "https://docs.google.com/forms/d/1t3DdeJlV8NCDfr6hY4yynSYupcNDQYBRQMt90GsjXK8",
+                          "_blank"
+                        )
+                      }
+                    >
+                      {t("Join Whitelist")}
+                    </Button>
                     {/* <button
                       onClick={() => {
                         router.push("/dao/register");

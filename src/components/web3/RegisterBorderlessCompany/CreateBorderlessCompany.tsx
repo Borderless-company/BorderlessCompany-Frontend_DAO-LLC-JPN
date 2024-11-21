@@ -1,4 +1,5 @@
 import { FormEvent, useCallback, useEffect, useState } from "react";
+import NextLink from "next/link";
 import {
   useWaitForTransactionReceipt,
   useWriteContract,
@@ -385,7 +386,14 @@ export function CreateBorderlessCompany() {
                 <p className="text-sm text-gray-600">
                   {t(
                     "Only users registered on the whitelist can activate DAO from this form."
-                  )}
+                  )}{" "}
+                  <NextLink
+                    className=" text-primary underline"
+                    target="_blank"
+                    href="https://docs.google.com/forms/d/1t3DdeJlV8NCDfr6hY4yynSYupcNDQYBRQMt90GsjXK8"
+                  >
+                    {t("Join Whitelist")}
+                  </NextLink>
                 </p>
               </div>
               <form onSubmit={submit} className="flex flex-col gap-6">
