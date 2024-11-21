@@ -12,17 +12,20 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import clsx from "clsx";
 import { Noto_Sans_JP } from "next/font/google";
-import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next";
 
 const notoSansJP = Noto_Sans_JP({
   subsets: ["latin"],
 });
 
 export const getServerSideProps = async ({ locale }: { locale: string }) => {
+  console.log("locale: ", locale);
+  const translations = await serverSideTranslations(locale, ["common"]);
+  console.log("translations: ", translations);
   return {
     props: {
-      ...(await serverSideTranslations(locale, ["common"])),
+      ...translations,
     },
   };
 };

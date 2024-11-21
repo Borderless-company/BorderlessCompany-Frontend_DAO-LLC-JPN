@@ -5,4 +5,5 @@ module.exports = {
     locales: ["ja", "en"],
     localeDetection: true,
   },
+  localePath: "./public/locales",
 };

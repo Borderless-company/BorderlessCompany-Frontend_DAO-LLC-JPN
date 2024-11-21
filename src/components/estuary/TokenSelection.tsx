@@ -35,12 +35,12 @@ export const TokenSelection: FC = () => {
       token?.name!,
       token?.image || undefined
     );
-    await updateToken({
+    const updatedToken = await updateToken({
       id: token?.id,
       product_id: product.id,
     });
-    setPrice(token?.fixed_price || 0);
-    setToken(token);
+    setPrice(updatedToken?.fixed_price || 0);
+    setToken(updatedToken);
     setPage(1);
   };
 

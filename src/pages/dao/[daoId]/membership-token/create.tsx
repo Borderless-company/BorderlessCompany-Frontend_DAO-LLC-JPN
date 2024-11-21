@@ -10,12 +10,16 @@ import { useEffect, useState } from "react";
 import { Address } from "viem";
 import { useGetService } from "@/components/hooks/useGetService";
 import { Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
-import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next";
 
-export const getServerSideProps = async ({ locale }: { locale: string }) => ({
-  props: await serverSideTranslations(locale, ["common"]),
-});
+export const getServerSideProps = async ({ locale }: { locale: string }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ["common"])),
+    },
+  };
+};
 
 const MembershipTokenCreate: NextPage = () => {
   const { t } = useTranslation();
