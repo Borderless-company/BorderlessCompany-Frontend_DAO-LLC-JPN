@@ -3,8 +3,6 @@ import type { NextPage } from "next";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import ListMembershipTokenHolders from "@/components/web3/MembershipToken/ListMembershipTokenHolders";
-import ListMembershipTokenHistory from "@/components/web3/MembershipToken/ListMembershipTokenHistory";
 import { Button } from "@nextui-org/react";
 import { Address } from "viem";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
@@ -27,18 +25,14 @@ const MembershipTokenDetail: NextPage = () => {
             <h3 className="text-center text-xl font-semibold">所有者一覧</h3>
           </div>
           <div className="w-full flex flex-col gap-4">
-            <ListMembershipTokenHolders
-              contractAddress={membershipTokenId as Address}
-            />
+            {/* TODO: ホルダー一覧を作る */}
           </div>
 
           <div className="flex  flex-wrap justify-between">
             <h3 className="text-center text-xl font-semibold">移動履歴</h3>
           </div>
           <div className="w-full flex flex-col gap-4">
-            <ListMembershipTokenHistory
-              contractAddress={membershipTokenId as Address}
-            />
+            {/* TODO: トークンの移転履歴などを作る */}
           </div>
 
           <div>
