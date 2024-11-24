@@ -124,6 +124,7 @@ const ListMembershipTokens = ({
 }: {
   contractAddress: Address;
 }) => {
+  // TODO: ここをuseTokensに置き換える
   const { data, isPending, error } = useMembershipTokens({
     daoContractAddress: contractAddress,
   });
