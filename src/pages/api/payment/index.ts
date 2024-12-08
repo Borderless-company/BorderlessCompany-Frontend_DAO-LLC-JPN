@@ -1,7 +1,11 @@
 // pages/api/payment.ts
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { supabase } from '@/utils/supabase';
-import { Enums } from '@/types/schema';
+import { Database, Enums } from '@/types/schema';
+import { createClient } from '@supabase/supabase-js';
+
+const serviveRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabase = createClient<Database>(supabaseUrl!, serviveRoleKey!);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   switch (req.method) {
