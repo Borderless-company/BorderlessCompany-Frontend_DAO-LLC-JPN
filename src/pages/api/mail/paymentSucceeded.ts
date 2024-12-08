@@ -23,7 +23,6 @@ export default async function handler(
       from: "info@borderless.company",
       templateId: "d-a330667188734be7814964fd096dcbad",
       dynamic_template_data: { tokenName: tokenName, orgName: orgName, symbol: symbol, tokenType: tokenType, price: String(price), replyTo: replyTo },
-      
     };
 
     await sgMail.send(msg);
