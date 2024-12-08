@@ -1,35 +1,40 @@
-// pages/api/user.ts
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { Enums } from '@/types/schema';
-import { createClient } from '@supabase/supabase-js';
-import { Database } from '@/types/schema';
 
+import { Database } from '@/types/schema';
+import { createClient } from '@supabase/supabase-js';
+import type { NextApiRequest, NextApiResponse } from 'next';
 const serviveRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabase = createClient<Database>(supabaseUrl!, serviveRoleKey!);
 
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   switch (req.method) {
     case 'POST': {
-      // USER作成 (upsert)
+      // CREATE / UPSERT DAO
       const {
-        evm_address,
-        name,
-        furigana,
         address,
-        kyc_status,
-        email
+        company_id,
+        company_name,
+        dao_name,
+        dao_icon,
+        establishment_date,
+        established_by,
       } = req.body;
 
+      if (!address) {
+        return res.status(400).json({ error: 'address is required' });
+      }
+
       const { data, error } = await supabase
-        .from("USER")
+        .from("DAO")
         .upsert({
-          evm_address,
-          name,
-          furigana,
           address,
-          kyc_status: kyc_status as Enums<"KycStatus">,
-          email,
+          company_id,
+          company_name,
+          dao_name,
+          dao_icon,
+          establishment_date,
+          established_by,
         })
         .select();
 
@@ -41,30 +46,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     case 'PUT': {
-      // USER更新 (evm_addressで指定)
+      // UPDATE DAO
       const {
-        evm_address,
-        name,
-        furigana,
         address,
-        kyc_status,
-        email
+        company_id,
+        company_name,
+        dao_name,
+        dao_icon,
+        establishment_date,
       } = req.body;
 
-      if (!evm_address) {
-        return res.status(400).json({ error: 'evm_address is required for update' });
+      if (!address) {
+        return res.status(400).json({ error: 'address is required' });
       }
 
       const { data, error } = await supabase
-        .from("USER")
+        .from("DAO")
         .update({
-          name,
-          furigana,
-          address,
-          kyc_status: kyc_status as Enums<"KycStatus">,
-          email,
+          company_id,
+          company_name,
+          dao_name,
+          dao_icon,
+          establishment_date,
         })
-        .eq("evm_address", evm_address)
+        .eq("address", address)
         .select();
 
       if (error) {

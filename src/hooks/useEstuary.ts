@@ -13,9 +13,15 @@ export const useEstuary = (id?: string) => {
     UpdateEstuaryProps
   >({
     mutationFn: async (props: UpdateEstuaryProps) => {
-      const { data, error } = await supabase
-        .from("ESTUARY")
-        .update({
+      if (!id) {
+        throw new Error("ID is required for update.");
+      }
+      const response = await fetch(`/api/estuary?id=${props.id}`, {
+        method: "PUT",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           org_name: props.org_name,
           org_logo: props.org_logo,
           estuary_link: props.estuary_link,
@@ -23,17 +29,19 @@ export const useEstuary = (id?: string) => {
           start_date: props.start_date,
           end_date: props.end_date,
           payment_methods: props.payment_methods,
-        
-          dao_id: props.dao_id
-        })
-        .eq("id", id!)
-        .select();
+          dao_id: props.dao_id,
+        }),
+      });
 
-      if (error) {
-        throw new Error(error.message);
+      const data = await response.json();
+      if (!response.ok) {
+        console.error(data.error);
+        throw new Error(data.error);
+      } else {
+        console.log("[SUCCESS] Estuary updated: ", data.data);
       }
-      console.log("[SUCCESS] Estuary updated: ", data);
-      return data[0];
+
+      return data.data;
     },
     onError: (error) => {
       console.error("[ERROR] Failed to update estuary: ", error);
@@ -49,9 +57,10 @@ export const useEstuary = (id?: string) => {
     Partial<Tables<"ESTUARY">>
   >({
     mutationFn: async (props: Partial<Tables<"ESTUARY">>) => {
-      const { data, error } = await supabase
-        .from("ESTUARY")
-        .insert({
+      const response = await fetch('/api/estuary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           id: props.id,
           org_name: props.org_name,
           org_logo: props.org_logo,
@@ -61,14 +70,18 @@ export const useEstuary = (id?: string) => {
           end_date: props.end_date,
           payment_methods: props.payment_methods,
           dao_id: props.dao_id,
-        })
-        .select();
-
-      if (error) {
-        throw new Error(error.message);
+        }),
+      });
+      
+      const data = await response.json();
+      if (!response.ok) {
+        console.error('[ERROR] Failed to create estuary: ', data.error);
+        throw new Error(data.error);
+      } else {
+        console.log("[SUCCESS] Estuary created: ", data.data);
       }
-      console.log("[SUCCESS] Estuary created: ", data);
-      return data[0];
+
+      return data.data;
     },
     onError: (error) => {
       console.error("[ERROR] Failed to create estuary: ", error);
@@ -78,10 +91,14 @@ export const useEstuary = (id?: string) => {
     },
   });
 
-  const { data: estuary } = useQuery<Tables<"ESTUARY"> & { tokens: Tables<"TOKEN">[] } | undefined, Error>({
+  const { data: estuary } = useQuery<
+    Tables<"ESTUARY"> & { tokens: Tables<"TOKEN">[] } | undefined, 
+    Error
+  >({
     queryKey: ["estuary", id],
     queryFn: async () => {
       if (!id) return undefined;
+      // TODO: read supabase
       const { data: estuary, error } = await supabase
         .from("ESTUARY")
         .select()
@@ -90,8 +107,8 @@ export const useEstuary = (id?: string) => {
 
       if (error) {
         throw error;
-      }
-
+        }
+      // TODO: read supabase
       const { data: tokens, error: tokensError } = await supabase
         .from("TOKEN")
         .select()

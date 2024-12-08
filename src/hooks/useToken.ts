@@ -21,37 +21,25 @@ export const createProduct = async (name: string, image?: string) => {
 
 export const useToken = (id?: string) => {
   const queryClient = useQueryClient();
+
   const { mutateAsync: createToken } = useMutation<
     Tables<"TOKEN">,
     Error,
     CreateTokenProps
   >({
     mutationFn: async (props: CreateTokenProps) => {
-      // const product = await createProduct(
-      //   props.name!,
-      //   props.image ? props.image : undefined
-      // );
-      const { data, error } = await supabase
-        .from("TOKEN")
-        .insert({
-          id: props.id,
-          name: props.name,
-          symbol: props.symbol,
-          is_executable: props.is_executable,
-          image: props.image,
-          min_price: props.min_price,
-          max_price: props.max_price,
-          fixed_price: props.fixed_price,
-          contract_address: props.contract_address,
-          // product_id: product.id,
-          dao_id: props.dao_id
-        })
-        .select();
-      if (error) {
-        throw new Error(error.message);
+
+      const response = await fetch('/api/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(props),
+      });
+      const json = await response.json();
+      if (!response.ok) {
+        throw new Error(json.error);
       }
-      console.log("[SUCCESS] Token created: ", data);
-      return data[0];
+      console.log("[SUCCESS] Token created: ", json.data);
+      return json.data;
     },
     onError: (error) => {
       console.error("[ERROR] Failed to create token: ", error);
@@ -67,19 +55,18 @@ export const useToken = (id?: string) => {
     Partial<Tables<"TOKEN">>
   >({
     mutationFn: async (props: Partial<Tables<"TOKEN">>) => {
-      if (!props.id) {
-        throw new Error("Token ID is required for update");
+
+      const response = await fetch('/api/token', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(props),
+      });
+      const json = await response.json();
+      if (!response.ok) {
+        throw new Error(json.error);
       }
-      const { data, error } = await supabase
-        .from("TOKEN")
-        .update(props)
-        .eq("id", props.id)
-        .select();
-      if (error) {
-        throw new Error(error.message);
-      }
-      console.log("[SUCCESS] Token updated: ", data);
-      return data[0];
+      console.log("[SUCCESS] Token updated: ", json.data);
+      return json.data;
     },
     onError: (error) => {
       console.error("[ERROR] Failed to update token: ", error);
@@ -88,6 +75,7 @@ export const useToken = (id?: string) => {
       queryClient.invalidateQueries({ queryKey: ["tokens"] });
     },
   });
+
 
   const { data: token } = useQuery<Tables<"TOKEN"> | undefined, Error>({
     queryKey: ["token", id],
@@ -105,5 +93,5 @@ export const useToken = (id?: string) => {
     },
   });
 
-  return { createToken, updateToken, token: token };
+  return { createToken, updateToken, token };
 };

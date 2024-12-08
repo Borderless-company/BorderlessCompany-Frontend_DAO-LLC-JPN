@@ -35,6 +35,7 @@ const EstuaryPage: NextPage = () => {
 
   useEffect(() => {
     const fetchEstuaryId = async () => {
+      // TODO: read supabase
       const { data, error } = await supabase
         .from("ESTUARY")
         .select()
@@ -55,6 +56,7 @@ const EstuaryPage: NextPage = () => {
     const estLink = `https://apps.borderless.company/estuary/${estId}`;
 
     console.log("pre-estId: ", estId);
+    // TODO: read supabase
     const { data: tokens, error } = await supabase
       .from("TOKEN")
       .select()

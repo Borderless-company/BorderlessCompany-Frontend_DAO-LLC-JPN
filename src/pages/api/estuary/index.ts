@@ -1,6 +1,9 @@
-// pages/api/estuary/index.ts
+import { Database } from '@/types/schema';
+import { createClient } from '@supabase/supabase-js';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '../../../utils/supabase';
+const serviveRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabase = createClient<Database>(supabaseUrl!, serviveRoleKey!);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query as { id?: string };
