@@ -14,7 +14,7 @@ export default async function handler(
         name: name,
         description: description || undefined,
       });
-
+      // TODO: write supabase
       // TokenテーブルにproductIdを書き込む
       const { data, error } = await supabase
         .from("TOKEN")
