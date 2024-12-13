@@ -3,14 +3,10 @@ import { EstuaryContainer } from "../../../components/estuary/EstuaryContainer";
 import { ThirdwebProvider } from "thirdweb/react";
 import { EstuaryProvider } from "@/components/estuary/EstuaryContext";
 import { useParams } from "next/navigation";
+import { withAuthGSSP } from "@/utils/isLogin";
 
-type EstuaryProps = {
-  logoSrc: string;
-  orgName: string;
-  // tokens: Token[];
-};
 
-const Estuary: NextPage<EstuaryProps> = () => {
+const Estuary = () => {
   return (
     <ThirdwebProvider>
       <EstuaryProvider>

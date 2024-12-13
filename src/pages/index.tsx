@@ -12,10 +12,13 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import clsx from "clsx";
 import { Noto_Sans_JP } from "next/font/google";
+import { withAuthGSSP } from "@/utils/isLogin";
 
 const notoSansJP = Noto_Sans_JP({
   subsets: ["latin"],
 });
+
+
 
 export default function Home() {
   return (
@@ -77,3 +80,6 @@ export default function Home() {
     </div>
   );
 }
+
+
+export const getServerSideProps = withAuthGSSP()
