@@ -43,7 +43,6 @@ export const useDAO = (address?: string) => {
     Partial<Tables<"DAO">>
   >({
     mutationFn: async (props: Partial<Tables<"DAO">>) => {
-      // TODO: read supabase
       const response = await fetch('/api/dao', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

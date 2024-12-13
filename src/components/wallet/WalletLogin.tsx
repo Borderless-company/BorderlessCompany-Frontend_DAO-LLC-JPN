@@ -1,4 +1,4 @@
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useAccount, useConnect, useDisconnect, useSignMessage } from "wagmi";
 import React, { useState, useEffect } from "react";
 import {
   Modal,
@@ -11,23 +11,69 @@ import {
 } from "@nextui-org/react";
 import { LoggedInMenu } from "@/components/wallet/LoggedInMenu";
 import { WalletIcon } from "../icons/WalletIcon";
-
+import { BrowserProvider } from "ethers";
 export default function WalletLogin() {
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
-  const [isClient, setIsClient] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isClient, setIsClient] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+  const [nonce, setNonce] = useState<string | null>(null);
+  
+
+  // wagmiのsignMessageフックを使ってnonceの署名を行う
+  const { signMessageAsync } = useSignMessage();
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+// フロントエンド例（すでに実装済みのWalletLoginコンポーネントを修正）
+
+  const handleLogin = async () => {
+    if (!address) return;
+    const nonceRes = await fetch("/api/auth/nonce?address=" + address);
+    const { nonce } = await nonceRes.json();
+
+    console.log("nonce", nonce);
+    console.log("address", address);
+    console.log("isConnected", isConnected);
+
+    const signature = await signMessageWithEthers(String(nonce));
+    console.log("signature", signature);
+
+    const verifyRes = await fetch("/api/auth/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: 'include',
+      body: JSON.stringify({
+        address,
+        signature,
+        nonce: String(nonce), // nonceは数値でないといけない
+      }),
+    });
+
+    const data = await verifyRes.json();
+    if (verifyRes.ok) {
+      onOpenChange();
+    } else {
+      console.error("Verification failed", data);
+    }
+  };
+
 
   return (
     <>
       {isClient && (
         <>
           {isConnected ? (
-            <LoggedInMenu />
+            token ? (
+              // JWTを取得済みの場合はログイン状態としてメニューを表示
+              <LoggedInMenu />
+            ) : (
+              // ウォレット接続済みだが、まだサインでのログイン(verify)を行っていない場合
+              <Button onPress={handleLogin}>サインしてログイン</Button>
+            )
           ) : (
             <div className="">
               <Button onPress={onOpen}>ウォレットログイン</Button>
@@ -61,11 +107,7 @@ export default function WalletLogin() {
                         </div>
                       </ModalBody>
                       <ModalFooter>
-                        <Button
-                          color="danger"
-                          variant="light"
-                          onPress={onClose}
-                        >
+                        <Button color="danger" variant="light" onPress={onClose}>
                           Close
                         </Button>
                       </ModalFooter>
@@ -73,12 +115,24 @@ export default function WalletLogin() {
                   )}
                 </ModalContent>
               </Modal>
-
-              {/* {error && <div>{error.message}</div>} */}
             </div>
           )}
         </>
       )}
     </>
   );
+}
+
+
+
+async function signMessageWithEthers(message: string) {
+  if (!window.ethereum) {
+    throw new Error("No crypto wallet found");
+  }
+
+  const provider = new BrowserProvider(window.ethereum);
+  const signer = await provider.getSigner();
+  
+  const signature = await signer.signMessage(message);
+  return signature;
 }

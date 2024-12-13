@@ -1,5 +1,6 @@
 
 import { Database } from '@/types/schema';
+import { withAuthGSSP } from '@/utils/isLogin';
 import { createClient } from '@supabase/supabase-js';
 import type { NextApiRequest, NextApiResponse } from 'next';
 const serviveRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -83,3 +84,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(405).json({ error: 'Method not allowed' });
   }
 }
+
+
+export const getServerSideProps = withAuthGSSP(async (ctx) => {
+  return { props: {} }
+})

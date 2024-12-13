@@ -1,5 +1,7 @@
 import SimpleLayout from "@/components/layout/SimpleLayout";
 import ListCompanies from "@/components/web3/RegisterBorderlessCompany/ListCompanies";
+import { withAuthGSSP } from "@/utils/isLogin";
+
 
 export default function DaoIndex() {
   return (
