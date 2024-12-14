@@ -12,6 +12,8 @@ import {
 import { LoggedInMenu } from "@/components/wallet/LoggedInMenu";
 import { WalletIcon } from "../icons/WalletIcon";
 import { BrowserProvider } from "ethers";
+
+
 export default function WalletLogin() {
   const { address, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
@@ -19,37 +21,28 @@ export default function WalletLogin() {
   const [isClient, setIsClient] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [nonce, setNonce] = useState<string | null>(null);
-  
-
-  // wagmiのsignMessageフックを使ってnonceの署名を行う
-  const { signMessageAsync } = useSignMessage();
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-// フロントエンド例（すでに実装済みのWalletLoginコンポーネントを修正）
 
   const handleLogin = async () => {
     if (!address) return;
     const nonceRes = await fetch("/api/auth/nonce?address=" + address);
     const { nonce } = await nonceRes.json();
 
-    console.log("nonce", nonce);
-    console.log("address", address);
-    console.log("isConnected", isConnected);
-
     const signature = await signMessageWithEthers(String(nonce));
     console.log("signature", signature);
 
-    const verifyRes = await fetch("/api/auth/verify", {
+    const verifyRes = await fetch("/api/auth/generateJWT", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: 'include',
       body: JSON.stringify({
         address,
         signature,
-        nonce: String(nonce), // nonceは数値でないといけない
+        nonce: String(nonce),
       }),
     });
 
@@ -71,7 +64,6 @@ export default function WalletLogin() {
               // JWTを取得済みの場合はログイン状態としてメニューを表示
               <LoggedInMenu />
             ) : (
-              // ウォレット接続済みだが、まだサインでのログイン(verify)を行っていない場合
               <Button onPress={handleLogin}>サインしてログイン</Button>
             )
           ) : (
@@ -122,8 +114,6 @@ export default function WalletLogin() {
     </>
   );
 }
-
-
 
 async function signMessageWithEthers(message: string) {
   if (!window.ethereum) {
