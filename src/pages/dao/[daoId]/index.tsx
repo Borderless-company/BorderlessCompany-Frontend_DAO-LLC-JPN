@@ -1,12 +1,7 @@
 "use client";
 import type { NextPage } from "next";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-
-import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { Address } from "viem";
-import Members from "@/components/Members";
-import ListMembershipTokens from "@/components/web3/MembershipTokenFactory/ListMembershipTokens";
 import { useCallback, useEffect, useState } from "react";
 import { Footer } from "@/components/Footer";
 import { Button, Link } from "@nextui-org/react";
@@ -15,13 +10,7 @@ import { useChainId } from "wagmi";
 import { supabase } from "@/utils/supabase";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
-
-const Chart = dynamic(
-  () => import("@/components/charts/pie").then((mod) => mod.Pie),
-  {
-    ssr: false,
-  }
-);
+import MemberList from "@/components/members/MemberList";
 
 export const getServerSideProps = async ({ locale }: { locale: string }) => {
   return {
@@ -63,9 +52,6 @@ const Dashboard: NextPage = () => {
                   <h3 className="text-center text-2xl font-bold">
                     {companyInfo.daoName}
                   </h3>
-                  {/* <div>
-                    <UpdateCompanyForm daoId={daoId as string} />
-                  </div> */}
                   <Link
                     href={`${blockExplorerUrl}/address/${daoId as string}`}
                     target="_blank"
@@ -75,45 +61,6 @@ const Dashboard: NextPage = () => {
                     {daoId as string}
                   </Link>
                 </div>
-              </div>
-              {/* <div className="grid grid-flow-row-dense grid-cols-12 mt-6 gap-6 w-full">
-                <div className="col-span-12 lg:col-span-7">
-        
-                  <div className="flex flex-col h-full gap-2">
-                    <h3 className="text-xl font-semibold"></h3>
-                    <div className="w-full bg-default-50 shadow-lg rounded-2xl p-6">
-                      <Chart />
-                    </div>
-                  </div>
-                </div>
-                <div className="col-span-12 lg:col-span-5">
-                  <div className="flex flex-col gap-2">
-                    <h3 className="text-xl font-semibold"></h3>
-                    <div className="flex flex-col">
-                      <CardBalance />
-                    </div>
-                  </div>
-                </div>
-              </div> */}
-
-              {/* Members */}
-              <div className="flex flex-col justify-center w-full py-5 px-4 lg:px-0  max-w-[90rem] mx-auto gap-3">
-                <div className="flex  flex-wrap justify-between">
-                  <h3 className="text-center text-xl font-semibold">
-                    {t("Membership")}
-                  </h3>
-                </div>
-                <ListMembershipTokens contractAddress={daoId as Address} />
-              </div>
-
-              {/* Members */}
-              <div className="flex flex-col justify-center w-full py-5 px-4 lg:px-0  max-w-[90rem] mx-auto gap-3">
-                <div className="flex  flex-wrap justify-between">
-                  <h3 className="text-center text-xl font-semibold">
-                    {t("Members")}
-                  </h3>
-                </div>
-                <Members contractAddress={daoId as Address} />
               </div>
             </div>
           </div>
