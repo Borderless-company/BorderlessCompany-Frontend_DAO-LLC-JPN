@@ -1,48 +1,21 @@
-# OverlayAG-frontend_DAO-LLC_JPN
+# Borderless v0.1
 
-Frontend development project for a Japanese Limited Liability DAO（DAO LLC） Service.
+## アーキテクチャ
 
-## はじめに
+- Frontend: Next.js Page Router
+- Backend: Next.js API Routes
+- Database: Supabase(PostgreSQL)
 
-このプロジェクトは Next.js を使用しています。開発を始める前に、以下の手順で環境を設定してください。
-
-### 必要なもの
-
-- Node.js（推奨バージョン 12 以上）
-- pnpm
-
-### インストール
-
-依存関係をインストールするには、ターミナルで以下のコマンドを実行してください。
+## ローカルでの起動
 
 ```bash
 pnpm install
-```
-
-### 開発サーバーの起動
-
-開発サーバーを起動するには、以下のコマンドを実行してください。
-
-```bash
 pnpm dev
 ```
 
-これで、`http://localhost:3000` でアプリケーションが起動します。
+## デプロイ
 
-### ビルド
-
-本番用にアプリケーションをビルドする場合は、以下のコマンドを実行してください。
-
-```bash
-pnpm build
-```
-
-ビルドが完了すると、`out` ディレクトリに出力されます。本番環境でのデプロイに使用できます。
-
-## TODO
-
-- Estuary のページごとのバリデーション
-- Estuary の Token 情報など、DB から取ってくる
-- タームシート DB
-- タームシートスクロール同意
-- Claim 処理
+- NEXT_PUBLIC_CHAIN_ID を変更する
+- NEXT_PUBLIC_BASE_URL を変更する
+- Dev サーバー: metis-testnet.apps.borderless.company
+- 本番サーバー: apps.borderless.company
