@@ -10,6 +10,15 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      animation: {
+        "bounce-right": "bounce-right 1s ease-in-out infinite",
+      },
+      keyframes: {
+        "bounce-right": {
+          "0%, 100%": { transform: "translateX(0)" },
+          "50%": { transform: "translateX(4px)" },
+        },
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
