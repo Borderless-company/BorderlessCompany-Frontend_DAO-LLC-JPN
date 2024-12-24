@@ -12,28 +12,30 @@ import {
 import { LoggedInMenu } from "@/components/wallet/LoggedInMenu";
 import { WalletIcon } from "../icons/WalletIcon";
 import { BrowserProvider } from "ethers";
+import { useAtom } from "jotai";
+import { useMe } from "@/hooks/useMe";
 
 
 export default function WalletLogin() {
+  const { me, isLoading, isError } = useMe();
+  const [isLogin, setIsLogin] = useState(false);
   const { address, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isClient, setIsClient] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
-  const [nonce, setNonce] = useState<string | null>(null);
+  const { signMessageAsync } = useSignMessage();
 
   useEffect(() => {
+    setIsLogin(me ? me.isLogin : false);
     setIsClient(true);
-  }, []);
-
+  }, [isLoading]);
 
   const handleLogin = async () => {
     if (!address) return;
     const nonceRes = await fetch("/api/auth/nonce?address=" + address);
     const { nonce } = await nonceRes.json();
 
-    const signature = await signMessageWithEthers(String(nonce));
-    console.log("signature", signature);
+    const signature = await signMessageAsync({ message: String(nonce) });
 
     const verifyRes = await fetch("/api/auth/generateJWT", {
       method: "POST",
@@ -60,8 +62,7 @@ export default function WalletLogin() {
       {isClient && (
         <>
           {isConnected ? (
-            token ? (
-              // JWTを取得済みの場合はログイン状態としてメニューを表示
+            isLogin ? (
               <LoggedInMenu />
             ) : (
               <Button onPress={handleLogin}>サインしてログイン</Button>
@@ -113,16 +114,4 @@ export default function WalletLogin() {
       )}
     </>
   );
-}
-
-async function signMessageWithEthers(message: string) {
-  if (!window.ethereum) {
-    throw new Error("No crypto wallet found");
-  }
-
-  const provider = new BrowserProvider(window.ethereum);
-  const signer = await provider.getSigner();
-  
-  const signature = await signer.signMessage(message);
-  return signature;
 }
