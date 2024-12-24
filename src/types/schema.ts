@@ -186,6 +186,27 @@ export type Database = {
           },
         ]
       }
+      NONCE: {
+        Row: {
+          created_at: string
+          evmAddress: string | null
+          id: number
+          nonce: number | null
+        }
+        Insert: {
+          created_at?: string
+          evmAddress?: string | null
+          id?: number
+          nonce?: number | null
+        }
+        Update: {
+          created_at?: string
+          evmAddress?: string | null
+          id?: number
+          nonce?: number | null
+        }
+        Relationships: []
+      }
       PAYMENT: {
         Row: {
           created_at: string

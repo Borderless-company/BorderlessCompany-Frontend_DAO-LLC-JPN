@@ -1,4 +1,4 @@
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useAccount, useConnect, useDisconnect, useSignMessage } from "wagmi";
 import React, { useState, useEffect } from "react";
 import {
   Modal,
@@ -12,24 +12,62 @@ import {
 import { LoggedInMenu } from "@/components/wallet/LoggedInMenu";
 import { WalletIcon } from "../icons/WalletIcon";
 import { useTranslation } from "next-i18next";
+import { BrowserProvider } from "ethers";
+import { useAtom } from "jotai";
+import { useMe } from "@/hooks/useMe";
 
 export default function WalletLogin() {
-  const { isConnected } = useAccount();
+  const { me, isLoading, isError } = useMe();
+  const [isLogin, setIsLogin] = useState(false);
+  const { address, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
-  const [isClient, setIsClient] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { t } = useTranslation("common");
-
+  const [isClient, setIsClient] = useState(false);
+  const { signMessageAsync } = useSignMessage();
+  
   useEffect(() => {
+    setIsLogin(me ? me.isLogin : false);
     setIsClient(true);
-  }, []);
+  }, [isLoading]);
+
+  const handleLogin = async () => {
+    if (!address) return;
+    const nonceRes = await fetch("/api/auth/nonce?address=" + address);
+    const { nonce } = await nonceRes.json();
+
+    const signature = await signMessageAsync({ message: String(nonce) });
+
+    const verifyRes = await fetch("/api/auth/generateJWT", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: 'include',
+      body: JSON.stringify({
+        address,
+        signature,
+        nonce: String(nonce),
+      }),
+    });
+
+    const data = await verifyRes.json();
+    if (verifyRes.ok) {
+      onOpenChange();
+    } else {
+      console.error("Verification failed", data);
+    }
+  };
+
 
   return (
     <>
       {isClient && (
         <>
           {isConnected ? (
-            <LoggedInMenu />
+            isLogin ? (
+              <LoggedInMenu />
+            ) : (
+              <Button onPress={handleLogin}>サインしてログイン</Button>
+            )
           ) : (
             <div className="">
               <Button color="primary" onPress={onOpen}>
@@ -65,11 +103,7 @@ export default function WalletLogin() {
                         </div>
                       </ModalBody>
                       <ModalFooter>
-                        <Button
-                          color="danger"
-                          variant="light"
-                          onPress={onClose}
-                        >
+                        <Button color="danger" variant="light" onPress={onClose}>
                           Close
                         </Button>
                       </ModalFooter>
@@ -77,8 +111,6 @@ export default function WalletLogin() {
                   )}
                 </ModalContent>
               </Modal>
-
-              {/* {error && <div>{error.message}</div>} */}
             </div>
           )}
         </>

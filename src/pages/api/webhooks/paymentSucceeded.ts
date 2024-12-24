@@ -33,6 +33,7 @@ export default async function handler(
       const session = event.data.object as Stripe.Checkout.Session;
       console.log("session:", session);
       if (session.payment_status === "paid") {
+
         const { data: payments, error } = await supabase
           .from("PAYMENT")
           .update({
@@ -42,6 +43,7 @@ export default async function handler(
         if (error) {
           console.log("error:", error);
         }
+
         await supabase.from("USER").update({
           email: session.customer_email || session.customer_details?.email,
         }).eq("evm_address", payments?.[0].user_id as string);

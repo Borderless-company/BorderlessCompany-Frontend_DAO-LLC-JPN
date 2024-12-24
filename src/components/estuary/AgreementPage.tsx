@@ -86,6 +86,7 @@ const AgreementPage: FC = () => {
   const startPolling = async () => {
     const pollInterval = setInterval(async () => {
       if (!account?.address) return;
+      // TODO: read supabase
       const { data: status } = await supabase
         .from("PAYMENT")
         .select("payment_status")

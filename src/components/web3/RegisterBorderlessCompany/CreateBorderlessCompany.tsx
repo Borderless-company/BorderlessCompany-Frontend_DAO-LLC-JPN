@@ -22,6 +22,7 @@ import { useAtom } from "jotai";
 import { selectedFileAtom } from "@/atoms";
 import { uploadFile } from "@/utils/supabase";
 import { useTranslation } from "next-i18next";
+import { useMe } from "@/hooks/useMe";
 
 export function CreateBorderlessCompany() {
   const { t } = useTranslation("common");
@@ -32,6 +33,7 @@ export function CreateBorderlessCompany() {
   const [isConfirmed, setIsConfirmed] = useState(false);
   const { address } = useAccount();
   const { createDAO } = useDAO();
+  const { me, isError } = useMe();
 
   const [contractAddress, setContractAddress] = useState<Address>();
   const [blockExplorerUrl, setBlockExplorerUrl] = useState<string>();

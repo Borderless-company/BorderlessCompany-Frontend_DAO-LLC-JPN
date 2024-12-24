@@ -17,23 +17,17 @@ export const useDAO = (address?: string) => {
     UpdateDAOProps
   >({
     mutationFn: async (props: UpdateDAOProps) => {
-      const { data, error } = await supabase
-        .from("DAO")
-        .update({
-          company_id: props.company_id,
-          company_name: props.company_name,
-          dao_name: props.dao_name,
-          dao_icon: props.dao_icon,
-          establishment_date: props.establishment_date,
-        })
-        .eq("address", address!)
-        .select();
-
-      if (error) {
-        throw new Error(error.message);
+      const response = await fetch('/api/dao', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...props, address }),
+      });
+      const json = await response.json();
+      if (!response.ok) {
+        throw new Error(json.error);
       }
-      console.log("[SUCCESS] DAO updated: ", data);
-      return data[0];
+      console.log("[SUCCESS] DAO updated: ", json.data);
+      return json.data;
     },
     onError: (error) => {
       console.error("[ERROR] Failed to update DAO: ", error);
@@ -49,24 +43,17 @@ export const useDAO = (address?: string) => {
     Partial<Tables<"DAO">>
   >({
     mutationFn: async (props: Partial<Tables<"DAO">>) => {
-      const { data, error } = await supabase
-        .from("DAO")
-        .upsert({
-          address: props.address!,
-          company_id: props.company_id,
-          company_name: props.company_name,
-          dao_name: props.dao_name,
-          dao_icon: props.dao_icon,
-          establishment_date: props.establishment_date,
-          established_by: props.established_by,
-        })
-        .select();
-
-      if (error) {
-        throw new Error(error.message);
+      const response = await fetch('/api/dao', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(props),
+      });
+      const json = await response.json();
+      if (!response.ok) {
+        throw new Error(json.error);
       }
-      console.log("[SUCCESS] DAO created: ", data);
-      return data[0];
+      console.log("[SUCCESS] DAO created: ", json.data);
+      return json.data;
     },
     onError: (error) => {
       console.error("[ERROR] Failed to create DAO: ", error);
@@ -76,10 +63,12 @@ export const useDAO = (address?: string) => {
     },
   });
 
+  // リード系は直接Supabase
   const { data: dao } = useQuery<Tables<"DAO"> | undefined, Error>({
     queryKey: ["dao", address],
     queryFn: async () => {
       if (!address) return undefined;
+      // TODO: read supabase
       const { data, error } = await supabase
         .from("DAO")
         .select()
@@ -103,12 +92,12 @@ export const useDAO = (address?: string) => {
     }
     return data;
   };
+  
   const getDAObyWalletAddress = (address: string) =>
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     useQuery<Tables<"DAO"> | undefined, Error>({
       queryKey: ["daoByWallet", address],
-    queryFn: () => _getDAObyWalletAddress(address),
-  });
+      queryFn: () => _getDAObyWalletAddress(address),
+    });
 
   return { updateDAO, createDAO, dao, getDAObyWalletAddress };
 };

@@ -26,6 +26,7 @@ export const EstuaryContainer: FC = () => {
   useEffect(() => {
     const checkPaymentStatus = async () => {
       if (account && estuary) {
+        // TODO: read supabase
         const { data, error } = await supabase
           .from("MEMBER")
           .select()

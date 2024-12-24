@@ -17,23 +17,18 @@ export const usePayment = (userId?: string) => {
     UpdatePaymentProps
   >({
     mutationFn: async (props: UpdatePaymentProps) => {
-      const { data, error } = await supabase
-        .from("PAYMENT")
-        .update({
-          estuary_id: props.estuary_id,
-          user_id: props.user_id,
-          payment_link: props.payment_link,
-          payment_status: props.payment_status as Enums<"PaymentStatus">,
-          price: props.price,
-        })
-        .eq("user_id", props.user_id!)
-        .select();
 
-      if (error) {
-        throw new Error(error.message);
+      const response = await fetch('/api/payment', {
+        method: "PUT",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(props),
+      });
+      const json = await response.json();
+      if (!response.ok) {
+        throw new Error(json.error);
       }
-      console.log("[SUCCESS] Payment updated: ", data);
-      return data[0];
+      console.log("[SUCCESS] Payment updated: ", json.data);
+      return json.data;
     },
     onError: (error) => {
       console.error("[ERROR] Failed to update payment: ", error);
@@ -49,23 +44,18 @@ export const usePayment = (userId?: string) => {
     Partial<Tables<"PAYMENT">>
   >({
     mutationFn: async (props: Partial<Tables<"PAYMENT">>) => {
-      const { data, error } = await supabase
-        .from("PAYMENT")
-        .upsert({
-          id: props.id,
-          estuary_id: props.estuary_id,
-          payment_link: props.payment_link,
-          payment_status: props.payment_status as Enums<"PaymentStatus">,
-          price: props.price,
-          user_id: props.user_id,
-        })
-        .select();
 
-      if (error) {
-        throw new Error(error.message);
+      const response = await fetch('/api/payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(props),
+      });
+      const json = await response.json();
+      if (!response.ok) {
+        throw new Error(json.error);
       }
-      console.log("[SUCCESS] Payment created: ", data);
-      return data[0];
+      console.log("[SUCCESS] Payment created: ", json.data);
+      return json.data;
     },
     onError: (error) => {
       console.error("[ERROR] Failed to create payment: ", error);
@@ -74,6 +64,8 @@ export const usePayment = (userId?: string) => {
       queryClient.invalidateQueries({ queryKey: ["payments", userId] });
     },
   });
+
+
   const getPayments = ({ userId, estId }: { userId: string; estId: string }) =>
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useQuery<Tables<"PAYMENT">[] | undefined, Error>({

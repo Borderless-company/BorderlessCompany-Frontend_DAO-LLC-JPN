@@ -16,10 +16,12 @@ const ClaimPage: FC = () => {
   const { estId } = router.query;
   const { estuary } = useEstuary(estId as string);
   const account = useActiveAccount();
+
   const { member } = useMember({
     userId: account?.address,
     daoId: estuary?.dao_id as string,
   });
+  
   const contract = getContract({
     address: member?.token.contract_address as string,
     chain: sepolia,

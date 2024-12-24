@@ -30,6 +30,7 @@ export const getServerSideProps = async ({ locale }: { locale: string }) => {
 
 export default function Home() {
   const { t } = useTranslation("common");
+
   return (
     <div className={clsx(notoSansJP.className, "font-sans")}>
       <Header />
@@ -100,3 +101,4 @@ export default function Home() {
     </div>
   );
 }
+

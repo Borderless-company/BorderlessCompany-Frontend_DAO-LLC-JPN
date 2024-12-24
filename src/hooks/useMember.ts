@@ -1,9 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/utils/supabase";
-import { Tables, Enums } from "@/types/schema";
+import { Tables } from "@/types/schema";
 
 export type UpdateMemberProps = Partial<Tables<"MEMBER">>;
-
 export type UseMemberProps = {
   userId?: string;
   daoId?: string;
@@ -18,26 +17,17 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
     UpdateMemberProps
   >({
     mutationFn: async (props: UpdateMemberProps) => {
-      const { data, error } = await supabase
-        .from("MEMBER")
-        .update({
-          dao_id: props.dao_id,
-          date_of_employment: props.date_of_employment,
-          is_admin: props.is_admin,
-          is_executive: props.is_executive,
-          token_id: props.token_id,
-          invested_amount: props.invested_amount,
-          is_minted: props.is_minted,
-        })
-        .eq("user_id", userId!)
-        .eq("dao_id", daoId!)
-        .select();
-
-      if (error) {
-        throw new Error(error.message);
+      const response = await fetch('/api/member', {
+        method: "PUT",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...props, user_id: userId, dao_id: daoId }),
+      });
+      const json = await response.json();
+      if (!response.ok) {
+        throw new Error(json.error);
       }
-      console.log("[SUCCESS] Member updated: ", data);
-      return data[0];
+      console.log("[SUCCESS] Member updated: ", json.data);
+      return json.data;
     },
     onError: (error) => {
       console.error("[ERROR] Failed to update member: ", error);
@@ -53,25 +43,17 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
     Partial<Tables<"MEMBER">>
   >({
     mutationFn: async (props: Partial<Tables<"MEMBER">>) => {
-      const { data, error } = await supabase
-        .from("MEMBER")
-        .insert({
-          user_id: props.user_id,
-          dao_id: props.dao_id,
-          date_of_employment: props.date_of_employment,
-          is_admin: props.is_admin,
-          is_executive: props.is_executive,
-          token_id: props.token_id,
-          invested_amount: props.invested_amount,
-          is_minted: props.is_minted,
-        })
-        .select();
-
-      if (error) {
-        throw new Error(error.message);
+      const response = await fetch('/api/member', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(props),
+      });
+      const json = await response.json();
+      if (!response.ok) {
+        throw new Error(json.error);
       }
-      console.log("[SUCCESS] Member created: ", data);
-      return data[0];
+      console.log("[SUCCESS] Member created: ", json.data);
+      return json.data;
     },
     onError: (error) => {
       console.error("[ERROR] Failed to create member: ", error);
@@ -116,7 +98,10 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
       return useQuery({
         queryKey: ["members", daoId],
         queryFn: async () => {
-          const { data, error } = await supabase.from("MEMBER").select(`*, USER (*), TOKEN (*)`).eq("dao_id", daoId);
+          const { data, error } = await supabase
+            .from("MEMBER")
+            .select(`*, USER (*), TOKEN (*)`)
+            .eq("dao_id", daoId);
           if (error) {
             throw new Error(error.message);
           }
@@ -128,7 +113,10 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
       return useQuery({
         queryKey: ["members", userId],
         queryFn: async () => {
-          const { data, error } = await supabase.from("MEMBER").select(`*, USER (*), TOKEN (*)`).eq("user_id", userId);
+          const { data, error } = await supabase
+            .from("MEMBER")
+            .select(`*, USER (*), TOKEN (*)`)
+            .eq("user_id", userId);
           if (error) {
             throw new Error(error.message);
           }
@@ -140,7 +128,11 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
       return useQuery({
         queryKey: ["members", userId, daoId],
         queryFn: async () => {
-          const { data, error } = await supabase.from("MEMBER").select(`*, USER (*), TOKEN (*)`).eq("user_id", userId).eq("dao_id", daoId);
+          const { data, error } = await supabase
+            .from("MEMBER")
+            .select(`*, USER (*), TOKEN (*)`)
+            .eq("user_id", userId)
+            .eq("dao_id", daoId);
           if (error) {
             throw new Error(error.message);
           }
@@ -152,12 +144,15 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
     }
   };
 
-  const getMembersByDaoId = ({ daoId }: { daoId: string }) => 
+  const getMembersByDaoId = ({ daoId }: { daoId: string }) =>
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useQuery({
       queryKey: ["members", daoId],
       queryFn: async () => {
-        const { data, error } = await supabase.from("MEMBER").select(`*, USER (*), TOKEN (*)`).eq("dao_id", daoId);
+        const { data, error } = await supabase
+          .from("MEMBER")
+          .select(`*, USER (*), TOKEN (*)`)
+          .eq("dao_id", daoId);
         if (error) {
           throw new Error(error.message);
         }
