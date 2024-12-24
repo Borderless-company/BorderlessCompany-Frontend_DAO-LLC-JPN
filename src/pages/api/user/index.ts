@@ -10,9 +10,8 @@ const supabase = createClient<Database>(supabaseUrl!, serviveRoleKey!);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   switch (req.method) {
-
     case 'POST': {
-
+      // USER作成 (upsert)
       const {
         evm_address,
         name,
