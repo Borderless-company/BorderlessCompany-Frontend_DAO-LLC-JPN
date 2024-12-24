@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse, NextApiHandler } from "next";
 import jwt from "jsonwebtoken";
-const JWT_SECRET = process.env.JWT_SECRET || "FAKE_JWT_SECRET";
+const JWT_SECRET = process.env.JWT_SECRET || "";
 
 export interface AuthenticatedRequest extends NextApiRequest {
   user?: {
@@ -19,8 +19,12 @@ export function authMiddleware(handler: NextApiHandler) {
         return res.status(401).json({ error: "No token provided" });
       }
 
-      const decoded = jwt.verify(token, JWT_SECRET) as { address: string; iat: number; exp: number; };
-      req.user = { address: decoded.address };
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET) as { address: string; iat: number; exp: number; };
+        req.user = { address: decoded.address };
+      } catch(e) {
+        req.user = {address: ""}
+      }
 
       return handler(req, res);
     } catch (error) {
@@ -30,7 +34,6 @@ export function authMiddleware(handler: NextApiHandler) {
   };
 }
 
-// シンプルなCookieパーサー
 function parseCookies(cookieHeader: string): Record<string, string> {
   const cookies: Record<string, string> = {};
   cookieHeader.split(";").forEach(cookie => {

@@ -12,21 +12,12 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import clsx from "clsx";
 import { Noto_Sans_JP } from "next/font/google";
-import { withAuthGSSP } from "@/utils/isLogin";
-import { useEffect } from "react";
-import { useAtom } from "jotai";
-import { isLoginAtom } from "@/atoms";
 
 const notoSansJP = Noto_Sans_JP({
   subsets: ["latin"],
 });
 
-export default function Home(prop: any) {
-  const [isLogin, setIsLogin] = useAtom(isLoginAtom);
-
-  useEffect(() => {
-    setIsLogin(true);
-  }, []);
+export default function Home() {
 
   return (
     <div className={clsx(notoSansJP.className, "font-sans")}>
@@ -88,5 +79,3 @@ export default function Home(prop: any) {
   );
 }
 
-
-export const getServerSideProps = withAuthGSSP()

@@ -12,7 +12,8 @@ const supabase = createClient(
 );
 
 // JWTシークレット（なければデフォルト値）
-const JWT_SECRET = process.env.JWT_SECRET || "TOMATO";
+const JWT_SECRET = process.env.JWT_SECRET || "";
+
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -55,15 +56,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   console.log("address", address);
   try {
     const recoveredAddress = verifyMessage(message, signature);
-
     if (recoveredAddress.toLowerCase() !== address.toLowerCase()) {
       return res.status(401).json({ error: "Signature verification failed" });
     }
 
-    // 署名成功の場合、nonceをインクリメントするなどの処理
+
     const { error: updateError } = await supabase
       .from("NONCE")
-      .update({ nonce: nonceNumber + 1 }) // 次回用にnonceをインクリメント
+      .update({ nonce: nonceNumber + 1 })
       .eq("evmAddress", address);
 
     if (updateError) {
@@ -75,9 +75,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const cookie = serialize("token", token, {
       httpOnly: true,
-      secure: false,  // 常にfalse。必要に応じて変更可能。
+      secure: false,
       path: "/",
-      maxAge: 60 * 60 * 24, // 1日
+      maxAge: 60 * 60 * 24 * 10,
       sameSite: "strict",
     });
 
