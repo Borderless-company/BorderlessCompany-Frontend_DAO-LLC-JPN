@@ -10,6 +10,7 @@
     "supabase:type": "npx supabase gen types typescript --project-id vyocmhwkrvspeitnllty --schema public > src/types/schema.ts"
   },
   "dependencies": {
+    "@lottiefiles/dotlottie-react": "^0.12.0",
     "@nextui-org/react": "^2.6.8",
     "@rainbow-me/rainbowkit": "^2.0.5",
     "@sendgrid/mail": "^8.1.4",
@@ -35,7 +36,9 @@
     "framer-motion": "^11.1.5",
     "i18next": "^23.16.8",
     "jotai": "^2.9.3",
+    "lottie-react": "^2.4.0",
     "mongodb": "^6.6.1",
+    "motion": "^11.15.0",
     "nedb": "^1.8.0",
     "next": "14.2.1",
     "next-i18next": "^15.3.1",
