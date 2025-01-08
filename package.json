@@ -10,6 +10,7 @@
     "supabase:type": "npx supabase gen types typescript --project-id vyocmhwkrvspeitnllty --schema public > src/types/schema.ts"
   },
   "dependencies": {
+    "@lottiefiles/dotlottie-react": "^0.12.1",
     "@nextui-org/react": "^2.3.4",
     "@rainbow-me/rainbowkit": "^2.0.5",
     "@sendgrid/mail": "^8.1.4",
@@ -46,6 +47,7 @@
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
     "react-aria-components": "^1.4.0",
+    "react-country-flag": "^3.1.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.53.0",
     "react-i18next": "^15.1.0",
