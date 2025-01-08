@@ -21,3 +21,9 @@
     --bls-danger-backing: #fee7ef;
   }
 }
+
+@layer components {
+  .font-headline-sm {
+    @apply text-[24px] font-bold leading-[28px] tracking-[-0.5px];
+  }
+}

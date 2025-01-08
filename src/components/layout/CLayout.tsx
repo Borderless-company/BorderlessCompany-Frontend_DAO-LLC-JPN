@@ -11,16 +11,22 @@ type CLayoutProps = {
   children?: React.ReactNode;
 } & ComponentPropsWithoutRef<"main">;
 
-export const CLayout: FC<CLayoutProps> = ({ children, ...props }) => {
+export const CLayout: FC<CLayoutProps> = ({
+  children,
+  className,
+  ...props
+}) => {
   return (
-    <main className={clsx(ibmPlexSansJP.className, "font-sans")} {...props}>
-      <div
-        className={clsx(
-          "flex w-full h-screen items-center justify-center bg-background text-foreground"
-        )}
-      >
-        {children}
-      </div>
+    <main
+      className={clsx(
+        ibmPlexSansJP.className,
+        "font-sans",
+        "flex w-full h-screen items-center justify-center bg-background text-foreground",
+        className
+      )}
+      {...props}
+    >
+      {children}
     </main>
   );
 };
