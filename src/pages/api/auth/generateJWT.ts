@@ -14,13 +14,19 @@ const supabase = createClient(
 // JWTシークレット（なければデフォルト値）
 const JWT_SECRET = process.env.JWT_SECRET || "";
 
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const { address, signature, nonce } = req.body as { address?: string; signature?: string; nonce?: string; };
+  const { address, signature, nonce } = req.body as {
+    address?: string;
+    signature?: string;
+    nonce?: string;
+  };
 
   if (!address || !signature || !nonce) {
     return res.status(400).json({ error: "Missing parameters" });
@@ -60,7 +66,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json({ error: "Signature verification failed" });
     }
 
-
     const { error: updateError } = await supabase
       .from("NONCE")
       .update({ nonce: nonceNumber + 1 })
@@ -71,7 +76,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: "Failed to update nonce" });
     }
 
-    const token = jwt.sign({ address: address.toLowerCase() }, JWT_SECRET, { expiresIn: "24h" });
+    const token = jwt.sign({ address: address.toLowerCase() }, JWT_SECRET, {
+      expiresIn: "24h",
+    });
 
     const cookie = serialize("token", token, {
       httpOnly: true,
@@ -83,7 +90,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.setHeader("Set-Cookie", cookie);
     return res.status(200).json({ success: true });
-
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal server error" });

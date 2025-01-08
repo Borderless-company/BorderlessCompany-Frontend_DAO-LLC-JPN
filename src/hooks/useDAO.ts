@@ -17,9 +17,9 @@ export const useDAO = (address?: string) => {
     UpdateDAOProps
   >({
     mutationFn: async (props: UpdateDAOProps) => {
-      const response = await fetch('/api/dao', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/dao", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...props, address }),
       });
       const json = await response.json();
@@ -43,9 +43,9 @@ export const useDAO = (address?: string) => {
     Partial<Tables<"DAO">>
   >({
     mutationFn: async (props: Partial<Tables<"DAO">>) => {
-      const response = await fetch('/api/dao', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/dao", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(props),
       });
       const json = await response.json();
@@ -92,8 +92,9 @@ export const useDAO = (address?: string) => {
     }
     return data;
   };
-  
+
   const getDAObyWalletAddress = (address: string) =>
+    // eslint-disable-next-line
     useQuery<Tables<"DAO"> | undefined, Error>({
       queryKey: ["daoByWallet", address],
       queryFn: () => _getDAObyWalletAddress(address),

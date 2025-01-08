@@ -12,8 +12,6 @@ import {
 import { LoggedInMenu } from "@/components/wallet/LoggedInMenu";
 import { WalletIcon } from "../icons/WalletIcon";
 import { useTranslation } from "next-i18next";
-import { BrowserProvider } from "ethers";
-import { useAtom } from "jotai";
 import { useMe } from "@/hooks/useMe";
 
 export default function WalletLogin() {
@@ -25,7 +23,7 @@ export default function WalletLogin() {
   const { t } = useTranslation("common");
   const [isClient, setIsClient] = useState(false);
   const { signMessageAsync } = useSignMessage();
-  
+
   useEffect(() => {
     setIsLogin(me ? me.isLogin : false);
     setIsClient(true);
@@ -41,7 +39,7 @@ export default function WalletLogin() {
     const verifyRes = await fetch("/api/auth/generateJWT", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: 'include',
+      credentials: "include",
       body: JSON.stringify({
         address,
         signature,
@@ -56,7 +54,6 @@ export default function WalletLogin() {
       console.error("Verification failed", data);
     }
   };
-
 
   return (
     <>
@@ -103,7 +100,11 @@ export default function WalletLogin() {
                         </div>
                       </ModalBody>
                       <ModalFooter>
-                        <Button color="danger" variant="light" onPress={onClose}>
+                        <Button
+                          color="danger"
+                          variant="light"
+                          onPress={onClose}
+                        >
                           Close
                         </Button>
                       </ModalFooter>
