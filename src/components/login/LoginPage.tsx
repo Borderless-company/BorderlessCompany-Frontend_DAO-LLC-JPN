@@ -2,14 +2,70 @@ import { ComponentPropsWithoutRef, FC, useEffect, useState } from "react";
 import { CLayout } from "../layout/CLayout";
 import Image from "next/image";
 import { useTranslation } from "next-i18next";
-import { Button } from "@nextui-org/react";
+import { Button, ButtonProps } from "@nextui-org/react";
 import clsx from "clsx";
-import { PiWalletFill } from "react-icons/pi";
+import { PiWalletFill, PiArrowSquareOut } from "react-icons/pi";
 import { Border } from "../decorative/Border";
+import { ConnectorSelectionModal } from "./ConnectorSelectionModal";
+import { useAccount, useDisconnect, useSignMessage } from "wagmi";
+import { useWhitelist } from "@/hooks/useWhitelist";
 
 export const LoginPage: FC = () => {
   const [isBorder, setIsBorder] = useState<boolean>(true);
   const [isIdle, setIsIdle] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isConnecting, setIsConnecting] = useState<boolean>(false);
+  const { signMessageAsync } = useSignMessage();
+  const { address } = useAccount();
+  const { disconnect } = useDisconnect();
+  const { useIsWhitelisted } = useWhitelist();
+  const { data: isWhitelisted, error: isWhitelistedError } = useIsWhitelisted(
+    address ?? ""
+  );
+
+  useEffect(() => {
+    if (address) {
+      setIsOpen(false);
+      if (isWhitelisted) {
+        setIsConnecting(true);
+        signIn();
+      } else {
+      }
+    }
+  }, [address, isWhitelisted]);
+
+  const signIn = async () => {
+    if (!address) return;
+    console.log("Signing in...");
+    const nonceRes = await fetch("/api/auth/nonce?address=" + address);
+    const { nonce } = await nonceRes.json();
+
+    try {
+      const signature = await signMessageAsync({ message: String(nonce) });
+      const verifyRes = await fetch("/api/auth/generateJWT", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          address,
+          signature,
+          nonce: String(nonce),
+        }),
+      });
+
+      const data = await verifyRes.json();
+      if (verifyRes.ok) {
+        setIsConnecting(false);
+      } else {
+        console.error("Verification failed", data);
+        setIsConnecting(false);
+        disconnect();
+      }
+    } catch {
+      setIsConnecting(false);
+      disconnect();
+    }
+  };
 
   useEffect(() => {
     setTimeout(() => {
@@ -28,41 +84,69 @@ export const LoginPage: FC = () => {
   }, [isIdle]);
 
   return (
-    <CLayout className="relative shadow-[inset_0px_0px_40px_-7px_#6EBFB8] px-4">
-      <div className="relative w-full h-[80vh] ">
+    <>
+      <CLayout className="relative shadow-[inset_0px_0px_40px_-7px_#6EBFB8] px-4">
+        <div className="relative w-full h-[80vh] ">
+          <Image
+            src="/globe.png"
+            alt="login_bg"
+            fill
+            style={{ objectFit: "contain", paddingBottom: "24px" }}
+          />
+          <LoginWidget
+            variant={address && !isWhitelisted ? "whitelist" : "connect"}
+            isConnecting={isConnecting}
+            connectButtonOptions={{
+              onPress: () => {
+                setIsConnecting(true);
+                setIsOpen(true);
+              },
+            }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          />
+        </div>
         <Image
-          src="/globe.png"
-          alt="login_bg"
-          fill
-          style={{ objectFit: "contain", paddingBottom: "24px" }}
+          src="/borderless_logo.png"
+          alt="Borderlss Logo"
+          width={160}
+          height={24}
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 object-contain"
         />
-        <LoginWidget className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-      </div>
-      <Image
-        src="/borderless_logo.png"
-        alt="Borderlss Logo"
-        width={160}
-        height={24}
-        className="absolute bottom-12 left-1/2 -translate-x-1/2 object-contain"
+        {isBorder && (
+          <>
+            <div className="absolute top-0 left-0 w-[320px] h-[640px] opacity-20">
+              <Border />
+            </div>
+            <div className="absolute bottom-0 right-0 w-[320px] h-[640px] rotate-180 opacity-20 ">
+              <Border />
+            </div>
+          </>
+        )}
+      </CLayout>
+      <ConnectorSelectionModal
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+        onClose={() => setIsConnecting(false)}
       />
-      {isBorder && (
-        <>
-          <div className="absolute top-0 left-0 w-[320px] h-[640px] opacity-20">
-            <Border />
-          </div>
-          <div className="absolute bottom-0 right-0 w-[320px] h-[640px] rotate-180 opacity-20 ">
-            <Border />
-          </div>
-        </>
-      )}
-    </CLayout>
+    </>
   );
 };
 
-type LoginWidgetProps = {} & ComponentPropsWithoutRef<"div">;
+type LoginWidgetProps = {
+  connectButtonOptions?: ButtonProps;
+  isConnecting?: boolean;
+  variant: "connect" | "whitelist";
+} & ComponentPropsWithoutRef<"div">;
 
-export const LoginWidget: FC<LoginWidgetProps> = ({ className, ...props }) => {
+export const LoginWidget: FC<LoginWidgetProps> = ({
+  variant = "connect",
+  connectButtonOptions,
+  className,
+  isConnecting,
+  ...props
+}) => {
   const { t } = useTranslation();
+
   return (
     <div
       className={clsx(
@@ -73,18 +157,52 @@ export const LoginWidget: FC<LoginWidgetProps> = ({ className, ...props }) => {
       )}
       {...props}
     >
-      <p className="font-headline-sm text-foreground">{t("Sign In")}</p>
-      <Button
-        color="primary"
-        size="lg"
-        fullWidth
-        style={{ fontFamily: "inherit" }}
-        startContent={
-          <PiWalletFill className="w-6 h-6 text-primary-foreground" />
-        }
+      <p
+        className={clsx(
+          "text-foreground text-center",
+          variant === "connect" ? "font-headline-sm" : "font-title-md"
+        )}
       >
-        {t("Connect Wallet")}
-      </Button>
+        {variant === "connect" ? t("Sign In") : t("Borderless is in beta")}
+      </p>
+      {variant === "connect" ? (
+        <>
+          <Button
+            color="primary"
+            size="lg"
+            fullWidth
+            style={{ fontFamily: "inherit" }}
+            startContent={
+              !isConnecting && (
+                <PiWalletFill className="w-6 h-6 text-primary-foreground" />
+              )
+            }
+            {...connectButtonOptions}
+            isLoading={isConnecting}
+          >
+            {isConnecting ? t("Connecting...") : t("Connect Wallet")}
+          </Button>
+        </>
+      ) : (
+        <>
+          <Button
+            className="gap-1"
+            color="secondary"
+            size="lg"
+            fullWidth
+            style={{ fontFamily: "inherit" }}
+            endContent={<PiArrowSquareOut className="w-4 h-4" />}
+            onPress={() => {
+              window.open(
+                "https://docs.google.com/forms/d/1t3DdeJlV8NCDfr6hY4yynSYupcNDQYBRQMt90GsjXK8",
+                "_blank"
+              );
+            }}
+          >
+            {t("Join Waitlist")}
+          </Button>
+        </>
+      )}
     </div>
   );
 };

@@ -69,7 +69,10 @@
   "Establishment Date": "Establishment Date",
   "Borderless Tag line": "Launch your DAO LLC Today.",
   "Connect Wallet": "Connect Wallet",
+  "Connecting...": "Connecting...",
   "Select Wallet": "Select Wallet",
   "Join Whitelist": "Join Whitelist",
-  "Sign In": "Welcome"
+  "Sign In": "Welcome",
+  "Join Waitlist": "Join Waitlist",
+  "Borderless is in beta": "Borderless is in beta. Please join our waitlist to use it"
 }

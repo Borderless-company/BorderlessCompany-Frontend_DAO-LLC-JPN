@@ -26,4 +26,10 @@
   .font-headline-sm {
     @apply text-[24px] font-bold leading-[28px] tracking-[-0.5px];
   }
+  .font-title-lg {
+    @apply text-[20px] font-bold leading-[24px] tracking-[-0.25px];
+  }
+  .font-title-md {
+    @apply text-[18px] font-bold leading-[20px] tracking-[-0.25px];
+  }
 }

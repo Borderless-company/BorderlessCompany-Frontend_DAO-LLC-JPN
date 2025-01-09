@@ -69,8 +69,11 @@
   "Establishment Date": "設立日",
   "Borderless Tag line": "DAOで始める、境界線のない会社へ",
   "Connect Wallet": "ウォレットログイン",
+  "Connecting...": "接続中...",
   "Select Wallet": "ウォレットを選択",
   "Sign In": "サインインしてください",
   "Invest": "に出資する",
-  "Join Whitelist": "ホワイトリストに登録"
+  "Join Whitelist": "ホワイトリストに登録",
+  "Join Waitlist": "順番待ちリストに登録",
+  "Borderless is in beta": "Borderlessはベータ版です。順番待ちリストに登録して連絡をお待ちください。"
 }
