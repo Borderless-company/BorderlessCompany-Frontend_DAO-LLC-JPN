@@ -1,4 +1,10 @@
-import { ComponentPropsWithoutRef, FC, useEffect, useState } from "react";
+import {
+  ComponentPropsWithoutRef,
+  FC,
+  useEffect,
+  useState,
+  useMemo,
+} from "react";
 import { CLayout } from "../layout/CLayout";
 import Image from "next/image";
 import { useTranslation } from "next-i18next";
@@ -146,6 +152,86 @@ export const LoginWidget: FC<LoginWidgetProps> = ({
   ...props
 }) => {
   const { t } = useTranslation();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const fontClass = useMemo(
+    () =>
+      mounted
+        ? variant === "connect"
+          ? "font-headline-sm"
+          : "font-title-md"
+        : "font-headline-sm",
+    [mounted, variant]
+  );
+
+  const textContent = useMemo(
+    () =>
+      mounted
+        ? variant === "connect"
+          ? t("Sign In")
+          : t("Borderless is in beta")
+        : t("Sign In"),
+    [mounted, variant, t]
+  );
+
+  const buttonText = useMemo(
+    () =>
+      mounted
+        ? variant === "connect"
+          ? isConnecting
+            ? t("Connecting...")
+            : t("Connect Wallet")
+          : t("Join Waitlist")
+        : "",
+    [mounted, variant, isConnecting, t]
+  );
+
+  const renderButton = () => {
+    if (!mounted) return null;
+
+    if (variant === "connect") {
+      return (
+        <Button
+          color="primary"
+          size="lg"
+          fullWidth
+          style={{ fontFamily: "inherit" }}
+          startContent={
+            !isConnecting && (
+              <PiWalletFill className="w-6 h-6 text-primary-foreground" />
+            )
+          }
+          {...connectButtonOptions}
+          isLoading={isConnecting}
+        >
+          {buttonText}
+        </Button>
+      );
+    }
+
+    return (
+      <Button
+        className="gap-1"
+        color="secondary"
+        size="lg"
+        fullWidth
+        style={{ fontFamily: "inherit" }}
+        endContent={<PiArrowSquareOut className="w-4 h-4" />}
+        onPress={() => {
+          window.open(
+            "https://docs.google.com/forms/d/1t3DdeJlV8NCDfr6hY4yynSYupcNDQYBRQMt90GsjXK8",
+            "_blank"
+          );
+        }}
+      >
+        {buttonText}
+      </Button>
+    );
+  };
 
   return (
     <div
@@ -157,52 +243,10 @@ export const LoginWidget: FC<LoginWidgetProps> = ({
       )}
       {...props}
     >
-      <p
-        className={clsx(
-          "text-foreground text-center",
-          variant === "connect" ? "font-headline-sm" : "font-title-md"
-        )}
-      >
-        {variant === "connect" ? t("Sign In") : t("Borderless is in beta")}
+      <p className={clsx("text-foreground text-center", fontClass)}>
+        {textContent}
       </p>
-      {variant === "connect" ? (
-        <>
-          <Button
-            color="primary"
-            size="lg"
-            fullWidth
-            style={{ fontFamily: "inherit" }}
-            startContent={
-              !isConnecting && (
-                <PiWalletFill className="w-6 h-6 text-primary-foreground" />
-              )
-            }
-            {...connectButtonOptions}
-            isLoading={isConnecting}
-          >
-            {isConnecting ? t("Connecting...") : t("Connect Wallet")}
-          </Button>
-        </>
-      ) : (
-        <>
-          <Button
-            className="gap-1"
-            color="secondary"
-            size="lg"
-            fullWidth
-            style={{ fontFamily: "inherit" }}
-            endContent={<PiArrowSquareOut className="w-4 h-4" />}
-            onPress={() => {
-              window.open(
-                "https://docs.google.com/forms/d/1t3DdeJlV8NCDfr6hY4yynSYupcNDQYBRQMt90GsjXK8",
-                "_blank"
-              );
-            }}
-          >
-            {t("Join Waitlist")}
-          </Button>
-        </>
-      )}
+      {renderButton()}
     </div>
   );
 };
