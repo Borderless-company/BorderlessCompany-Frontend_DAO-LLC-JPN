@@ -9,6 +9,102 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      AGREEMENT: {
+        Row: {
+          agreed_at: string
+          id: string
+          privacy_policy: string | null
+          terms_of_use: string | null
+          type: Database["public"]["Enums"]["AgreementType"] | null
+          user_id: string | null
+        }
+        Insert: {
+          agreed_at?: string
+          id?: string
+          privacy_policy?: string | null
+          terms_of_use?: string | null
+          type?: Database["public"]["Enums"]["AgreementType"] | null
+          user_id?: string | null
+        }
+        Update: {
+          agreed_at?: string
+          id?: string
+          privacy_policy?: string | null
+          terms_of_use?: string | null
+          type?: Database["public"]["Enums"]["AgreementType"] | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "AGREEMENT_privacy_policy_fkey"
+            columns: ["privacy_policy"]
+            isOneToOne: false
+            referencedRelation: "PRIVACY_POLICY"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "AGREEMENT_terms_of_use_fkey"
+            columns: ["terms_of_use"]
+            isOneToOne: false
+            referencedRelation: "TERMS_OF_USE"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "AGREEMENT_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "USER"
+            referencedColumns: ["evm_address"]
+          },
+        ]
+      }
+      COMPANY: {
+        Row: {
+          company_number: string | null
+          company_type: Database["public"]["Enums"]["CompanyType"] | null
+          created_at: string
+          deployment_date: string | null
+          display_name: string | null
+          founder_id: string | null
+          icon: string | null
+          id: string
+          jurisdiction: Database["public"]["Enums"]["Jurisdiction"] | null
+          sc_address: string | null
+        }
+        Insert: {
+          company_number?: string | null
+          company_type?: Database["public"]["Enums"]["CompanyType"] | null
+          created_at?: string
+          deployment_date?: string | null
+          display_name?: string | null
+          founder_id?: string | null
+          icon?: string | null
+          id?: string
+          jurisdiction?: Database["public"]["Enums"]["Jurisdiction"] | null
+          sc_address?: string | null
+        }
+        Update: {
+          company_number?: string | null
+          company_type?: Database["public"]["Enums"]["CompanyType"] | null
+          created_at?: string
+          deployment_date?: string | null
+          display_name?: string | null
+          founder_id?: string | null
+          icon?: string | null
+          id?: string
+          jurisdiction?: Database["public"]["Enums"]["Jurisdiction"] | null
+          sc_address?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "COMPANY_founder_id_fkey"
+            columns: ["founder_id"]
+            isOneToOne: false
+            referencedRelation: "USER"
+            referencedColumns: ["evm_address"]
+          },
+        ]
+      }
       DAO: {
         Row: {
           address: string
@@ -252,6 +348,48 @@ export type Database = {
           },
         ]
       }
+      PRIVACY_POLICY: {
+        Row: {
+          created_at: string
+          id: string
+          uri: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          uri: string
+          version: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          uri?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      TERMS_OF_USE: {
+        Row: {
+          created_at: string
+          id: string
+          uri: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          uri: string
+          version: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          uri?: string
+          version?: string
+        }
+        Relationships: []
+      }
       TEST: {
         Row: {
           age: number | null
@@ -368,16 +506,16 @@ export type Database = {
       }
       WHITELIST: {
         Row: {
-          address: string
           created_at: string
+          user_id: string
         }
         Insert: {
-          address: string
           created_at?: string
+          user_id: string
         }
         Update: {
-          address?: string
           created_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -389,6 +527,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      AgreementType: "termsAndConditions" | "termSheets"
+      CompanyType: "llc"
+      Jurisdiction: "jp"
       KycStatus: "done" | "reviewing" | "yet" | "error"
       PaymentStatus: "done" | "pending" | "yet" | "error"
     }

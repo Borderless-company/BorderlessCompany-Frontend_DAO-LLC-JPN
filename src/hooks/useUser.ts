@@ -17,10 +17,9 @@ export const useUser = (evmAddress?: string) => {
     UpdateUserProps
   >({
     mutationFn: async (props: UpdateUserProps) => {
-
-      const response = await fetch('/api/user', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/user", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...props, evm_address: evmAddress }),
       });
       const json = await response.json();
@@ -44,9 +43,9 @@ export const useUser = (evmAddress?: string) => {
     Partial<Tables<"USER">>
   >({
     mutationFn: async (props: Partial<Tables<"USER">>) => {
-      const response = await fetch('/api/user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(props),
       });
       const json = await response.json();
@@ -64,7 +63,7 @@ export const useUser = (evmAddress?: string) => {
     },
   });
 
-  const { data: user} = useQuery<Tables<"USER"> | undefined, Error>({
+  const { data: user } = useQuery<Tables<"USER"> | undefined, Error>({
     queryKey: ["user", evmAddress],
     queryFn: async () => {
       if (!evmAddress) return undefined;
@@ -79,6 +78,6 @@ export const useUser = (evmAddress?: string) => {
       return data;
     },
   });
-  
+
   return { updateUser, createUser, user };
 };

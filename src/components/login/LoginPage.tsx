@@ -5,20 +5,30 @@ import {
   useState,
   useMemo,
 } from "react";
-import { CLayout } from "../layout/CLayout";
 import Image from "next/image";
 import { useTranslation } from "next-i18next";
 import { Button, ButtonProps } from "@nextui-org/react";
 import clsx from "clsx";
 import { PiWalletFill, PiArrowSquareOut } from "react-icons/pi";
-import { Border } from "../decorative/Border";
 import { ConnectorSelectionModal } from "./ConnectorSelectionModal";
 import { useAccount, useDisconnect, useSignMessage } from "wagmi";
 import { useWhitelist } from "@/hooks/useWhitelist";
+import { useMe } from "@/hooks/useMe";
+import { useRouter } from "next/router";
+import { hasAccount } from "@/utils/api/user";
 
-export const LoginPage: FC = () => {
-  const [isBorder, setIsBorder] = useState<boolean>(true);
-  const [isIdle, setIsIdle] = useState<boolean>(false);
+type LoginPageProps = {
+  page: number;
+  onPageChange: (page: number) => void;
+  isLoadingCompany: boolean;
+};
+
+export const LoginPage: FC<LoginPageProps> = ({
+  page,
+  onPageChange,
+  isLoadingCompany,
+}) => {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
   const { signMessageAsync } = useSignMessage();
@@ -28,18 +38,38 @@ export const LoginPage: FC = () => {
   const { data: isWhitelisted, error: isWhitelistedError } = useIsWhitelisted(
     address ?? ""
   );
+  const { me, refetch } = useMe();
 
   useEffect(() => {
-    if (address) {
+    const checkAccount = async () => {
+      try {
+        const _hasAccount = await hasAccount(address ?? "");
+        if (!_hasAccount) {
+          // アカウントがない場合
+          onPageChange(1);
+        }
+      } catch (e) {
+        console.error(e);
+        setIsConnecting(false);
+        return;
+      }
+    };
+
+    console.log("me: ", me);
+    if (me?.isLogin) {
+      checkAccount();
+    } else if (address) {
       setIsOpen(false);
       if (isWhitelisted) {
         setIsConnecting(true);
         signIn();
       } else {
+        setIsConnecting(false);
       }
     }
-  }, [address, isWhitelisted]);
+  }, [address, isWhitelisted, me]);
 
+  // ウォレットによるサインイン
   const signIn = async () => {
     if (!address) return;
     console.log("Signing in...");
@@ -62,6 +92,7 @@ export const LoginPage: FC = () => {
       const data = await verifyRes.json();
       if (verifyRes.ok) {
         setIsConnecting(false);
+        await refetch();
       } else {
         console.error("Verification failed", data);
         setIsConnecting(false);
@@ -73,62 +104,27 @@ export const LoginPage: FC = () => {
     }
   };
 
-  useEffect(() => {
-    setTimeout(() => {
-      setIsBorder(false);
-      setIsIdle(true);
-    }, 1700);
-  }, [isBorder]);
-
-  useEffect(() => {
-    if (isIdle) {
-      setTimeout(() => {
-        setIsIdle(false);
-        setIsBorder(true);
-      }, 2000);
-    }
-  }, [isIdle]);
-
   return (
     <>
-      <CLayout className="relative shadow-[inset_0px_0px_40px_-7px_#6EBFB8] px-4">
-        <div className="relative w-full h-[80vh] ">
-          <Image
-            src="/globe.png"
-            alt="login_bg"
-            fill
-            style={{ objectFit: "contain", paddingBottom: "24px" }}
-          />
-          <LoginWidget
-            variant={address && !isWhitelisted ? "whitelist" : "connect"}
-            isConnecting={isConnecting}
-            connectButtonOptions={{
-              onPress: () => {
-                setIsConnecting(true);
-                setIsOpen(true);
-              },
-            }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          />
-        </div>
+      <div className="relative w-full h-[80vh] ">
         <Image
-          src="/borderless_logo.png"
-          alt="Borderlss Logo"
-          width={160}
-          height={24}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 object-contain"
+          src="/globe.png"
+          alt="login_bg"
+          fill
+          style={{ objectFit: "contain", paddingBottom: "24px" }}
         />
-        {isBorder && (
-          <>
-            <div className="absolute top-0 left-0 w-[320px] h-[640px] opacity-20">
-              <Border />
-            </div>
-            <div className="absolute bottom-0 right-0 w-[320px] h-[640px] rotate-180 opacity-20 ">
-              <Border />
-            </div>
-          </>
-        )}
-      </CLayout>
+        <LoginWidget
+          variant={address && !isWhitelisted ? "whitelist" : "connect"}
+          isConnecting={isConnecting || isLoadingCompany}
+          connectButtonOptions={{
+            onPress: () => {
+              setIsConnecting(true);
+              setIsOpen(true);
+            },
+          }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        />
+      </div>
       <ConnectorSelectionModal
         isOpen={isOpen}
         onOpenChange={setIsOpen}

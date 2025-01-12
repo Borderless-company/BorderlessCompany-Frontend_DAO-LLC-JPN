@@ -5,7 +5,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "";
 export interface AuthenticatedRequest extends NextApiRequest {
   user?: {
     address: string;
-  }
+  };
 }
 
 export function authMiddleware(handler: NextApiHandler) {
@@ -20,10 +20,15 @@ export function authMiddleware(handler: NextApiHandler) {
       }
 
       try {
-        const decoded = jwt.verify(token, JWT_SECRET) as { address: string; iat: number; exp: number; };
+        const decoded = jwt.verify(token, JWT_SECRET) as {
+          address: string;
+          iat: number;
+          exp: number;
+        };
+        console.log("decoded: ", decoded);
         req.user = { address: decoded.address };
-      } catch(e) {
-        req.user = {address: ""}
+      } catch (e) {
+        req.user = { address: "" };
       }
 
       return handler(req, res);
@@ -36,7 +41,8 @@ export function authMiddleware(handler: NextApiHandler) {
 
 function parseCookies(cookieHeader: string): Record<string, string> {
   const cookies: Record<string, string> = {};
-  cookieHeader.split(";").forEach(cookie => {
+  console.log("cookieHeader: ", cookieHeader);
+  cookieHeader.split(";").forEach((cookie) => {
     const parts = cookie.trim().split("=");
     const key = parts.shift();
     if (key) {
@@ -44,5 +50,6 @@ function parseCookies(cookieHeader: string): Record<string, string> {
       cookies[key] = value;
     }
   });
+
   return cookies;
 }

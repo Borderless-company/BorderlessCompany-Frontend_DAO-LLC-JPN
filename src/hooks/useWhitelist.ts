@@ -5,7 +5,7 @@ import { Tables, Enums } from "@/types/schema";
 export const useWhitelist = () => {
   const useIsWhitelisted = (userId: string) =>
     useQuery({
-      queryKey: ["whitelist", userId],
+      queryKey: ["whitelist", userId && userId],
       queryFn: async () => {
         if (!userId) return;
         const { data, error } = await supabase

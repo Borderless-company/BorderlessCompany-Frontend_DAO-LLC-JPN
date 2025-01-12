@@ -47,20 +47,8 @@ export const CountrySelection: FC<CountrySelectionProps> = ({
             アメリカの法人
           </CountrySelectionItem>
           <Divider className="w-full bg-transparent bg-gradient-to-l from-primary-outline to-primary-outline/0 border-none" />
-          <CountrySelectionItem countryCode="HK" isWIP>
-            香港の法人
-          </CountrySelectionItem>
-          <Divider className="w-full bg-transparent bg-gradient-to-l from-primary-outline to-primary-outline/0 border-none" />
           <CountrySelectionItem countryCode="AE" isWIP>
             アラブ首長国連邦の法人
-          </CountrySelectionItem>
-          <Divider className="w-full bg-transparent bg-gradient-to-l from-primary-outline to-primary-outline/0 border-none" />
-          <CountrySelectionItem countryCode="DE" isWIP>
-            ドイツの法人
-          </CountrySelectionItem>
-          <Divider className="w-full bg-transparent bg-gradient-to-l from-primary-outline to-primary-outline/0 border-none" />
-          <CountrySelectionItem countryCode="MH" isWIP>
-            マーシャル諸島の法人
           </CountrySelectionItem>
         </div>
       </div>
