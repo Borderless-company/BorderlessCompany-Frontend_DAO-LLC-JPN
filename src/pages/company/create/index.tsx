@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import { CreateCompanyPage } from "@/components/dao/register/CreateCompanyPage";
-import { serverSideTranslations } from "next-i18next/dist/types/serverSideTranslations";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export const getServerSideProps = async ({ locale }: { locale: string }) => {
   return {
