@@ -1,7 +1,7 @@
 import React from "react";
 import { useLockedBody } from "../hooks/useBodyLock";
 import { DashboardNavbar } from "../navbar/DashboardNavbar";
-import { SidebarWrapper } from "../sidebar/SidebarWrapper";
+import { Sidebar } from "../sidebar/Sidebar";
 import { SidebarContext } from "./DashboardLayoutContext";
 
 import clsx from "clsx";
@@ -31,7 +31,7 @@ export const DashboardLayout = ({ children }: Props) => {
       }}
     >
       <section className={clsx(notoSansJP.className, "font-sans flex")}>
-        <SidebarWrapper />
+        <Sidebar />
         <DashboardNavbar>{children}</DashboardNavbar>
       </section>
     </SidebarContext.Provider>

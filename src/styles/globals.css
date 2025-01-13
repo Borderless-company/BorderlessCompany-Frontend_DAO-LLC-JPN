@@ -32,4 +32,8 @@
   .font-title-md {
     @apply text-[18px] font-bold leading-[20px] tracking-[-0.25px];
   }
+
+  .font-label-lg {
+    @apply text-[16px] font-semibold leading-[18px] tracking-[0px];
+  }
 }
