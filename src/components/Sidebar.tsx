@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { cn } from "@nextui-org/react";
 import { useSidebarContext } from "@/components/layout/DashboardLayoutContext";
 import { usePathname } from "next/navigation";
@@ -17,7 +17,7 @@ import Link from "next/link";
 import { useTranslation } from "next-i18next";
 import { Button } from "react-aria-components";
 import Image from "next/image";
-import { AccountChip } from "../AccountChip";
+import { AccountChip } from "./AccountChip";
 
 export type SidebarProps = {
   companyName?: string;
@@ -129,10 +129,19 @@ export const SidebarItem: FC<SidebarItemProps> = ({
   href,
 }) => {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // 初期レンダリング時は何も表示しない
+  if (!mounted) return null;
+
+  const iconColor = isActive ? "#006361" : "#171717";
+
   return (
-    <IconContext.Provider
-      value={{ size: "24", color: isActive ? "#006361" : "#171717" }}
-    >
+    <IconContext.Provider value={{ size: "24", color: iconColor }}>
       <Button
         className={cn(
           "appearance-none transition-colors duration-150 w-full h-12 p-4 flex items-center justify-between gap-2 data-[hovered]:bg-neutral-backing data-[hovered]:cursor-pointer data-[disabled]:opacity-60",

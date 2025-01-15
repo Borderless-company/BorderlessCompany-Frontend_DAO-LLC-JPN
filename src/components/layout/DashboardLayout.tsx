@@ -1,7 +1,7 @@
 import React from "react";
 import { useLockedBody } from "../hooks/useBodyLock";
 import { DashboardNavbar } from "../navbar/DashboardNavbar";
-import { Sidebar } from "../sidebar/Sidebar";
+import { Sidebar } from "../Sidebar";
 import { SidebarContext } from "./DashboardLayoutContext";
 
 import clsx from "clsx";

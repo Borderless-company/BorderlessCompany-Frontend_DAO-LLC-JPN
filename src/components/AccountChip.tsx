@@ -8,7 +8,7 @@ import {
   useDisclosure,
   Modal,
 } from "@nextui-org/react";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Button } from "react-aria-components";
 import { useAccount } from "wagmi";
 import Image from "next/image";
@@ -23,6 +23,15 @@ export const AccountChip: FC<AccountChipProps> = ({ name }) => {
   const { address } = useAccount();
   const { signOut } = useSignOut();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // 初期レンダリング時は何も表示しない
+  if (!mounted) return null;
+
   return (
     <>
       <Button

@@ -12,11 +12,13 @@ export const SHCLayout: FC<SHCLayoutProps> = ({
   children,
 }) => {
   return (
-    <main className="w-full h-screen grid grid-cols-[240px_1fr]">
-      <div className="w-full h-full bg-primary-backing">{Sidebar}</div>
-      <div className="w-full h-full bg-secondary-backing grid grid-rows-[56px_1fr]">
-        <nav className="w-full h-full bg-neutral-backing">{Header}</nav>
-        {children}
+    <main className="w-full h-screen grid grid-cols-[240px_1fr] overflow-hidden">
+      <div className="w-full h-full">{Sidebar}</div>
+      <div className="w-full h-full  grid grid-rows-[56px_1fr]">
+        <nav className="w-full h-full">{Header}</nav>
+        <div className="w-full h-[calc(100vh-56px)] overflow-scroll">
+          {children}
+        </div>
       </div>
     </main>
   );

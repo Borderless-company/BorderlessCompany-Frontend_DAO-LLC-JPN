@@ -23,6 +23,9 @@
 }
 
 @layer components {
+  .font-headline-lg {
+    @apply text-[32px] font-bold leading-[36px] tracking-[-0.5px];
+  }
   .font-headline-sm {
     @apply text-[24px] font-bold leading-[28px] tracking-[-0.5px];
   }
@@ -32,8 +35,13 @@
   .font-title-md {
     @apply text-[18px] font-bold leading-[20px] tracking-[-0.25px];
   }
-
   .font-label-lg {
     @apply text-[16px] font-semibold leading-[18px] tracking-[0px];
+  }
+  .font-label-md {
+    @apply text-[14px] font-semibold leading-[15px] tracking-[0px];
+  }
+  .font-body-md {
+    @apply text-[16px] font-medium leading-[24px] tracking-[0px];
   }
 }
