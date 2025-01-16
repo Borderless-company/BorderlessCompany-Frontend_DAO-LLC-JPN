@@ -36,19 +36,19 @@ export const CountrySelection: FC<CountrySelectionProps> = ({
         </div>
         <div className="flex flex-col items-start justify-start gap-0 w-full h-auto overflow-hidden bg-primary-foreground rounded-xl border-1 border-primary-outline">
           <CountrySelectionItem countryCode="JP" onPress={onNext}>
-            Japanese company
+            Japan
           </CountrySelectionItem>
           <Divider className="w-full bg-transparent bg-gradient-to-l from-primary-outline to-primary-outline/0 border-none" />
           <CountrySelectionItem countryCode="CH" isWIP>
-            Swiss company
+            Switzerland
           </CountrySelectionItem>
           <Divider className="w-full bg-transparent bg-gradient-to-l from-primary-outline to-primary-outline/0 border-none" />
           <CountrySelectionItem countryCode="US" isWIP>
-            American company
+            United States
           </CountrySelectionItem>
           <Divider className="w-full bg-transparent bg-gradient-to-l from-primary-outline to-primary-outline/0 border-none" />
           <CountrySelectionItem countryCode="AE" isWIP>
-            UAE company
+            United Arab Emirates (UAE)
           </CountrySelectionItem>
         </div>
       </div>
