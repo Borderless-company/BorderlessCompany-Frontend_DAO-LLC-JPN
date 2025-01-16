@@ -14,6 +14,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const {
         id,
         company_id,
+        company_name,
         branch_location,
         business_end_date,
         business_purpose,
@@ -29,6 +30,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         .upsert({
           id,
           company_id,
+          company_name,
           branch_location,
           business_end_date,
           business_purpose,
@@ -38,7 +40,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           establishment_date,
           location,
         })
-        .select();
+        .select(`*, COMPANY_NAME (*)`);
 
       if (error) {
         return res.status(400).json({ error: error.message });
@@ -59,6 +61,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         currency,
         establishment_date,
         location,
+        company_name,
+        company_id,
       }: Tables<"AOI"> = req.body;
 
       if (!id) {
@@ -76,10 +80,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           currency,
           establishment_date,
           location,
-          status,
+          company_name,
+          company_id,
         })
         .eq("id", id)
-        .select();
+        .select(`*, COMPANY_NAME (*)`);
 
       if (error) {
         return res.status(400).json({ error: error.message });
@@ -89,44 +94,37 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     case "GET": {
-      // GET AOI BY ID OR COMPANY_ID
       const { id, company_id } = req.query;
 
       if (!id && !company_id) {
         return res.status(400).json({ error: "id or company_id is required" });
       }
 
-      if (Array.isArray(id)) {
-        return res.status(400).json({ error: "id is not an array" });
+      if (id && Array.isArray(id)) {
+        return res.status(400).json({ error: "id must be a string" });
       }
 
-      if (Array.isArray(company_id)) {
-        return res.status(400).json({ error: "company_id is not an array" });
+      if (company_id && Array.isArray(company_id)) {
+        return res.status(400).json({ error: "company_id must be a string" });
       }
+
+      let query = supabase.from("AOI").select(`*, COMPANY_NAME (*)`);
 
       if (id) {
-        const { data, error } = await supabase
-          .from("AOI")
-          .select()
-          .eq("id", id as string)
-          .single();
-
-        if (error) {
-          return res.status(400).json({ error: error.message });
-        }
-        return res.status(200).json({ data });
-      } else if (company_id) {
-        const { data, error } = await supabase
-          .from("AOI")
-          .select()
-          .eq("company_id", company_id as string)
-          .single();
-
-        if (error) {
-          return res.status(400).json({ error: error.message });
-        }
-        return res.status(200).json({ data });
+        query = query.eq("id", id);
       }
+
+      if (company_id) {
+        query = query.eq("company_id", company_id);
+      }
+
+      const { data, error } = await query.single();
+
+      if (error) {
+        return res.status(400).json({ error: error.message });
+      }
+
+      return res.status(200).json({ data });
     }
 
     default:

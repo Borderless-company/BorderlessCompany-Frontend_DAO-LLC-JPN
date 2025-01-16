@@ -73,7 +73,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
             />
             <Stack className="w-full h-full gap-2">
               <div className="w-full font-headline-lg">
-                {company?.display_name || "New Company"}
+                {company?.display_name || "Your Company"}
               </div>
               <Chip
                 variant="bordered"
@@ -113,6 +113,17 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                   {company?.company_type?.toUpperCase() || "None"}
                 </div>
               </Stack>
+              {company?.email && (
+                <Stack
+                  h
+                  className="w-full max-w-lg h-full gap-2 items-center justify-between py-3"
+                >
+                  <div className="font-label-md">{"Company Email"}</div>
+                  <div className=" font-label-md">
+                    {company?.email || "None"}
+                  </div>
+                </Stack>
+              )}
             </Stack>
           </div>
           <Stack className="w-full h-fit gap-4 px-10 py-6">
@@ -157,6 +168,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
       <AoIBuilder
         isOpen={isOpenAoiBuilder}
         onOpenChange={onOpenChangeAoiBuilder}
+        companyId={companyId}
       />
       <CompanyProfileEdit
         company={company}

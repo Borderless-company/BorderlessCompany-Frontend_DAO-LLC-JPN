@@ -25,30 +25,30 @@ export const CountrySelection: FC<CountrySelectionProps> = ({
       }}
     >
       <h2 className="text-2xl font-bold w-full text-center">
-        Borderlessへようこそ
+        Welcome to Borderless
       </h2>
       <div className="flex flex-col items-start justify-start gap-2 w-full">
         <div className="flex items-center justify-start gap-1">
           <PiPlusCircleDuotone className="text-primary text-medium" size={24} />
           <h3 className="text-primary text-medium font-bold pt-[1.5px]">
-            新しい法人を作成
+            Create a new company
           </h3>
         </div>
         <div className="flex flex-col items-start justify-start gap-0 w-full h-auto overflow-hidden bg-primary-foreground rounded-xl border-1 border-primary-outline">
           <CountrySelectionItem countryCode="JP" onPress={onNext}>
-            日本の法人
+            Japanese company
           </CountrySelectionItem>
           <Divider className="w-full bg-transparent bg-gradient-to-l from-primary-outline to-primary-outline/0 border-none" />
           <CountrySelectionItem countryCode="CH" isWIP>
-            スイスの法人
+            Swiss company
           </CountrySelectionItem>
           <Divider className="w-full bg-transparent bg-gradient-to-l from-primary-outline to-primary-outline/0 border-none" />
           <CountrySelectionItem countryCode="US" isWIP>
-            アメリカの法人
+            American company
           </CountrySelectionItem>
           <Divider className="w-full bg-transparent bg-gradient-to-l from-primary-outline to-primary-outline/0 border-none" />
           <CountrySelectionItem countryCode="AE" isWIP>
-            アラブ首長国連邦の法人
+            UAE company
           </CountrySelectionItem>
         </div>
       </div>
@@ -97,7 +97,7 @@ const CountrySelectionItem: FC<CountrySelectionItemProps> = ({
               content: "font-semibold",
             }}
           >
-            開発中
+            Coming soon
           </Chip>
         ) : (
           <PiArrowRight

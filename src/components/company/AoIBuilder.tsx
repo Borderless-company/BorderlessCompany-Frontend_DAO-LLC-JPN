@@ -14,11 +14,29 @@ import {
   DateValue,
 } from "@nextui-org/react";
 import { Stack } from "@/sphere/Stack";
-import { useForm } from "react-hook-form";
 import { PiPlusCircle, PiMinusCircle } from "react-icons/pi";
 import { LuJapaneseYen } from "react-icons/lu";
+import { useTaskStatus } from "@/hooks/useTaskStatus";
+import { useCompanyName } from "@/hooks/useCompanyName";
+import { useMember } from "@/hooks/useMember";
+import { useAOI } from "@/hooks/useAOI";
+import { Database, Tables } from "@/types/schema";
+import { useCompany } from "@/hooks/useCompany";
+import { useUser } from "@/hooks/useUser";
+type AoIBuilderProps = {
+  companyId?: string;
+} & Omit<DrawerProps, "children">;
 
-type AoIBuilderProps = {} & Omit<DrawerProps, "children">;
+type ExecutiveMember = {
+  id?: string;
+  userId: string;
+  name: string;
+  address: string;
+  walletAddress: string;
+  isRepresentative: boolean;
+  investment: string;
+  dateOfEmployment?: string;
+};
 
 type AoIFormData = {
   companyNameJp: string;
@@ -26,20 +44,21 @@ type AoIFormData = {
   businessPurpose: string;
   location: string;
   branchLocations: string[];
-  executiveMembers: {
-    name: string;
-    address: string;
-    walletAddress: string;
-    isRepresentative: boolean;
-    investment: string;
-  }[];
+  executiveMembers: ExecutiveMember[];
   businessStartDate: DateValue | null;
   businessEndDate: DateValue | null;
   capital: string;
+  currency: Database["public"]["Enums"]["Currency"];
   establishmentDate: DateValue | null;
 };
 
-export const AoIBuilder: FC<AoIBuilderProps> = ({ ...props }) => {
+export const AoIBuilder: FC<AoIBuilderProps> = ({ companyId, ...props }) => {
+  const { updateTaskStatusByIds } = useTaskStatus();
+  const { updateCompanyName } = useCompanyName();
+  const { createMember, updateMember } = useMember({ daoId: companyId });
+  const { updateAOI } = useAOI(companyId);
+  const { company } = useCompany(companyId);
+  const { createUser } = useUser();
   const [formData, setFormData] = useState<AoIFormData>({
     companyNameJp: "",
     companyNameEn: "",
@@ -48,16 +67,18 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ ...props }) => {
     branchLocations: [""],
     executiveMembers: [
       {
+        userId: "",
         name: "",
         address: "",
-        walletAddress: "",
-        isRepresentative: false,
+        walletAddress: company?.founder_id!,
+        isRepresentative: true,
         investment: "",
       },
     ],
     businessStartDate: null,
     businessEndDate: null,
     capital: "",
+    currency: "yen",
     establishmentDate: null,
   });
 
@@ -101,7 +122,7 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ ...props }) => {
 
   const handleExecutiveMemberChange = (
     index: number,
-    field: keyof (typeof formData.executiveMembers)[0],
+    field: keyof ExecutiveMember,
     value: string | boolean
   ) => {
     if (field === "name" && value === "") {
@@ -116,6 +137,7 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ ...props }) => {
             ? newExecutiveMembers
             : [
                 {
+                  userId: "",
                   name: "",
                   address: "",
                   walletAddress: "",
@@ -130,6 +152,7 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ ...props }) => {
       if (index === formData.executiveMembers.length) {
         // 新しい要素を追加
         newExecutiveMembers.push({
+          userId: "",
           name: "",
           address: "",
           walletAddress: "",
@@ -166,44 +189,84 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ ...props }) => {
     }));
   };
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formElement = new FormData(e.target as HTMLFormElement);
+    console.log("formData: ", formData);
+    console.log("companyId: ", companyId);
+    if (!companyId || !company) return;
 
-    // branchLocationsを配列として取得
-    const branches = formData.branchLocations
-      .map((_, index) => formElement.get(`branchLocation-${index}`))
-      .filter(
-        (location): location is string =>
-          !!location && location.toString().trim() !== ""
-      );
+    try {
+      // 1. COMPANY_NAMEの更新
+      const companyNameResponse = await updateCompanyName({
+        id: company.company_name!,
+        "ja-jp": formData.companyNameJp,
+        "en-us": formData.companyNameEn,
+      });
 
-    // Executive Membersを配列として取得
-    const executives = formData.executiveMembers.map((_, index) => ({
-      name: formElement.get(`executiveMemberName-${index}`),
-      address: formElement.get(`executiveMemberAddress-${index}`),
-      walletAddress: formElement.get(`executiveMemberWalletAddress-${index}`),
-      isRepresentative:
-        formElement.get(`isRepresentativeMember-${index}`) === "on",
-    }));
+      if (!companyNameResponse) {
+        throw new Error("会社名の更新に失敗しました");
+      }
 
-    // フォームデータから特定のプレフィックスを持つフィールドを除外
-    const formEntries = Object.fromEntries(
-      Array.from(formElement.entries()).filter(
-        ([key]) =>
-          !key.startsWith("branchLocation-") &&
-          !key.startsWith("executiveMember") &&
-          !key.startsWith("isRepresentativeMember-")
-      )
-    );
+      // 2. USERの更新
+      const userPromises = formData.executiveMembers.map(async (member) => {
+        if (!member.walletAddress) return;
+        const user = await createUser({
+          evm_address: member.walletAddress,
+          address: member.address,
+          name: member.name,
+        });
+        return user;
+      });
 
-    const data = {
-      ...formEntries,
-      branchLocations: branches,
-      executiveMembers: executives,
-    };
+      const users = await Promise.all(userPromises);
 
-    console.log("AoI Data", data);
+      // 3. MEMBERの更新
+      const memberPromises = formData.executiveMembers.map(async (member) => {
+        if (!member.walletAddress) return;
+        const memberData: Partial<Tables<"MEMBER">> = {
+          user_id: member.walletAddress,
+          dao_id: companyId,
+          is_executive: true,
+          is_representative: member.isRepresentative,
+          invested_amount: parseInt(member.investment),
+        };
+
+        return await createMember(memberData);
+      });
+
+      await Promise.all(memberPromises);
+
+      // 3. AOIの更新
+      const aoiResponse = await updateAOI({
+        id: company.aoi!,
+        company_name: companyNameResponse.id,
+        company_id: companyId,
+        business_purpose: formData.businessPurpose,
+        location: formData.location,
+        branch_location: formData.branchLocations,
+        establishment_date: formData.establishmentDate?.toString() || null,
+        business_start_date: formData.businessStartDate?.toString() || null,
+        business_end_date: formData.businessEndDate?.toString() || null,
+        capital: parseInt(formData.capital),
+        currency: formData.currency,
+      });
+
+      if (!aoiResponse) {
+        throw new Error("定款の更新に失敗しました");
+      }
+
+      // タスクステータスの更新
+      await updateTaskStatusByIds({
+        company_id: companyId,
+        task_id: "create-aoi",
+        status: "completed",
+      });
+
+      props.onClose?.();
+      console.log("更新が完了しました");
+    } catch (error) {
+      console.error("更新中にエラーが発生しました:", error);
+    }
   };
 
   return (
@@ -341,7 +404,7 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ ...props }) => {
                           )
                         }
                         label="Name"
-                        placeholder="John Doe"
+                        placeholder={index !== 0 ? "John Doe" : "Your Name"}
                         labelPlacement="inside"
                       />
                       <Input
@@ -360,7 +423,11 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ ...props }) => {
                       />
                       <Input
                         name={`executiveMemberWalletAddress-${index}`}
-                        value={member.walletAddress}
+                        value={
+                          index !== 0
+                            ? member.walletAddress
+                            : company?.founder_id!
+                        }
                         onChange={(e) =>
                           handleExecutiveMemberChange(
                             index,
@@ -368,6 +435,7 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ ...props }) => {
                             e.target.value
                           )
                         }
+                        isReadOnly={index === 0}
                         label="Wallet Address"
                         placeholder="0x1234567890abcdef"
                         labelPlacement="inside"
@@ -416,6 +484,7 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ ...props }) => {
                         executiveMembers: [
                           ...prev.executiveMembers,
                           {
+                            userId: "",
                             name: "",
                             address: "",
                             walletAddress: "",

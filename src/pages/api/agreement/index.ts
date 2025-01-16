@@ -42,6 +42,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(400).json({ error: "user_id is required" });
       }
 
+      if (Array.isArray(user_id)) {
+        return res.status(400).json({ error: "user_id must be a string" });
+      }
+
       const { data, error } = await supabase
         .from("AGREEMENT")
         .select()

@@ -13,6 +13,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       // CREATE / UPSERT COMPANY
       const {
         id,
+        company_name,
         company_number,
         company_type,
         deployment_date,
@@ -23,12 +24,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         icon,
         is_active,
         email,
+        aoi,
       }: Tables<"COMPANY"> = req.body;
 
       const { data, error } = await supabase
         .from("COMPANY")
         .upsert({
           id,
+          company_name,
           company_number,
           company_type,
           deployment_date,
@@ -39,6 +42,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           icon,
           is_active,
           email,
+          aoi,
         })
         .select();
 
@@ -53,6 +57,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       // UPDATE COMPANY
       const {
         id,
+        company_name,
         company_number,
         company_type,
         deployment_date,
@@ -62,6 +67,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         icon,
         is_active,
         email,
+        aoi,
       }: Tables<"COMPANY"> = req.body;
 
       if (!id) {
@@ -71,6 +77,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       const { data, error } = await supabase
         .from("COMPANY")
         .update({
+          company_name,
           company_number,
           company_type,
           deployment_date,
@@ -80,6 +87,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           icon,
           is_active,
           email,
+          aoi,
         })
         .eq("id", id)
         .select();

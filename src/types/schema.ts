@@ -66,6 +66,7 @@ export type Database = {
           business_start_date: string | null
           capital: number | null
           company_id: string | null
+          company_name: string | null
           created_at: string
           currency: Database["public"]["Enums"]["Currency"] | null
           establishment_date: string | null
@@ -79,6 +80,7 @@ export type Database = {
           business_start_date?: string | null
           capital?: number | null
           company_id?: string | null
+          company_name?: string | null
           created_at?: string
           currency?: Database["public"]["Enums"]["Currency"] | null
           establishment_date?: string | null
@@ -92,6 +94,7 @@ export type Database = {
           business_start_date?: string | null
           capital?: number | null
           company_id?: string | null
+          company_name?: string | null
           created_at?: string
           currency?: Database["public"]["Enums"]["Currency"] | null
           establishment_date?: string | null
@@ -106,10 +109,19 @@ export type Database = {
             referencedRelation: "COMPANY"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "AOI_company_name_fkey"
+            columns: ["company_name"]
+            isOneToOne: false
+            referencedRelation: "COMPANY_NAME"
+            referencedColumns: ["id"]
+          },
         ]
       }
       COMPANY: {
         Row: {
+          aoi: string | null
+          company_name: string | null
           company_number: string | null
           company_type: Database["public"]["Enums"]["CompanyType"] | null
           created_at: string
@@ -124,6 +136,8 @@ export type Database = {
           sc_address: string | null
         }
         Insert: {
+          aoi?: string | null
+          company_name?: string | null
           company_number?: string | null
           company_type?: Database["public"]["Enums"]["CompanyType"] | null
           created_at?: string
@@ -138,6 +152,8 @@ export type Database = {
           sc_address?: string | null
         }
         Update: {
+          aoi?: string | null
+          company_name?: string | null
           company_number?: string | null
           company_type?: Database["public"]["Enums"]["CompanyType"] | null
           created_at?: string
@@ -153,6 +169,20 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "COMPANY_aoi_fkey"
+            columns: ["aoi"]
+            isOneToOne: false
+            referencedRelation: "AOI"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "COMPANY_company_name_fkey"
+            columns: ["company_name"]
+            isOneToOne: false
+            referencedRelation: "COMPANY_NAME"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "COMPANY_founder_id_fkey"
             columns: ["founder_id"]
             isOneToOne: false
@@ -163,22 +193,22 @@ export type Database = {
       }
       COMPANY_NAME: {
         Row: {
-          country: string | null
           created_at: string
+          "en-us": string | null
           id: string
-          name: string | null
+          "ja-jp": string | null
         }
         Insert: {
-          country?: string | null
           created_at?: string
-          id: string
-          name?: string | null
+          "en-us"?: string | null
+          id?: string
+          "ja-jp"?: string | null
         }
         Update: {
-          country?: string | null
           created_at?: string
+          "en-us"?: string | null
           id?: string
-          name?: string | null
+          "ja-jp"?: string | null
         }
         Relationships: []
       }
@@ -308,6 +338,7 @@ export type Database = {
           is_admin: boolean | null
           is_executive: boolean | null
           is_minted: boolean
+          is_representative: boolean | null
           token_id: string | null
           user_id: string | null
         }
@@ -320,6 +351,7 @@ export type Database = {
           is_admin?: boolean | null
           is_executive?: boolean | null
           is_minted?: boolean
+          is_representative?: boolean | null
           token_id?: string | null
           user_id?: string | null
         }
@@ -332,6 +364,7 @@ export type Database = {
           is_admin?: boolean | null
           is_executive?: boolean | null
           is_minted?: boolean
+          is_representative?: boolean | null
           token_id?: string | null
           user_id?: string | null
         }
@@ -663,6 +696,7 @@ export type Database = {
       Currency: "yen" | "usd"
       Jurisdiction: "jp"
       KycStatus: "done" | "reviewing" | "yet" | "error"
+      LangCode: "ja-JP" | "en-US"
       PaymentStatus: "done" | "pending" | "yet" | "error"
       TaskStatus: "todo" | "completed" | "inProgress"
     }

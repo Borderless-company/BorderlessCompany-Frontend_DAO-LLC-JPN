@@ -10,6 +10,8 @@ import { useCompany } from "@/hooks/useCompany";
 import { useAccount } from "wagmi";
 import { useRouter } from "next/router";
 import { useTaskStatus } from "@/hooks/useTaskStatus";
+import { useAOI } from "@/hooks/useAOI";
+import { useCompanyName } from "@/hooks/useCompanyName";
 
 export const CreateCompanyPage: FC = () => {
   const [page, setPage] = useState<number>(0);
@@ -19,6 +21,8 @@ export const CreateCompanyPage: FC = () => {
   const { address } = useAccount();
   const router = useRouter();
   const { createTaskStatus } = useTaskStatus();
+  const { createAOI } = useAOI();
+  const { createCompanyName } = useCompanyName();
 
   const onBack = () => {
     setPage((prev) => prev - 1);
@@ -31,11 +35,14 @@ export const CreateCompanyPage: FC = () => {
   const onCreateCompany = async () => {
     setPage(2);
     try {
+      const companyName = await createCompanyName({});
+      const aoi = await createAOI({});
       const company = await createCompany({
         founder_id: address,
-        display_name: "New Company",
         jurisdiction: "jp",
         company_type: "llc",
+        company_name: companyName.id,
+        aoi: aoi.id,
       });
 
       if (company.id) {

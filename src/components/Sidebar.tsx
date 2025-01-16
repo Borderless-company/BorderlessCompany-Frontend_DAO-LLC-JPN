@@ -18,21 +18,24 @@ import { useTranslation } from "next-i18next";
 import { Button } from "react-aria-components";
 import Image from "next/image";
 import { AccountChip } from "./AccountChip";
+import { useCompany } from "@/hooks/useCompany";
 
 export type SidebarProps = {
-  companyName?: string;
-  companyIcon?: string;
+  companyId?: string;
 };
 
-export const Sidebar: FC<SidebarProps> = ({ companyName, companyIcon }) => {
+export const Sidebar: FC<SidebarProps> = ({ companyId }) => {
   const pathname = usePathname();
   const { t } = useTranslation("common");
   const router = useRouter();
-  const { companyId } = router.query;
+  const { company } = useCompany(companyId as string);
 
   return (
     <aside className="bg-background transition-transform h-screen w-60 shrink-0 z-[202] overflow-y-auto border-r border-divider flex flex-col translate-x-0 ">
-      <SidebarHeader text="New Company" />
+      <SidebarHeader
+        text={company?.display_name || "Your Company"}
+        icon={company?.icon || "/company_icon_fallback.png"}
+      />
       <div className="flex-1 ">
         <SidebarItem
           title="Home"

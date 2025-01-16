@@ -21,7 +21,7 @@ const ClaimPage: FC = () => {
     userId: account?.address,
     daoId: estuary?.dao_id as string,
   });
-  
+
   const contract = getContract({
     address: member?.token.contract_address as string,
     chain: sepolia,
@@ -77,7 +77,7 @@ const ClaimPage: FC = () => {
           <p className="text-slate-500 text-base text-center font-medium">
             受け取るをタップして社員権を受け取ってください
           </p>
-          <p>{"aaa" || transactionResult?.transactionHash}</p>
+          <p>{transactionResult?.transactionHash}</p>
         </div>
         {/* <div className="flex gap-2">
           <Image src={"/etherscan.png"} alt="org logo" width={32} height={32} />

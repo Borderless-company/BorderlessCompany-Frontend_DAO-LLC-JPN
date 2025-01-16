@@ -86,6 +86,7 @@ export const CompanyProfileEdit: FC<CompanyProfileEditProps> = ({
       setSelectedFile(undefined);
       setImgUrl(undefined);
       props.onClose?.();
+      props.onOpenChange?.(false);
     } catch (error) {
       console.error("Failed to update company profile:", error);
     }
@@ -135,6 +136,7 @@ export const CompanyProfileEdit: FC<CompanyProfileEditProps> = ({
                     label="Company Name"
                     labelPlacement="outside"
                     placeholder="Enter your company name"
+                    description="This name is a display name for your company and doesn't have to be the same as your company name."
                   />
                   <Input
                     name="email"

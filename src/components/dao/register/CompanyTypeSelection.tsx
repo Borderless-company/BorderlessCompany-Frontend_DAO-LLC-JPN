@@ -33,7 +33,7 @@ export const CompanyTypeSelection: FC<CompanyTypeSelectionProps> = ({
       }}
     >
       <h2 className="text-2xl font-bold w-full text-start">
-        作成する法人の種類を選択してください
+        Select the company type
       </h2>
       <RadioGroup
         orientation="horizontal"
@@ -44,28 +44,28 @@ export const CompanyTypeSelection: FC<CompanyTypeSelectionProps> = ({
       >
         <CompanyTypeSelectionItem
           value="llc"
-          title="合同会社型"
-          description="合同会社型DAOは、デジタル社員権を活用した社員募集が行えます。"
+          title="LLC"
+          description="LLC is a limited liability company that allows for the use of digital employee rights."
         />
         <CompanyTypeSelectionItem
           value="inc"
-          title="株式会社型"
+          title="Inc"
           isComingSoon={true}
           isDisabled={true}
         />
         <CompanyTypeSelectionItem
           value="gia"
-          title="一般社団法人型"
+          title="GIA"
           isComingSoon={true}
           isDisabled={true}
         />
       </RadioGroup>
       <Stack h className="gap-2 justify-end">
         <Button color="primary" variant="bordered" onPress={onBack}>
-          戻る
+          Back
         </Button>
         <Button color="primary" variant="solid" onPress={onNext}>
-          作成する
+          Create
         </Button>
       </Stack>
     </motion.div>

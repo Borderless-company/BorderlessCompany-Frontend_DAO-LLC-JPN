@@ -1,10 +1,14 @@
 // pages/api/member.ts
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { supabase } from '@/utils/supabase';
+import type { NextApiRequest, NextApiResponse } from "next";
+import { supabase } from "@/utils/supabase";
+import { Tables } from "@/types/schema";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   switch (req.method) {
-    case 'POST': {
+    case "POST": {
       // メンバー新規作成
       const {
         user_id,
@@ -15,7 +19,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         token_id,
         invested_amount,
         is_minted,
-      } = req.body;
+        is_representative,
+      }: Tables<"MEMBER"> = req.body;
 
       const { data, error } = await supabase
         .from("MEMBER")
@@ -28,6 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           token_id,
           invested_amount,
           is_minted,
+          is_representative,
         })
         .select();
 
@@ -38,7 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(201).json({ data: data[0] });
     }
 
-    case 'PUT': {
+    case "PUT": {
       // メンバー更新
       const {
         user_id,
@@ -49,10 +55,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         token_id,
         invested_amount,
         is_minted,
-      } = req.body;
+        is_representative,
+      }: Tables<"MEMBER"> = req.body;
 
       if (!user_id || !dao_id) {
-        return res.status(400).json({ error: 'user_id and dao_id are required' });
+        return res
+          .status(400)
+          .json({ error: "user_id and dao_id are required" });
       }
 
       const { data, error } = await supabase
@@ -65,6 +74,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           token_id,
           invested_amount,
           is_minted,
+          is_representative,
         })
         .eq("user_id", user_id)
         .eq("dao_id", dao_id)
@@ -78,6 +88,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     default:
-      return res.status(405).json({ error: 'Method not allowed' });
+      return res.status(405).json({ error: "Method not allowed" });
   }
 }

@@ -14,6 +14,7 @@ import clsx from "clsx";
 import { Noto_Sans_JP } from "next/font/google";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
+import { useEffect } from "react";
 
 const notoSansJP = Noto_Sans_JP({
   subsets: ["latin"],
@@ -30,6 +31,10 @@ export const getServerSideProps = async ({ locale }: { locale: string }) => {
 
 export default function Home() {
   const { t } = useTranslation("common");
+
+  useEffect(() => {
+    router.push("/login");
+  }, []);
 
   return (
     <div className={clsx(notoSansJP.className, "font-sans")}>
@@ -101,4 +106,3 @@ export default function Home() {
     </div>
   );
 }
-

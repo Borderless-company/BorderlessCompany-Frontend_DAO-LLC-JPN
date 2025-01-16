@@ -22,7 +22,10 @@ export const getServerSideProps = async ({
 
 const CompanyHome: NextPage<{ companyId: string }> = ({ companyId }) => {
   return (
-    <SHCLayout Sidebar={<Sidebar />} Header={<NavBar title="Home" />}>
+    <SHCLayout
+      Sidebar={<Sidebar companyId={companyId} />}
+      Header={<NavBar title="Home" />}
+    >
       <CompanyHomePage companyId={companyId} />
     </SHCLayout>
   );
