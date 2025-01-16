@@ -99,7 +99,7 @@ export const AgreementPage: FC<AgreementPageProps> = ({
           isBorder={false}
         />
       </CheckboxGroup>
-      <Stack h className="w-full justify-end gap-2">
+      <Stack h className="w-full justify-end gap-2 z-20">
         <Button
           color="primary"
           variant="bordered"

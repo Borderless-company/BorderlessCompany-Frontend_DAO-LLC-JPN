@@ -7,6 +7,7 @@ import { CreateBorderlessCompany } from "@/components/web3/RegisterBorderlessCom
 import { useCompanybyFounderId } from "@/hooks/useCompany";
 import { useMe } from "@/hooks/useMe";
 import { useSignOut } from "@/hooks/useSignOut";
+import { useUser } from "@/hooks/useUser";
 import { Button } from "@nextui-org/react";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Image from "next/image";
@@ -32,6 +33,7 @@ export default function Login() {
     isLoading: isLoadingCompany,
     isError,
   } = useCompanybyFounderId(address || "");
+  const { user } = useUser(address || "");
 
   // 初期化
   useEffect(() => {
@@ -40,9 +42,11 @@ export default function Login() {
     } else if (me?.isLogin) {
       if (company && !isLoadingCompany) {
         router.push(`/company/${company.id}`);
-      } else if (isError) {
+      } else if (isError && user) {
         console.log("isError: ", isError);
         router.push("/company/create");
+      } else {
+        return;
       }
     }
   }, [me, company, router, isLoadingCompany]);
