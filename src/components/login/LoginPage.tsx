@@ -47,6 +47,8 @@ export const LoginPage: FC<LoginPageProps> = ({
         if (!_hasAccount) {
           // アカウントがない場合
           onPageChange(1);
+        } else {
+          // アカウントがある場合
         }
       } catch (e) {
         console.error(e);

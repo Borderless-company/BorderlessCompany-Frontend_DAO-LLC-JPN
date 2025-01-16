@@ -24,13 +24,14 @@ export const getServerSideProps = async ({ locale }: { locale: string }) => {
 
 export default function Login() {
   const [page, setPage] = useState(0);
-  const { signOut } = useSignOut();
   const { me } = useMe();
   const { address } = useAccount();
   const router = useRouter();
-  const { company, isLoading: isLoadingCompany } = useCompanybyFounderId(
-    address || ""
-  );
+  const {
+    company,
+    isLoading: isLoadingCompany,
+    isError,
+  } = useCompanybyFounderId(address || "");
 
   // 初期化
   useEffect(() => {
@@ -39,6 +40,9 @@ export default function Login() {
     } else if (me?.isLogin) {
       if (company && !isLoadingCompany) {
         router.push(`/company/${company.id}`);
+      } else if (isError) {
+        console.log("isError: ", isError);
+        router.push("/company/create");
       }
     }
   }, [me, company, router, isLoadingCompany]);

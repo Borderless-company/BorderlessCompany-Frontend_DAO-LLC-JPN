@@ -10,35 +10,33 @@ const supabase = createClient<Database>(supabaseUrl!, serviveRoleKey!);
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   switch (req.method) {
     case "POST": {
-      // CREATE / UPSERT COMPANY
+      // CREATE / UPSERT AOI
       const {
         id,
-        company_number,
-        company_type,
-        deployment_date,
-        founder_id,
-        jurisdiction,
-        sc_address,
-        display_name,
-        icon,
-        is_active,
-        email,
-      }: Tables<"COMPANY"> = req.body;
+        company_id,
+        branch_location,
+        business_end_date,
+        business_purpose,
+        business_start_date,
+        capital,
+        currency,
+        establishment_date,
+        location,
+      }: Tables<"AOI"> = req.body;
 
       const { data, error } = await supabase
-        .from("COMPANY")
+        .from("AOI")
         .upsert({
           id,
-          company_number,
-          company_type,
-          deployment_date,
-          founder_id,
-          jurisdiction,
-          sc_address,
-          display_name,
-          icon,
-          is_active,
-          email,
+          company_id,
+          branch_location,
+          business_end_date,
+          business_purpose,
+          business_start_date,
+          capital,
+          currency,
+          establishment_date,
+          location,
         })
         .select();
 
@@ -50,36 +48,35 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     case "PUT": {
-      // UPDATE COMPANY
+      // UPDATE AOI
       const {
         id,
-        company_number,
-        company_type,
-        deployment_date,
-        jurisdiction,
-        sc_address,
-        display_name,
-        icon,
-        is_active,
-        email,
-      }: Tables<"COMPANY"> = req.body;
+        branch_location,
+        business_end_date,
+        business_purpose,
+        business_start_date,
+        capital,
+        currency,
+        establishment_date,
+        location,
+      }: Tables<"AOI"> = req.body;
 
       if (!id) {
         return res.status(400).json({ error: "id is required" });
       }
 
       const { data, error } = await supabase
-        .from("COMPANY")
+        .from("AOI")
         .update({
-          company_number,
-          company_type,
-          deployment_date,
-          jurisdiction,
-          sc_address,
-          display_name,
-          icon,
-          is_active,
-          email,
+          branch_location,
+          business_end_date,
+          business_purpose,
+          business_start_date,
+          capital,
+          currency,
+          establishment_date,
+          location,
+          status,
         })
         .eq("id", id)
         .select();
@@ -92,24 +89,24 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     case "GET": {
-      // GET COMPANY BY ID
-      const { id, founder_id } = req.query;
+      // GET AOI BY ID OR COMPANY_ID
+      const { id, company_id } = req.query;
 
-      if (!id && !founder_id) {
-        return res.status(400).json({ error: "id or founder_id is required" });
+      if (!id && !company_id) {
+        return res.status(400).json({ error: "id or company_id is required" });
       }
 
       if (Array.isArray(id)) {
         return res.status(400).json({ error: "id is not an array" });
       }
 
-      if (Array.isArray(founder_id)) {
-        return res.status(400).json({ error: "founder_id is not an array" });
+      if (Array.isArray(company_id)) {
+        return res.status(400).json({ error: "company_id is not an array" });
       }
 
       if (id) {
         const { data, error } = await supabase
-          .from("COMPANY")
+          .from("AOI")
           .select()
           .eq("id", id as string)
           .single();
@@ -118,12 +115,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           return res.status(400).json({ error: error.message });
         }
         return res.status(200).json({ data });
-      } else if (founder_id) {
-        console.log("fetching company by founder_id: ", founder_id);
+      } else if (company_id) {
         const { data, error } = await supabase
-          .from("COMPANY")
+          .from("AOI")
           .select()
-          .eq("founder_id", founder_id as string)
+          .eq("company_id", company_id as string)
           .single();
 
         if (error) {

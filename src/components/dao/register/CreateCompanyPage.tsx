@@ -9,6 +9,7 @@ import { useSignOut } from "@/hooks/useSignOut";
 import { useCompany } from "@/hooks/useCompany";
 import { useAccount } from "wagmi";
 import { useRouter } from "next/router";
+import { useTaskStatus } from "@/hooks/useTaskStatus";
 
 export const CreateCompanyPage: FC = () => {
   const [page, setPage] = useState<number>(0);
@@ -17,6 +18,7 @@ export const CreateCompanyPage: FC = () => {
   const { createCompany, isCreateCompanySuccess } = useCompany();
   const { address } = useAccount();
   const router = useRouter();
+  const { createTaskStatus } = useTaskStatus();
 
   const onBack = () => {
     setPage((prev) => prev - 1);
@@ -37,6 +39,21 @@ export const CreateCompanyPage: FC = () => {
       });
 
       if (company.id) {
+        await createTaskStatus({
+          company_id: company.id,
+          task_id: "create-aoi",
+          status: "todo",
+        });
+        await createTaskStatus({
+          company_id: company.id,
+          task_id: "enter-company-profile",
+          status: "todo",
+        });
+        await createTaskStatus({
+          company_id: company.id,
+          task_id: "enter-executive-token-info",
+          status: "todo",
+        });
         setTimeout(() => {
           router.push(`/company/${company.id}`);
         }, 3000);

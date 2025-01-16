@@ -5,11 +5,7 @@ import { hasCompany } from "@/utils/api/company";
 
 export type UpdateCompanyProps = Partial<Tables<"COMPANY">>;
 
-export type UseCompanyProps = {
-  id?: string;
-};
-
-export const useCompany = () => {
+export const useCompany = (id?: string) => {
   const queryClient = useQueryClient();
 
   const { mutateAsync: createCompany, isSuccess: isCreateCompanySuccess } =
@@ -38,55 +34,66 @@ export const useCompany = () => {
       },
     });
 
-  const { mutateAsync: updateCompany } = useMutation<
-    Tables<"COMPANY">,
-    Error,
-    UpdateCompanyProps
-  >({
-    mutationFn: async (props: UpdateCompanyProps) => {
-      const response = await fetch("/api/company", {
-        method: "PUT",
+  const { mutateAsync: updateCompany, isSuccess: isCompanyUpdated } =
+    useMutation<Tables<"COMPANY">, Error, UpdateCompanyProps>({
+      mutationFn: async (props: UpdateCompanyProps) => {
+        const response = await fetch("/api/company", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...props }),
+        });
+        const json = await response.json();
+        if (!response.ok) {
+          throw new Error(json.error);
+        }
+        console.log("[SUCCESS] Company updated: ", json.data);
+        return json.data;
+      },
+      onError: (error) => {
+        console.error("[ERROR] Failed to update Company: ", error);
+      },
+      onSuccess: (data) => {
+        queryClient.invalidateQueries({ queryKey: ["company", data.id] });
+      },
+    });
+
+  const {
+    data: company,
+    isLoading,
+    isError,
+  } = useQuery<Tables<"COMPANY"> | undefined, Error>({
+    queryKey: ["company", id],
+    queryFn: async () => {
+      if (!id) return undefined;
+      const response = await fetch(`/api/company?id=${id}`, {
+        method: "GET",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...props }),
       });
       const json = await response.json();
       if (!response.ok) {
         throw new Error(json.error);
       }
-      console.log("[SUCCESS] Company updated: ", json.data);
       return json.data;
     },
-    onError: (error) => {
-      console.error("[ERROR] Failed to update Company: ", error);
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["company", data.id] });
-    },
   });
-  // const { data: company } = useQuery<Tables<"COMPANY"> | undefined, Error>({
-  //   queryKey: ["company", id],
-  //   queryFn: async () => {
-  //     if (!id) return undefined;
-  //     const response = await fetch(`/api/company?id=${id}`, {
-  //       method: "GET",
-  //       headers: { "Content-Type": "application/json" },
-  //     });
-  //     const json = await response.json();
-  //     if (!response.ok) {
-  //       throw new Error(json.error);
-  //     }
-  //     return json.data;
-  //   },
-  // });
 
-  return { updateCompany, createCompany, isCreateCompanySuccess };
+  return {
+    updateCompany,
+    createCompany,
+    isCreateCompanySuccess,
+    isError,
+    isCompanyUpdated,
+    company,
+    isLoading,
+  };
 };
 
 export const useCompanybyFounderId = (founderId: string) => {
-  const { data: company, isLoading } = useQuery<
-    Tables<"COMPANY"> | undefined,
-    Error
-  >({
+  const {
+    data: company,
+    isLoading,
+    isError,
+  } = useQuery<Tables<"COMPANY"> | undefined, Error>({
     queryKey: ["companyByFounderId", founderId && founderId],
     queryFn: async () => {
       if (!founderId) return undefined;
@@ -101,5 +108,5 @@ export const useCompanybyFounderId = (founderId: string) => {
       return json.data;
     },
   });
-  return { company, isLoading };
+  return { company, isLoading, isError };
 };

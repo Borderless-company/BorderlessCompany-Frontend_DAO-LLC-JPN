@@ -29,9 +29,9 @@ const ImageUploader: FC<ImageUploaderProps> = ({ label }) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-lg font-semibold ">{label}</p>
+      <p className="font-label-md">{label}</p>
       {selectedFile && (
-        <div>
+        <>
           {preview && (
             <div>
               <img
@@ -45,7 +45,7 @@ const ImageUploader: FC<ImageUploaderProps> = ({ label }) => {
               />
             </div>
           )}
-        </div>
+        </>
       )}
       <FileTrigger
         acceptedFileTypes={["image/png", "image/jpeg"]}

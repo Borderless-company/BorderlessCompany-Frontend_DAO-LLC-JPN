@@ -58,6 +58,56 @@ export type Database = {
           },
         ]
       }
+      AOI: {
+        Row: {
+          branch_location: string[] | null
+          business_end_date: string | null
+          business_purpose: string | null
+          business_start_date: string | null
+          capital: number | null
+          company_id: string | null
+          created_at: string
+          currency: Database["public"]["Enums"]["Currency"] | null
+          establishment_date: string | null
+          id: string
+          location: string | null
+        }
+        Insert: {
+          branch_location?: string[] | null
+          business_end_date?: string | null
+          business_purpose?: string | null
+          business_start_date?: string | null
+          capital?: number | null
+          company_id?: string | null
+          created_at?: string
+          currency?: Database["public"]["Enums"]["Currency"] | null
+          establishment_date?: string | null
+          id?: string
+          location?: string | null
+        }
+        Update: {
+          branch_location?: string[] | null
+          business_end_date?: string | null
+          business_purpose?: string | null
+          business_start_date?: string | null
+          capital?: number | null
+          company_id?: string | null
+          created_at?: string
+          currency?: Database["public"]["Enums"]["Currency"] | null
+          establishment_date?: string | null
+          id?: string
+          location?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "AOI_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "COMPANY"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       COMPANY: {
         Row: {
           company_number: string | null
@@ -65,9 +115,11 @@ export type Database = {
           created_at: string
           deployment_date: string | null
           display_name: string | null
+          email: string | null
           founder_id: string | null
           icon: string | null
           id: string
+          is_active: boolean | null
           jurisdiction: Database["public"]["Enums"]["Jurisdiction"] | null
           sc_address: string | null
         }
@@ -77,9 +129,11 @@ export type Database = {
           created_at?: string
           deployment_date?: string | null
           display_name?: string | null
+          email?: string | null
           founder_id?: string | null
           icon?: string | null
           id?: string
+          is_active?: boolean | null
           jurisdiction?: Database["public"]["Enums"]["Jurisdiction"] | null
           sc_address?: string | null
         }
@@ -89,9 +143,11 @@ export type Database = {
           created_at?: string
           deployment_date?: string | null
           display_name?: string | null
+          email?: string | null
           founder_id?: string | null
           icon?: string | null
           id?: string
+          is_active?: boolean | null
           jurisdiction?: Database["public"]["Enums"]["Jurisdiction"] | null
           sc_address?: string | null
         }
@@ -104,6 +160,27 @@ export type Database = {
             referencedColumns: ["evm_address"]
           },
         ]
+      }
+      COMPANY_NAME: {
+        Row: {
+          country: string | null
+          created_at: string
+          id: string
+          name: string | null
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          id: string
+          name?: string | null
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
       }
       DAO: {
         Row: {
@@ -369,6 +446,60 @@ export type Database = {
         }
         Relationships: []
       }
+      TASK: {
+        Row: {
+          created_at: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      TASK_STATUS: {
+        Row: {
+          company_id: string | null
+          created_at: string
+          id: string
+          status: Database["public"]["Enums"]["TaskStatus"] | null
+          task_id: string | null
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["TaskStatus"] | null
+          task_id?: string | null
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["TaskStatus"] | null
+          task_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "TASK_STATUS_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "COMPANY"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "TASK_STATUS_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "TASK"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       TERMS_OF_USE: {
         Row: {
           created_at: string
@@ -529,9 +660,11 @@ export type Database = {
     Enums: {
       AgreementType: "termsAndConditions" | "termSheets"
       CompanyType: "llc"
+      Currency: "yen" | "usd"
       Jurisdiction: "jp"
       KycStatus: "done" | "reviewing" | "yet" | "error"
       PaymentStatus: "done" | "pending" | "yet" | "error"
+      TaskStatus: "todo" | "completed" | "inProgress"
     }
     CompositeTypes: {
       [_ in never]: never
