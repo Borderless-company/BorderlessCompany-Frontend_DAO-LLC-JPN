@@ -75,8 +75,16 @@ export const LoginPage: FC<LoginPageProps> = ({
   const signIn = async () => {
     if (!address) return;
     console.log("Signing in...");
-    const nonceRes = await fetch("/api/auth/nonce?address=" + address);
-    const { nonce } = await nonceRes.json();
+    let nonce = 0;
+
+    try {
+      const nonceRes = await fetch("/api/auth/nonce?address=" + address);
+      const { nonce: _nonce } = await nonceRes.json();
+      nonce = _nonce;
+    } catch (e) {
+      console.error(e);
+      return;
+    }
 
     try {
       const signature = await signMessageAsync({ message: String(nonce) });
@@ -100,7 +108,8 @@ export const LoginPage: FC<LoginPageProps> = ({
         setIsConnecting(false);
         disconnect();
       }
-    } catch {
+    } catch (e) {
+      console.error(e);
       setIsConnecting(false);
       disconnect();
     }
