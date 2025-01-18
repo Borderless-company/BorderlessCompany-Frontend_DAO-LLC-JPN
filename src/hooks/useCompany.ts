@@ -5,6 +5,10 @@ import { hasCompany } from "@/utils/api/company";
 
 export type UpdateCompanyProps = Partial<Tables<"COMPANY">>;
 
+export type CompanyWithRelations = Tables<"COMPANY"> & {
+  COMPANY_NAME: Tables<"COMPANY_NAME"> | null;
+};
+
 export const useCompany = (id?: string) => {
   const queryClient = useQueryClient();
 
@@ -61,7 +65,8 @@ export const useCompany = (id?: string) => {
     data: company,
     isLoading,
     isError,
-  } = useQuery<Tables<"COMPANY"> | undefined, Error>({
+    refetch,
+  } = useQuery<CompanyWithRelations | undefined, Error>({
     queryKey: ["company", id],
     queryFn: async () => {
       if (!id) return undefined;
@@ -85,6 +90,7 @@ export const useCompany = (id?: string) => {
     isCompanyUpdated,
     company,
     isLoading,
+    refetch,
   };
 };
 
@@ -93,7 +99,7 @@ export const useCompanybyFounderId = (founderId: string) => {
     data: company,
     isLoading,
     isError,
-  } = useQuery<Tables<"COMPANY"> | undefined, Error>({
+  } = useQuery<CompanyWithRelations | undefined, Error>({
     queryKey: ["companyByFounderId", founderId && founderId],
     queryFn: async () => {
       if (!founderId) return undefined;

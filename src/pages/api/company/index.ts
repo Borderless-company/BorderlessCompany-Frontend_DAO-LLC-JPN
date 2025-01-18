@@ -118,7 +118,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       if (id) {
         const { data, error } = await supabase
           .from("COMPANY")
-          .select()
+          .select(`*, COMPANY_NAME (*)`)
           .eq("id", id as string)
           .single();
 
@@ -130,7 +130,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         console.log("fetching company by founder_id: ", founder_id);
         const { data, error } = await supabase
           .from("COMPANY")
-          .select()
+          .select(`*, COMPANY_NAME (*)`)
           .eq("founder_id", founder_id as string)
           .single();
 

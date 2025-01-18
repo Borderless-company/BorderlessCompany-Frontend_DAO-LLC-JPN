@@ -10,6 +10,7 @@
     "supabase:type": "npx supabase gen types typescript --project-id vyocmhwkrvspeitnllty --schema public > src/types/schema.ts"
   },
   "dependencies": {
+    "@internationalized/date": "^3.7.0",
     "@lottiefiles/dotlottie-react": "^0.12.1",
     "@nextui-org/react": "^2.6.11",
     "@rainbow-me/rainbowkit": "^2.0.5",

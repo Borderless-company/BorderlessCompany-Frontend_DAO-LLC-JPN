@@ -32,8 +32,10 @@ export const useUser = (evmAddress?: string) => {
     onError: (error) => {
       console.error("[ERROR] Failed to update user: ", error);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user", evmAddress] });
+    onSuccess: (_, props) => {
+      queryClient.invalidateQueries({
+        queryKey: ["user", props.evm_address],
+      });
     },
   });
 
@@ -77,7 +79,27 @@ export const useUser = (evmAddress?: string) => {
       }
       return data;
     },
+    enabled: !!evmAddress,
   });
 
-  return { updateUser, createUser, user };
+  const deleteUser = async (evmAddress: string) => {
+    const response = await fetch("/api/user", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        evm_address: evmAddress,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("ユーザーの削除に失敗しました");
+    }
+
+    const data = await response.json();
+    return data;
+  };
+
+  return { updateUser, createUser, user, deleteUser };
 };

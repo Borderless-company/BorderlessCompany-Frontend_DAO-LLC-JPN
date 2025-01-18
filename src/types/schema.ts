@@ -330,6 +330,7 @@ export type Database = {
       }
       MEMBER: {
         Row: {
+          company_id: string | null
           created_at: string
           dao_id: string | null
           date_of_employment: string | null
@@ -343,6 +344,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          company_id?: string | null
           created_at?: string
           dao_id?: string | null
           date_of_employment?: string | null
@@ -356,6 +358,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          company_id?: string | null
           created_at?: string
           dao_id?: string | null
           date_of_employment?: string | null
@@ -369,6 +372,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "MEMBER_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "COMPANY"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "MEMBER_dao_id_fkey"
             columns: ["dao_id"]

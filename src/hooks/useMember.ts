@@ -17,10 +17,10 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
     UpdateMemberProps
   >({
     mutationFn: async (props: UpdateMemberProps) => {
-      const response = await fetch('/api/member', {
+      const response = await fetch("/api/member", {
         method: "PUT",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...props, user_id: userId, dao_id: daoId }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(props),
       });
       const json = await response.json();
       if (!response.ok) {
@@ -43,9 +43,9 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
     Partial<Tables<"MEMBER">>
   >({
     mutationFn: async (props: Partial<Tables<"MEMBER">>) => {
-      const response = await fetch('/api/member', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/member", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(props),
       });
       const json = await response.json();
@@ -58,8 +58,36 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
     onError: (error) => {
       console.error("[ERROR] Failed to create member: ", error);
     },
+    onSuccess: (_, props) => {
+      queryClient.invalidateQueries({
+        queryKey: ["member", props.user_id, props.company_id],
+      });
+    },
+  });
+
+  const { mutateAsync: deleteMember } = useMutation<
+    void,
+    Error,
+    { user_id: string; company_id: string }
+  >({
+    mutationFn: async ({ user_id, company_id }) => {
+      const response = await fetch(
+        `/api/member?user_id=${user_id}&company_id=${company_id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      const json = await response.json();
+      if (!response.ok) {
+        throw new Error(json.error);
+      }
+      console.log("[SUCCESS] Member deleted");
+    },
+    onError: (error) => {
+      console.error("[ERROR] Failed to delete member: ", error);
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["member", userId, daoId] });
+      queryClient.invalidateQueries({ queryKey: ["members"] });
     },
   });
 
@@ -92,7 +120,13 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
     },
   });
 
-  const getMembers = ({ daoId, userId }: { daoId?: string; userId?: string }) => {
+  const getMembers = ({
+    daoId,
+    userId,
+  }: {
+    daoId?: string;
+    userId?: string;
+  }) => {
     if (daoId) {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       return useQuery({
@@ -106,7 +140,7 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
             throw new Error(error.message);
           }
           return data;
-        }
+        },
       });
     } else if (userId) {
       // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -121,7 +155,7 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
             throw new Error(error.message);
           }
           return data;
-        }
+        },
       });
     } else if (userId && daoId) {
       // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -137,7 +171,7 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
             throw new Error(error.message);
           }
           return data;
-        }
+        },
       });
     } else {
       return undefined;
@@ -157,8 +191,38 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
           throw new Error(error.message);
         }
         return data;
-      }
+      },
     });
 
-  return { updateMember, createMember, member, getMembers, getMembersByDaoId };
+  return {
+    updateMember,
+    createMember,
+    deleteMember,
+    member,
+    getMembers,
+    getMembersByDaoId,
+  };
+};
+
+export const useMembersByCompanyId = (companyId?: string) => {
+  const {
+    data: members,
+    isLoading: isLoadingMembers,
+    error: membersError,
+  } = useQuery({
+    queryKey: ["members", companyId],
+    queryFn: async () => {
+      if (!companyId) return undefined;
+      const { data, error } = await supabase
+        .from("MEMBER")
+        .select(`*, USER (*), TOKEN (*)`)
+        .eq("company_id", companyId);
+      if (error) {
+        throw new Error(error.message);
+      }
+      return data;
+    },
+  });
+
+  return { members, isLoadingMembers, membersError };
 };
