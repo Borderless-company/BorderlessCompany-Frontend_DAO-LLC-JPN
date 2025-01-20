@@ -9,7 +9,7 @@ import {
 } from "wagmi";
 import { RegisterBorderlessCompanyAbi } from "@/utils/abi/RegisterBorderlessCompany.sol/RegisterBorderlessCompany";
 import { AccountStateConflictError, Address, stringToHex } from "viem";
-import { Button, Checkbox, DatePicker, Input, Link } from "@nextui-org/react";
+import { Button, Checkbox, DatePicker, Input, Link } from "@heroui/react";
 import {
   getBlockExplorerUrl,
   getRegisterBorderlessCompanyContractAddress,

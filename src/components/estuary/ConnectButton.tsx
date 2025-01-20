@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { client, wallets } from "@/utils/client";
-import { Button, ButtonProps } from "@nextui-org/react";
+import { Button, ButtonProps } from "@heroui/react";
 import {
   useConnectModal,
   useActiveAccount,

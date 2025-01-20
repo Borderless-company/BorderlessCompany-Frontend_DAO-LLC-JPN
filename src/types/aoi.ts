@@ -1,4 +1,4 @@
-import { DateValue } from "@nextui-org/react";
+import { DateValue } from "@heroui/react";
 import { Database } from "@/types/schema";
 
 export type ExecutiveMember = {

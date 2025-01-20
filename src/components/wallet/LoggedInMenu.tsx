@@ -10,7 +10,7 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 
 export function LoggedInMenu() {
   const { address, connector, isConnected } = useAccount();

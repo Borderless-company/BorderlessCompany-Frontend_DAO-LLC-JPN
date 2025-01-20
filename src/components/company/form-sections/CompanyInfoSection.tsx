@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Input, Textarea } from "@nextui-org/react";
+import { Input, Textarea } from "@heroui/react";
 import { AoIFormData } from "@/types/aoi";
 
 type CompanyInfoSectionProps = {

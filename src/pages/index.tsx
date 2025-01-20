@@ -5,7 +5,7 @@ import ListCompanies from "@/components/web3/RegisterBorderlessCompany/ListCompa
 import { CurrentAddressIsWhitelisted } from "@/components/web3/Whitelist/CurrentAddressIsWhitelisted";
 import { FormIsWhitelisted } from "@/components/web3/Whitelist/FormIsWhitelisted";
 import { IsWhitelisted } from "@/components/web3/Whitelist/IsWhitelisted";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import router from "next/router";
 import Image from "next/image";
 import { Footer } from "@/components/Footer";

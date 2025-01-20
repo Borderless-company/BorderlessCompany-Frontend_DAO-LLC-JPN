@@ -1,5 +1,5 @@
 import { useEstuary } from "@/hooks/useEstuary";
-import { Link } from "@nextui-org/react";
+import { Link } from "@heroui/react";
 import { useTranslation } from "next-i18next";
 import React, { FC } from "react";
 

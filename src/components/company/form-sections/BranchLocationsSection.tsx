@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Button, Input } from "@nextui-org/react";
+import { Button, Input } from "@heroui/react";
 import { PiPlusCircle, PiMinusCircle } from "react-icons/pi";
 import { AoIFormData } from "@/types/aoi";
 

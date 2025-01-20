@@ -1,5 +1,5 @@
 import { estuaryPageAtom } from "@/atoms";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { FC, useEffect } from "react";
 import {
   PiArrowRight,

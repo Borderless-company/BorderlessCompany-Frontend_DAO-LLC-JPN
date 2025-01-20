@@ -7,7 +7,7 @@ import {
   DrawerBody,
   DrawerFooter,
   Button,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Stack } from "@/sphere/Stack";
 import { useTaskStatus } from "@/hooks/useTaskStatus";
 import { useCompanyName } from "@/hooks/useCompanyName";

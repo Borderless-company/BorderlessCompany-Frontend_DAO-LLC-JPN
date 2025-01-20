@@ -7,7 +7,7 @@ import {
   getRegisterBorderlessCompanyContractAddress,
   getRegisterBorderlessCompanyStartBlockNumber,
 } from "@/utils/contractAddress";
-import { Spinner } from "@nextui-org/react";
+import { Spinner } from "@heroui/react";
 
 const ListCompanies = () => {
   const chainId = useChainId();

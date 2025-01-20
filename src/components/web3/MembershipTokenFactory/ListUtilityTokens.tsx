@@ -19,7 +19,7 @@ import {
   TableRow,
   Link,
   Tooltip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 
 const columns = [
   { name: "SYMBOL", uid: "symbol" },

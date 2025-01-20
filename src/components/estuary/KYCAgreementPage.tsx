@@ -1,4 +1,4 @@
-import { Button, CheckboxGroup, Input } from "@nextui-org/react";
+import { Button, CheckboxGroup, Input } from "@heroui/react";
 import { FC, useState, useMemo } from "react";
 import {
   PiArrowRight,

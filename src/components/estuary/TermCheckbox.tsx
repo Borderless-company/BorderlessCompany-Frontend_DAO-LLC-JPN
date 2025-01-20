@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Checkbox, CheckboxProps, cn } from "@nextui-org/react";
+import { Checkbox, CheckboxProps, cn } from "@heroui/react";
 import { PiArrowSquareOutBold } from "react-icons/pi";
 import { useTranslation } from "next-i18next";
 

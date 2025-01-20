@@ -21,7 +21,7 @@ import {
   Tooltip,
   Chip,
   Button,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import Image from "next/image";
 
 const columns = [

@@ -1,10 +1,10 @@
 import { FC, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { CheckboxGroup } from "@nextui-org/react";
+import { CheckboxGroup } from "@heroui/react";
 import { TermCheckbox } from "../estuary/TermCheckbox";
 import { useTranslation } from "next-i18next";
 import { Stack } from "@/sphere/Stack";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { useSignOut } from "@/hooks/useSignOut";
 import { useUser } from "@/hooks/useUser";
 import { useAccount } from "wagmi";

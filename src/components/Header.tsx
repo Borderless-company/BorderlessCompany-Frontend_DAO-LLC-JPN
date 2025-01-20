@@ -5,7 +5,7 @@ import {
   NavbarItem,
   Link,
   Button,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Logo } from "@/components/Logo";
 import WalletLogin from "./wallet/WalletLogin";
 

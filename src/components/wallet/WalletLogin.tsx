@@ -8,7 +8,7 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { LoggedInMenu } from "@/components/wallet/LoggedInMenu";
 import { WalletIcon } from "../icons/WalletIcon";
 import { useTranslation } from "next-i18next";

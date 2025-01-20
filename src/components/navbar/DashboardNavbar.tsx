@@ -1,4 +1,4 @@
-import { Navbar, NavbarContent } from "@nextui-org/react";
+import { Navbar, NavbarContent } from "@heroui/react";
 import React from "react";
 import { HamburgerButton } from "./HamburgerButton";
 import WalletLogin from "../wallet/WalletLogin";

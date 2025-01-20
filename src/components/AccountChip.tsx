@@ -7,7 +7,7 @@ import {
   ModalHeader,
   useDisclosure,
   Modal,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { FC, useEffect, useState } from "react";
 import { Button } from "react-aria-components";
 import { useAccount } from "wagmi";

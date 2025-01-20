@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Button, Input, Checkbox } from "@nextui-org/react";
+import { Button, Input, Checkbox } from "@heroui/react";
 import { PiPlusCircle, PiMinusCircle } from "react-icons/pi";
 import { LuJapaneseYen } from "react-icons/lu";
 import { AoIFormData } from "@/types/aoi";

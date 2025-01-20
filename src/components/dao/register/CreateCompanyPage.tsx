@@ -4,7 +4,7 @@ import { CountrySelection } from "./CountrySelection";
 import { AnimatePresence } from "framer-motion";
 import { CompanyTypeSelection } from "./CompanyTypeSelection";
 import { SettingUp } from "./SettingUp";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { useSignOut } from "@/hooks/useSignOut";
 import { useCompany } from "@/hooks/useCompany";
 import { useAccount } from "wagmi";

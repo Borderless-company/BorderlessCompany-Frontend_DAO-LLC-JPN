@@ -1,6 +1,6 @@
 import { FC, useEffect, useMemo } from "react";
 import { useTranslation } from "next-i18next";
-import { Chip, ChipProps, cn, Spinner, useDisclosure } from "@nextui-org/react";
+import { Chip, ChipProps, cn, Spinner, useDisclosure } from "@heroui/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { Stack } from "@/sphere/Stack";

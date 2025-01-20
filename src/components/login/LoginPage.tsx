@@ -7,7 +7,7 @@ import {
 } from "react";
 import Image from "next/image";
 import { useTranslation } from "next-i18next";
-import { Button, ButtonProps } from "@nextui-org/react";
+import { Button, ButtonProps, Input, Switch } from "@heroui/react";
 import clsx from "clsx";
 import { PiWalletFill, PiArrowSquareOut } from "react-icons/pi";
 import { ConnectorSelectionModal } from "./ConnectorSelectionModal";
@@ -124,6 +124,7 @@ export const LoginPage: FC<LoginPageProps> = ({
           fill
           style={{ objectFit: "contain", paddingBottom: "24px" }}
         />
+
         <LoginWidget
           variant={address && !isWhitelisted ? "whitelist" : "connect"}
           isConnecting={isConnecting || isLoadingCompany}
@@ -203,7 +204,9 @@ export const LoginWidget: FC<LoginWidgetProps> = ({
     if (variant === "connect") {
       return (
         <Button
+          className="gap-1"
           color="primary"
+          radius="md"
           size="lg"
           fullWidth
           style={{ fontFamily: "inherit" }}
@@ -221,22 +224,24 @@ export const LoginWidget: FC<LoginWidgetProps> = ({
     }
 
     return (
-      <Button
-        className="gap-1"
-        color="secondary"
-        size="lg"
-        fullWidth
-        style={{ fontFamily: "inherit" }}
-        endContent={<PiArrowSquareOut className="w-4 h-4" />}
-        onPress={() => {
-          window.open(
-            "https://docs.google.com/forms/d/1t3DdeJlV8NCDfr6hY4yynSYupcNDQYBRQMt90GsjXK8",
-            "_blank"
-          );
-        }}
-      >
-        {buttonText}
-      </Button>
+      <>
+        <Button
+          className="gap-1"
+          color="secondary"
+          size="lg"
+          fullWidth
+          style={{ fontFamily: "inherit" }}
+          endContent={<PiArrowSquareOut className="w-4 h-4" />}
+          onPress={() => {
+            window.open(
+              "https://docs.google.com/forms/d/1t3DdeJlV8NCDfr6hY4yynSYupcNDQYBRQMt90GsjXK8",
+              "_blank"
+            );
+          }}
+        >
+          {buttonText}
+        </Button>
+      </>
     );
   };
 

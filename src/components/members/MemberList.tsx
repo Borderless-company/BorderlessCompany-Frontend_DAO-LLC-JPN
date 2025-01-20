@@ -13,7 +13,7 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useMember } from "@/hooks/useMember";
 import { downloadCsv } from "@/utils/csv";
 import { shortenAddress } from "@/utils/web3";

@@ -7,7 +7,7 @@ import {
 } from "wagmi";
 import { MembershipTokenFactoryAbi } from "@/utils/abi/MembershipTokenFactory";
 import { Address, stringToHex } from "viem";
-import { Button, Input } from "@nextui-org/react";
+import { Button, Input } from "@heroui/react";
 import {
   getBlockExplorerUrl,
   getMembershipTokenFactoryContractAddress,

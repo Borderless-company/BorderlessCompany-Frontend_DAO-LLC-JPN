@@ -3,7 +3,7 @@ import type { NextPage } from "next";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { Address } from "viem";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 

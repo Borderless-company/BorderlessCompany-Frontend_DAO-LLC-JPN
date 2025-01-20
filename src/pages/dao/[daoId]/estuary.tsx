@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import SimpleLayout from "@/components/layout/SimpleLayout";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { useEstuary } from "@/hooks/useEstuary";
 import { v4 as uuidv4 } from "uuid";
 import { useDAO } from "@/hooks/useDAO";

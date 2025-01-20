@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { PiPlusCircleDuotone, PiArrowRight } from "react-icons/pi";
 import ReactCountryFlag from "react-country-flag";
-import { Button, ButtonProps, Chip, Divider } from "@nextui-org/react";
+import { Button, ButtonProps, Chip, Divider } from "@heroui/react";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
 

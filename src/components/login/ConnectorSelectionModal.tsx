@@ -1,11 +1,11 @@
-import { Button, ModalFooter } from "@nextui-org/react";
+import { Button, ModalFooter } from "@heroui/react";
 import {
   Modal,
   ModalBody,
   ModalContent,
   ModalHeader,
   ModalProps,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useTranslation } from "next-i18next";
 import { FC } from "react";
 import { WalletIcon } from "../icons/WalletIcon";
@@ -21,7 +21,12 @@ export const ConnectorSelectionModal: FC<ConnectorSelectionModalProps> = ({
   const { t } = useTranslation();
   const { connect, connectors } = useConnect();
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} {...props}>
+    <Modal
+      className="z-50"
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      {...props}
+    >
       <ModalContent>
         {(onClose) => (
           <>

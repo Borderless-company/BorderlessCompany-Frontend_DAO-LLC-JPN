@@ -6,7 +6,7 @@ import {
   RadioProps,
   cn,
   Chip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { motion } from "framer-motion";
 import { FC, useState } from "react";
 import { Button as RACButton } from "react-aria-components";

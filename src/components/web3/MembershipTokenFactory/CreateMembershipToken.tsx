@@ -7,7 +7,7 @@ import {
 } from "wagmi";
 import { TokenServiceAbi } from "@/utils/abi/TokenService.sol/TokenService";
 import { Address } from "viem";
-import { Button, Checkbox, Input } from "@nextui-org/react";
+import { Button, Checkbox, Input } from "@heroui/react";
 import { getBlockExplorerUrl } from "@/utils/contractAddress";
 import { useRouter } from "next/router";
 import ImageUploader from "@/components/ImageUploader";

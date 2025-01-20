@@ -3,7 +3,7 @@ import "@/styles/hero-anim.css";
 import "@/styles/complete.css";
 
 import type { AppProps } from "next/app";
-import { NextUIProvider } from "@nextui-org/react";
+import { HeroUIProvider } from "@heroui/react";
 
 import WagmiWrapper from "@/components/provider/WagmiWrapper";
 
@@ -23,7 +23,7 @@ const queryClient = new QueryClient();
 function App({ Component, pageProps }: AppProps) {
   return (
     <WagmiWrapper>
-      <NextUIProvider>
+      <HeroUIProvider>
         <QueryClientProvider client={queryClient}>
           <Provider>
             <RootLayout>
@@ -31,7 +31,7 @@ function App({ Component, pageProps }: AppProps) {
             </RootLayout>
           </Provider>
         </QueryClientProvider>
-      </NextUIProvider>
+      </HeroUIProvider>
     </WagmiWrapper>
   );
 }

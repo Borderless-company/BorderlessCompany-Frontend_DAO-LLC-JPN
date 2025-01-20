@@ -1,8 +1,8 @@
 import { FC, useEffect, useState } from "react";
-import { RadioGroup } from "@nextui-org/react";
-import { cn } from "@nextui-org/react";
+import { RadioGroup } from "@heroui/react";
+import { cn } from "@heroui/react";
 import Image from "next/image";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { PiArrowRight, PiSignIn } from "react-icons/pi";
 import { TokenCard } from "./TokenCard";
 import { useActiveAccount, useConnectModal } from "thirdweb/react";

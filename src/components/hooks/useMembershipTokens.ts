@@ -21,7 +21,7 @@ import {
   Tooltip,
   Chip,
   Button,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import Image from "next/image";
 import { NonFungibleTokenTYPE721Abi } from "@/utils/abi/NonFungibleTokenTYPE721.sol/NonFungibleTokenTYPE721";
 import { TokenServiceAbi } from "@/utils/abi/TokenService.sol/TokenService";

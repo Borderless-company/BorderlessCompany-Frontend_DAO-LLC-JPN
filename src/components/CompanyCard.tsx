@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardBody, Image } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, Image } from "@heroui/react";
 import { supabase } from "@/utils/supabase";
 import { useEffect } from "react";
 interface Company {

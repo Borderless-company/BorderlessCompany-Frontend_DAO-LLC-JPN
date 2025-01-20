@@ -8,7 +8,7 @@ import { useCompanybyFounderId } from "@/hooks/useCompany";
 import { useMe } from "@/hooks/useMe";
 import { useSignOut } from "@/hooks/useSignOut";
 import { useUser } from "@/hooks/useUser";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Image from "next/image";
 import { useRouter } from "next/router";

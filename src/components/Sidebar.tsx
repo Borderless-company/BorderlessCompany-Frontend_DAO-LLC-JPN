@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { cn } from "@nextui-org/react";
+import { cn } from "@heroui/react";
 import { useSidebarContext } from "@/components/layout/DashboardLayoutContext";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";

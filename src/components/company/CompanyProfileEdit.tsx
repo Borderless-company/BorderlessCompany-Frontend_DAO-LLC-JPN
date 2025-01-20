@@ -8,7 +8,7 @@ import {
   Button,
   Input,
   ModalProps,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Tables } from "@/types/schema";
 import { useCompany } from "@/hooks/useCompany";
 import { Stack } from "@/sphere/Stack";

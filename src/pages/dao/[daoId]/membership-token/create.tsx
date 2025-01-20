@@ -9,7 +9,7 @@ import { GetService } from "@/components/web3/BorderlessCompany/GetService";
 import { useEffect, useState } from "react";
 import { Address } from "viem";
 import { useGetService } from "@/components/hooks/useGetService";
-import { Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
+import { Card, CardBody, CardHeader, Divider } from "@heroui/react";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
 

@@ -1,6 +1,6 @@
 import { FC } from "react";
 import Image from "next/image";
-import { Radio, useRadio, cn, RadioProps } from "@nextui-org/react";
+import { Radio, useRadio, cn, RadioProps } from "@heroui/react";
 
 type TokenCardProps = {
   name: string;

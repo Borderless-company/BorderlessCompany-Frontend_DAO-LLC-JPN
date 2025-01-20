@@ -4,7 +4,7 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { Footer } from "@/components/Footer";
-import { Button, Link } from "@nextui-org/react";
+import { Button, Link } from "@heroui/react";
 import { getBlockExplorerUrl } from "@/utils/contractAddress";
 import { useChainId } from "wagmi";
 import { supabase } from "@/utils/supabase";

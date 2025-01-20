@@ -7,7 +7,7 @@ import {
 } from "wagmi";
 import { UtilityTokenAbi } from "@/utils/abi/UtilityToken";
 import { Address, stringToHex } from "viem";
-import { Button, Input } from "@nextui-org/react";
+import { Button, Input } from "@heroui/react";
 import { getBlockExplorerUrl } from "@/utils/contractAddress";
 import { useRouter } from "next/router";
 

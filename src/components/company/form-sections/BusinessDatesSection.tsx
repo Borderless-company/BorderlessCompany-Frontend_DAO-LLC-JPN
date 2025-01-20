@@ -1,8 +1,8 @@
 import { FC } from "react";
-import { Input, DateInput } from "@nextui-org/react";
+import { Input, DateInput } from "@heroui/react";
 import { LuJapaneseYen } from "react-icons/lu";
 import { AoIFormData } from "@/types/aoi";
-import { DateValue } from "@nextui-org/react";
+import { DateValue } from "@heroui/react";
 import { CalendarDate, ZonedDateTime } from "@internationalized/date";
 
 type BusinessDatesSectionProps = {
@@ -60,7 +60,7 @@ export const BusinessDatesSection: FC<BusinessDatesSectionProps> = ({
       />
       <DateInput
         name="establishmentDate"
-        //@ts-ignore
+        //@ts-ignorepp
         value={formData.establishmentDate as DateValue}
         onChange={(value) => handleDateChange("establishmentDate", value)}
         label="Establishment Date"
