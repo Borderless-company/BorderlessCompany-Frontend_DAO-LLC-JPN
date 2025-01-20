@@ -19,6 +19,7 @@ import {
 import { AoIBuilder } from "./AoIBuilder";
 import { useCompany } from "@/hooks/useCompany";
 import { CompanyProfileEdit } from "./CompanyProfileEdit";
+import { ExecutiveTokenInfoEdit } from "./ExecutiveTokenInfoEdit";
 import { useSignOut } from "@/hooks/useSignOut";
 import { useTaskStatusByCompany } from "@/hooks/useTaskStatus";
 
@@ -40,6 +41,13 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
     onOpen: onOpenCompanyProfileEdit,
     onOpenChange: onOpenChangeCompanyProfileEdit,
   } = useDisclosure();
+
+  const {
+    isOpen: isOpenExecutiveTokenInfoEdit,
+    onOpen: onOpenExecutiveTokenInfoEdit,
+    onOpenChange: onOpenChangeExecutiveTokenInfoEdit,
+  } = useDisclosure();
+
   const { company, isLoading, isError } = useCompany(companyId);
   const {
     data: taskStatus,
@@ -157,6 +165,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                       key={task.id}
                       title={"Enter Executive Member Token Info"}
                       status={task.status || "todo"}
+                      onPress={onOpenExecutiveTokenInfoEdit}
                     />
                   )}
                 </>
@@ -175,6 +184,13 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
         isOpen={isOpenCompanyProfileEdit}
         onOpenChange={onOpenChangeCompanyProfileEdit}
       />
+      {isOpenExecutiveTokenInfoEdit && (
+        <ExecutiveTokenInfoEdit
+          company={company}
+          isOpen={isOpenExecutiveTokenInfoEdit}
+          onOpenChange={onOpenChangeExecutiveTokenInfoEdit}
+        />
+      )}
     </>
   );
 };

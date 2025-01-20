@@ -587,9 +587,11 @@ export type Database = {
       }
       TOKEN: {
         Row: {
+          company_id: string | null
           contract_address: string | null
           created_at: string
           dao_id: string | null
+          description: string | null
           estuary_id: string | null
           fixed_price: number | null
           id: string
@@ -600,11 +602,14 @@ export type Database = {
           name: string | null
           product_id: string | null
           symbol: string | null
+          token_metadata: string | null
         }
         Insert: {
+          company_id?: string | null
           contract_address?: string | null
           created_at?: string
           dao_id?: string | null
+          description?: string | null
           estuary_id?: string | null
           fixed_price?: number | null
           id?: string
@@ -615,11 +620,14 @@ export type Database = {
           name?: string | null
           product_id?: string | null
           symbol?: string | null
+          token_metadata?: string | null
         }
         Update: {
+          company_id?: string | null
           contract_address?: string | null
           created_at?: string
           dao_id?: string | null
+          description?: string | null
           estuary_id?: string | null
           fixed_price?: number | null
           id?: string
@@ -630,8 +638,16 @@ export type Database = {
           name?: string | null
           product_id?: string | null
           symbol?: string | null
+          token_metadata?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "TOKEN_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "COMPANY"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "TOKEN_dao_id_fkey"
             columns: ["dao_id"]

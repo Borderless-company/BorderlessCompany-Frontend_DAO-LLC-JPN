@@ -15,7 +15,7 @@ export const createProduct = async (name: string, image?: string) => {
     name: name,
     images: image ? [image] : [],
   });
-  console.log("product_id", product)
+  console.log("product_id", product);
   return product;
 };
 
@@ -28,10 +28,9 @@ export const useToken = (id?: string) => {
     CreateTokenProps
   >({
     mutationFn: async (props: CreateTokenProps) => {
-
-      const response = await fetch('/api/token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(props),
       });
       const json = await response.json();
@@ -55,10 +54,9 @@ export const useToken = (id?: string) => {
     Partial<Tables<"TOKEN">>
   >({
     mutationFn: async (props: Partial<Tables<"TOKEN">>) => {
-
-      const response = await fetch('/api/token', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/token", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(props),
       });
       const json = await response.json();
@@ -75,7 +73,6 @@ export const useToken = (id?: string) => {
       queryClient.invalidateQueries({ queryKey: ["tokens"] });
     },
   });
-
 
   const { data: token } = useQuery<Tables<"TOKEN"> | undefined, Error>({
     queryKey: ["token", id],
@@ -94,4 +91,27 @@ export const useToken = (id?: string) => {
   });
 
   return { createToken, updateToken, token };
+};
+
+export const useTokenByCompanyId = (companyId?: string) => {
+  const {
+    data: tokens,
+    isLoading: isLoadingTokens,
+    isError: isErrorTokens,
+    refetch: refetchTokens,
+  } = useQuery<Tables<"TOKEN">[] | undefined, Error>({
+    queryKey: ["tokens", "company", companyId],
+    queryFn: async () => {
+      if (!companyId) return undefined;
+      const response = await fetch(`/api/token?companyId=${companyId}`);
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error);
+      }
+      console.log("[SUCCESS] Tokens fetched: ", data);
+      return data.data;
+    },
+  });
+
+  return { tokens, isLoadingTokens, isErrorTokens, refetchTokens };
 };
