@@ -3,11 +3,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider, createConfig, http } from "wagmi";
 import { walletConnect, injected } from "wagmi/connectors";
 import { sepolia, polygonAmoy } from "wagmi/chains";
-import { defineChain } from "viem";
+import { defineChain, Chain } from "viem";
 
 import Web3AuthConnectorInstance from "@/utils/Web3AuthConnectorInstance";
 
-const metisSepolia = defineChain({
+const metisSepolia = {
   id: 59902,
   name: "Metis Sepolia",
   nativeCurrency: {
@@ -25,13 +25,7 @@ const metisSepolia = defineChain({
       apiUrl: "https://sepolia-explorer-api.metisdevops.link/api",
     },
   },
-  // contracts: {
-  //   multicall3: {
-  //     address: "0xca11bde05977b3631167028862be2a173976ca11",
-  //     blockCreated: 2338552,
-  //   },
-  // },
-});
+} as const satisfies Chain;
 
 const config = createConfig({
   chains: [metisSepolia],

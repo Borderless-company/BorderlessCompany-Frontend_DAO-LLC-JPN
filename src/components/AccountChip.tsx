@@ -13,7 +13,7 @@ import { Button } from "react-aria-components";
 import { useAccount } from "wagmi";
 import Image from "next/image";
 import { PiDotsThreeVertical } from "react-icons/pi";
-import { Balance } from "./web3/balance";
+import { Balance } from "./wallet/balance";
 import { useSignOut } from "@/hooks/useSignOut";
 export type AccountChipProps = {
   name?: string;

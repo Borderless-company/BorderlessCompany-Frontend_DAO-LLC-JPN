@@ -1,9 +1,7 @@
 import { User, Tooltip, Chip } from "@heroui/react";
 import React from "react";
-import { DeleteIcon } from "../icons/table/delete-icon";
-import { EditIcon } from "../icons/table/edit-icon";
-import { EyeIcon } from "../icons/table/eye-icon";
 import { users } from "./data";
+import { PiEye } from "react-icons/pi";
 
 interface Props {
   user: (typeof users)[number];
@@ -56,7 +54,7 @@ export const RenderCell = ({ user, columnKey }: Props) => {
           <div>
             <Tooltip content="Details">
               <button onClick={() => console.log("View user", user.id)}>
-                <EyeIcon size={20} fill="#979797" />
+                <PiEye size={20} />
               </button>
             </Tooltip>
           </div>

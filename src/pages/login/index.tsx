@@ -1,9 +1,7 @@
 import { Border } from "@/components/decorative/Border";
 import { CLayout } from "@/components/layout/CLayout";
-import SimpleLayout from "@/components/layout/SimpleLayout";
 import { AgreementPage } from "@/components/login/AgreementPage";
 import { LoginPage } from "@/components/login/LoginPage";
-import { CreateBorderlessCompany } from "@/components/web3/RegisterBorderlessCompany/CreateBorderlessCompany";
 import { useCompanybyFounderId } from "@/hooks/useCompany";
 import { useMe } from "@/hooks/useMe";
 import { useSignOut } from "@/hooks/useSignOut";

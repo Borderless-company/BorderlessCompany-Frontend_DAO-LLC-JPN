@@ -1,6 +1,5 @@
 import { useAccount, useConnect, useDisconnect } from "wagmi";
-import { SwitchChain } from "@/components/web3/switchNetwork";
-import { Balance } from "@/components/web3/balance";
+import { Balance } from "@/components/wallet/balance";
 import React, { useState, useEffect } from "react";
 import {
   Modal,
