@@ -174,16 +174,20 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
           </Stack>
         </Stack>
       )}
-      <AoIBuilder
-        isOpen={isOpenAoiBuilder}
-        onOpenChange={onOpenChangeAoiBuilder}
-        companyId={companyId}
-      />
-      <CompanyProfileEdit
-        company={company}
-        isOpen={isOpenCompanyProfileEdit}
-        onOpenChange={onOpenChangeCompanyProfileEdit}
-      />
+      {isOpenAoiBuilder && (
+        <AoIBuilder
+          isOpen={isOpenAoiBuilder}
+          onOpenChange={onOpenChangeAoiBuilder}
+          companyId={companyId}
+        />
+      )}
+      {isOpenCompanyProfileEdit && (
+        <CompanyProfileEdit
+          company={company}
+          isOpen={isOpenCompanyProfileEdit}
+          onOpenChange={onOpenChangeCompanyProfileEdit}
+        />
+      )}
       {isOpenExecutiveTokenInfoEdit && (
         <ExecutiveTokenInfoEdit
           company={company}
