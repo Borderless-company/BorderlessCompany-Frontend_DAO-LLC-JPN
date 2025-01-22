@@ -36,25 +36,29 @@ export const AoIPreview: FC<AoIPreviewProps> = ({ formData }) => {
           当会社は、本店を{formData.location || "＿＿＿"}に置く。
         </p>
 
-        <h3 className="font-title-lg text-foreground mb-2 mt-4">
-          第4条 (支店の所在地)
-        </h3>
-        <p className="font-body-md text-foreground">
-          当会社は、
-          {formData.branchLocations.filter((loc) => loc).length > 0 ? (
-            formData.branchLocations
-              .filter((loc) => loc)
-              .map((location, index) => (
-                <span key={index}>
-                  {index > 0 && "、"}
-                  支店を{location}に置く
-                </span>
-              ))
-          ) : (
-            <span>支店を＿＿＿に置く</span>
-          )}
-          。
-        </p>
+        {formData.branchLocations.length > 0 && (
+          <>
+            <h3 className="font-title-lg text-foreground mb-2 mt-4">
+              第4条 (支店の所在地)
+            </h3>
+            <p className="font-body-md text-foreground">
+              当会社は、
+              {formData.branchLocations.filter((loc) => loc).length > 0 ? (
+                formData.branchLocations
+                  .filter((loc) => loc)
+                  .map((location, index) => (
+                    <span key={index}>
+                      {index > 0 && "、"}
+                      支店を{location}に置く
+                    </span>
+                  ))
+              ) : (
+                <span>支店を＿＿＿に置く</span>
+              )}
+              。
+            </p>
+          </>
+        )}
 
         <h3 className="font-title-lg text-foreground mb-2 mt-4">
           第5条 (公告の方法)

@@ -19,8 +19,7 @@ export const BranchLocationsSection: FC<BranchLocationsSectionProps> = ({
       );
       setFormData((prev) => ({
         ...prev,
-        branchLocations:
-          newBranchLocations.length > 0 ? newBranchLocations : [""],
+        branchLocations: newBranchLocations,
       }));
     } else {
       const newBranchLocations = [...formData.branchLocations];
@@ -49,17 +48,15 @@ export const BranchLocationsSection: FC<BranchLocationsSectionProps> = ({
             label={`Branch Location ${index + 1}`}
             labelPlacement="inside"
           />
-          {index > 0 && (
-            <Button
-              isIconOnly
-              size="sm"
-              color="danger"
-              variant="light"
-              onPress={() => handleBranchLocationChange(index, "")}
-            >
-              <PiMinusCircle className="w-4 h-4" />
-            </Button>
-          )}
+          <Button
+            isIconOnly
+            size="sm"
+            color="danger"
+            variant="light"
+            onPress={() => handleBranchLocationChange(index, "")}
+          >
+            <PiMinusCircle className="w-4 h-4" />
+          </Button>
         </div>
       ))}
       <Button
