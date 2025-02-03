@@ -90,6 +90,51 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       return res.status(200).json({ data });
     }
 
+    case "DELETE": {
+      const { id, company_id, task_id } = req.query;
+
+      if (id && !Array.isArray(id)) {
+        const { error } = await supabase
+          .from("TASK_STATUS")
+          .delete()
+          .eq("id", id);
+
+        if (error) {
+          return res.status(400).json({ error: error.message });
+        }
+
+        return res
+          .status(200)
+          .json({ message: "Task status deleted successfully" });
+      }
+
+      if (
+        !company_id ||
+        !task_id ||
+        Array.isArray(company_id) ||
+        Array.isArray(task_id)
+      ) {
+        return res.status(400).json({
+          error:
+            "Either id or both company_id and task_id (as strings) are required",
+        });
+      }
+
+      const { error } = await supabase
+        .from("TASK_STATUS")
+        .delete()
+        .eq("company_id", company_id)
+        .eq("task_id", task_id);
+
+      if (error) {
+        return res.status(400).json({ error: error.message });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Task status deleted successfully" });
+    }
+
     default:
       return res.status(405).json({ error: "Method not allowed" });
   }
