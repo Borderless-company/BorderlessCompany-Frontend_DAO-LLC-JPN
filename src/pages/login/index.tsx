@@ -35,10 +35,16 @@ export default function Login() {
 
   // 初期化
   useEffect(() => {
+    console.log("me: ", me);
+    console.log("company: ", company);
+    console.log("isLoadingCompany: ", isLoadingCompany);
+    console.log("user: ", user);
     if (!me?.isLogin) {
       setPage(0);
     } else if (me?.isLogin) {
-      if (company && !isLoadingCompany) {
+      if (!user) {
+        setPage(1);
+      } else if (company && !isLoadingCompany) {
         router.push(`/company/${company.id}`);
       } else if (isError && user) {
         console.log("isError: ", isError);
@@ -47,7 +53,7 @@ export default function Login() {
         return;
       }
     }
-  }, [me, company, router, isLoadingCompany]);
+  }, [me, company, router, isLoadingCompany, user]);
 
   return (
     <CLayout className="relative shadow-[inset_0px_0px_40px_-7px_#6EBFB8] px-4">

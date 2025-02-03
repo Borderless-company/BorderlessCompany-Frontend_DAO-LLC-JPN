@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Address } from "viem";
+import { useMembersByCompanyId } from "@/hooks/useMember";
 import {
   Button,
   Chip,
@@ -25,6 +26,7 @@ const columns = [
   { name: "Wallet Address", uid: "walletAddress" },
   { name: "Date of Employment", uid: "dateOfEmployment" },
   { name: "Invested Amount", uid: "investedAmount" },
+  { name: "Type", uid: "isExecutive" },
   { name: "Status", uid: "status" },
   { name: "Actions", uid: "actions" },
   // { name: "Receipt", uid: "receipt" },
@@ -38,8 +40,8 @@ type MemberRow = {
   dateOfEmployment: string;
   investedAmount: string;
   status: string;
+  isExecutive: string;
   actions: {
-    daoId: string;
     contractAddress: string;
     mintTo: string;
     isMinted: boolean;
@@ -85,6 +87,18 @@ export const RenderCell = ({ item, columnKey }: Props) => {
           <span className="text-xs font-semibold">{item.status}</span>
         </Chip>
       );
+    case "isExecutive":
+      return (
+        <Chip
+          size="sm"
+          variant="flat"
+          color={item.isExecutive === "true" ? "primary" : "secondary"}
+        >
+          <span className="text-xs font-semibold">
+            {item.isExecutive === "true" ? t("Executive") : t("Non Executive")}
+          </span>
+        </Chip>
+      );
     case "actions":
       return (
         <Button
@@ -95,9 +109,7 @@ export const RenderCell = ({ item, columnKey }: Props) => {
           className="h-6 w-fit"
           isDisabled={item.actions.isMinted}
           onPress={() => {
-            router.push(
-              `/dao/${item.actions.daoId}/membership-token/${item.actions.contractAddress}/issue?mintTo=${item.actions.mintTo}`
-            );
+            console.log("item:", item);
           }}
         >
           <span className="text-xs font-semibold">{t("Issue")}</span>
@@ -108,9 +120,8 @@ export const RenderCell = ({ item, columnKey }: Props) => {
   }
 };
 
-const MemberList = ({ contractAddress }: { contractAddress: Address }) => {
-  const { getMembersByDaoId } = useMember({});
-  const { data: members } = getMembersByDaoId({ daoId: contractAddress });
+const MemberList = ({ companyId }: { companyId: string }) => {
+  const { members } = useMembersByCompanyId(companyId);
   const { t, i18n } = useTranslation("common");
 
   const memberData = useMemo(() => {
@@ -125,8 +136,8 @@ const MemberList = ({ contractAddress }: { contractAddress: Address }) => {
         ).toLocaleDateString("ja-JP"),
         investedAmount: member.invested_amount?.toString() ?? "",
         status: member.is_minted ? t("Issued") : t("Not issued"),
+        isExecutive: member.is_executive?.toString() ?? "false",
         actions: {
-          daoId: contractAddress,
           contractAddress: member.TOKEN?.contract_address ?? "",
           mintTo: member.USER?.evm_address ?? "",
           isMinted: member.is_minted,
