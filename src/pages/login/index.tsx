@@ -11,7 +11,7 @@ import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
+import { useActiveAccount } from "thirdweb/react";
 
 export const getServerSideProps = async ({ locale }: { locale: string }) => {
   return {
@@ -24,14 +24,14 @@ export const getServerSideProps = async ({ locale }: { locale: string }) => {
 export default function Login() {
   const [page, setPage] = useState(0);
   const { me } = useMe();
-  const { address } = useAccount();
+  const smartAccount = useActiveAccount();
   const router = useRouter();
   const {
     company,
     isLoading: isLoadingCompany,
     isError,
-  } = useCompanybyFounderId(address || "");
-  const { user } = useUser(address || "");
+  } = useCompanybyFounderId(smartAccount?.address || "");
+  const { user } = useUser(smartAccount?.address || "");
 
   // 初期化
   useEffect(() => {

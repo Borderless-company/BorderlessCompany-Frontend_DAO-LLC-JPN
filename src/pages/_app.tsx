@@ -5,8 +5,8 @@ import "@/styles/complete.css";
 import type { AppProps } from "next/app";
 import { HeroUIProvider } from "@heroui/react";
 
-import WagmiWrapper from "@/components/provider/WagmiWrapper";
-
+// import WagmiWrapper from "@/components/provider/WagmiWrapper";
+import ThirdwebProviderWrapper from "@/components/provider/ThirdwebProviderWrapper";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { Provider } from "jotai";
@@ -22,7 +22,7 @@ const queryClient = new QueryClient();
 
 function App({ Component, pageProps }: AppProps) {
   return (
-    <WagmiWrapper>
+    <ThirdwebProviderWrapper>
       <HeroUIProvider>
         <QueryClientProvider client={queryClient}>
           <Provider>
@@ -32,7 +32,7 @@ function App({ Component, pageProps }: AppProps) {
           </Provider>
         </QueryClientProvider>
       </HeroUIProvider>
-    </WagmiWrapper>
+    </ThirdwebProviderWrapper>
   );
 }
 

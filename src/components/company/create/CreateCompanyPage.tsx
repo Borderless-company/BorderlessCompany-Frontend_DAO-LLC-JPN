@@ -7,7 +7,7 @@ import { SettingUp } from "./SettingUp";
 import { Button } from "@heroui/react";
 import { useSignOut } from "@/hooks/useSignOut";
 import { useCompany } from "@/hooks/useCompany";
-import { useAccount } from "wagmi";
+import { useActiveAccount } from "thirdweb/react";
 import { useRouter } from "next/router";
 import { useTaskStatus } from "@/hooks/useTaskStatus";
 import { useAOI } from "@/hooks/useAOI";
@@ -18,7 +18,7 @@ export const CreateCompanyPage: FC = () => {
   const [isGoingBack, setIsGoingBack] = useState<boolean>(false);
   const { signOut } = useSignOut();
   const { createCompany, isCreateCompanySuccess } = useCompany();
-  const { address } = useAccount();
+  const smartAccount = useActiveAccount();
   const router = useRouter();
   const { createTaskStatus } = useTaskStatus();
   const { createAOI } = useAOI();
@@ -38,7 +38,7 @@ export const CreateCompanyPage: FC = () => {
       const companyName = await createCompanyName({});
       const aoi = await createAOI({});
       const company = await createCompany({
-        founder_id: address,
+        founder_id: smartAccount?.address,
         jurisdiction: "jp",
         company_type: "llc",
         company_name: companyName.id,

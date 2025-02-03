@@ -6,7 +6,7 @@ import { Button } from "@heroui/react";
 import { PiArrowRight, PiSignIn } from "react-icons/pi";
 import { TokenCard } from "./TokenCard";
 import { useActiveAccount, useConnectModal } from "thirdweb/react";
-import { client, wallets } from "@/utils/client";
+import { client } from "@/utils/client";
 import { useEstuaryContext } from "./EstuaryContext";
 import { useToken, createProduct } from "@/hooks/useToken";
 import { useEstuary } from "@/hooks/useEstuary";
@@ -50,8 +50,8 @@ export const TokenSelection: FC = () => {
   }, [token, selectedTokenId]);
 
   const handleConnect = async () => {
-    const wallet = await connect({ client, wallets: wallets, size: "compact" });
-    console.log("Connected wallet: ", account);
+    const wallet = await connect({ client });
+    console.log("Connected wallet: ", wallet);
   };
   console.log("language: ", i18n.language);
 

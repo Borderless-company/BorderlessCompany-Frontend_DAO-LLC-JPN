@@ -1,14 +1,18 @@
-import { useAccount, useBalance } from "wagmi";
+import { client, defaultChain } from "@/utils/client";
+import { useActiveAccount, useWalletBalance } from "thirdweb/react";
 
 export function Balance() {
-  const { address } = useAccount();
+  const smartAccount = useActiveAccount();
 
-  const { data: default_ } = useBalance({ address });
-  const { data: account_ } = useBalance({ address });
+  const { data } = useWalletBalance({
+    chain: defaultChain,
+    address: smartAccount?.address,
+    client: client,
+  });
 
   return (
     <div>
-      <div>Balance: {default_?.formatted}</div>
+      <div>Balance: {data?.value?.toString()}</div>
     </div>
   );
 }

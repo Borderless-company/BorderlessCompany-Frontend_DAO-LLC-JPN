@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { client, wallets } from "@/utils/client";
+import { client } from "@/utils/client";
 import { Button, ButtonProps } from "@heroui/react";
 import {
   useConnectModal,
@@ -26,11 +26,8 @@ export const ConnectButton: FC<ConnectButtonProps> = ({ ...props }) => {
   const handleConnect = async () => {
     const wallet = await connect({
       client,
-      wallets: wallets,
-      size: "compact",
-      chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
     });
-    console.log("Connected wallet: ", account);
+    console.log("Connected wallet: ", wallet);
   };
 
   useEffect(() => {

@@ -9,7 +9,11 @@ import {
 import { useTranslation } from "next-i18next";
 import { FC } from "react";
 import { WalletIcon } from "../icons/WalletIcon";
-import { useConnect } from "wagmi";
+import { inAppWallet } from "thirdweb/wallets";
+import { useConnect } from "thirdweb/react";
+import { defineChain } from "thirdweb/chains";
+import { client } from "@/utils/client";
+import { ACCOUNT_FACTORY_ADDRESS } from "@/constants";
 
 export type ConnectorSelectionModalProps = {} & Omit<ModalProps, "children">;
 
@@ -19,7 +23,27 @@ export const ConnectorSelectionModal: FC<ConnectorSelectionModalProps> = ({
   ...props
 }) => {
   const { t } = useTranslation();
-  const { connect, connectors } = useConnect();
+  const { connect } = useConnect({
+    client,
+    accountAbstraction: {
+      chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
+      factoryAddress: ACCOUNT_FACTORY_ADDRESS,
+      sponsorGas: true,
+    },
+  });
+
+  const connectToSmartAccount = async () => {
+    connect(async () => {
+      const wallet = inAppWallet(); // or any other wallet
+      await wallet.connect({
+        client,
+        chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
+        strategy: "google",
+      });
+      return wallet;
+    });
+  };
+
   return (
     <Modal
       className="z-50"
@@ -35,7 +59,7 @@ export const ConnectorSelectionModal: FC<ConnectorSelectionModalProps> = ({
             </ModalHeader>
             <ModalBody>
               <div className="flex flex-col gap-1">
-                {connectors.map((connector) => {
+                {/* {connectors.map((connector) => {
                   return (
                     <Button
                       color="primary"
@@ -48,7 +72,16 @@ export const ConnectorSelectionModal: FC<ConnectorSelectionModalProps> = ({
                       {connector.name}
                     </Button>
                   );
-                })}
+                })} */}
+                <Button
+                  color="primary"
+                  variant="bordered"
+                  startContent={<WalletIcon connector="google" />}
+                  className="card"
+                  onPress={connectToSmartAccount}
+                >
+                  Google
+                </Button>
               </div>
             </ModalBody>
             <ModalFooter>
