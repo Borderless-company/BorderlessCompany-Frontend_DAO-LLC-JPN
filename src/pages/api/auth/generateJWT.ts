@@ -1,15 +1,40 @@
 // pages/api/auth/verify.ts
-import type { NextApiRequest, NextApiResponse } from "next";
-import { verifyMessage } from "ethers";
-import { serialize } from "cookie";
-import jwt from "jsonwebtoken";
 import { createClient } from "@supabase/supabase-js";
-
+import { serialize } from "cookie";
+import { ethers } from "ethers";
+import jwt from "jsonwebtoken";
+import type { NextApiRequest, NextApiResponse } from "next";
 // 環境変数からSupabaseクライアントの初期化
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "",
   process.env.SUPABASE_SERVICE_ROLE_KEY || ""
 );
+
+const contractABI = [
+  {
+    constant: true,
+    inputs: [
+      {
+        name: "_hash",
+        type: "bytes32",
+      },
+      {
+        name: "_signature",
+        type: "bytes",
+      },
+    ],
+    name: "isValidSignature",
+    outputs: [
+      {
+        name: "",
+        type: "bytes4",
+      },
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+];
 
 // JWTシークレット（なければデフォルト値）
 const JWT_SECRET = process.env.JWT_SECRET || "";
@@ -61,8 +86,14 @@ export default async function handler(
   console.log("signature", signature);
   console.log("address", address);
   try {
-    const recoveredAddress = verifyMessage(message, signature);
-    if (recoveredAddress.toLowerCase() !== address.toLowerCase()) {
+    const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
+    const contract = new ethers.Contract(address, contractABI, provider);
+
+    const messageHash = ethers.hashMessage(message);
+    const hashBytes = ethers.getBytes(messageHash);
+    const magicNumber = await contract.isValidSignature(hashBytes, signature);
+
+    if (magicNumber !== "0x1626ba7e") {
       return res.status(401).json({ error: "Signature verification failed" });
     }
 

@@ -1,17 +1,19 @@
 import { useDAO } from "@/hooks/useDAO";
 import { FC, useEffect } from "react";
-import { useAccount } from "wagmi";
+import { useReadContract } from "thirdweb/react";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import { Tables } from "@/types/schema";
 import { useMe } from "@/hooks/useMe";
 import { useSignOut } from "@/hooks/useSignOut";
+import { useActiveAccount, TransactionButton } from "thirdweb/react";
+
 
 const initialPages = ["/login"];
 
 export const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   const router = useRouter();
-  const { address } = useAccount();
+  const smartAccount = useActiveAccount();
   const { me } = useMe();
   const { signOut } = useSignOut();
   // const { getDAObyWalletAddress } = useDAO();
@@ -22,12 +24,12 @@ export const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
     if (initialPages.includes(router.pathname)) {
       return;
     }
-    if (!address) {
+    if (!smartAccount) {
       console.log("me: ", me);
-      console.log("address: ", address);
+      console.log("address: ", smartAccount);
       signOut();
     }
-  }, [me, address]);
+  }, [me, smartAccount]);
 
   // useEffect(() => {
   //   console.log("address: ", address);

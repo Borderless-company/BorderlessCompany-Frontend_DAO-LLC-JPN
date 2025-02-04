@@ -1,12 +1,9 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Address } from "viem";
 import { useMembersByCompanyId } from "@/hooks/useMember";
 import {
   Button,
   Chip,
-  Input,
-  Link,
   Spinner,
   Table,
   TableBody,
@@ -20,6 +17,7 @@ import { downloadCsv } from "@/utils/csv";
 import { shortenAddress } from "@/utils/web3";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
+import { Address } from "thirdweb";
 const columns = [
   { name: "Name", uid: "name" },
   { name: "Address", uid: "address" },

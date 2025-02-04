@@ -1,21 +1,26 @@
+import { useSetContractURI } from "@/hooks/useContract";
+import { useMe } from "@/hooks/useMe";
+import { useWhitelist } from "@/hooks/useWhitelist";
+import { hasAccount } from "@/utils/api/user";
+import { Button, ButtonProps } from "@heroui/react";
+import clsx from "clsx";
+import { useTranslation } from "next-i18next";
+import Image from "next/image";
+import { useRouter } from "next/router";
 import {
   ComponentPropsWithoutRef,
   FC,
   useEffect,
-  useState,
   useMemo,
+  useState,
 } from "react";
-import Image from "next/image";
-import { useTranslation } from "next-i18next";
-import { Button, ButtonProps, Input, Switch } from "@heroui/react";
-import clsx from "clsx";
-import { PiWalletFill, PiArrowSquareOut } from "react-icons/pi";
+import { PiArrowSquareOut, PiWalletFill } from "react-icons/pi";
+import {
+  useActiveAccount,
+  useActiveWallet,
+  useDisconnect,
+} from "thirdweb/react";
 import { ConnectorSelectionModal } from "./ConnectorSelectionModal";
-import { useAccount, useDisconnect, useSignMessage } from "wagmi";
-import { useWhitelist } from "@/hooks/useWhitelist";
-import { useMe } from "@/hooks/useMe";
-import { useRouter } from "next/router";
-import { hasAccount } from "@/utils/api/user";
 
 type LoginPageProps = {
   page: number;
@@ -31,19 +36,20 @@ export const LoginPage: FC<LoginPageProps> = ({
   const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
-  const { signMessageAsync } = useSignMessage();
-  const { address } = useAccount();
+  const smartAccount = useActiveAccount();
+  const smartWallet = useActiveWallet();
   const { disconnect } = useDisconnect();
   const { useIsWhitelisted } = useWhitelist();
   const { data: isWhitelisted, error: isWhitelistedError } = useIsWhitelisted(
-    address ?? ""
+    smartAccount?.address ?? ""
   );
   const { me, refetch } = useMe();
+  const { sendTx } = useSetContractURI();
 
   useEffect(() => {
     const checkAccount = async () => {
       try {
-        const _hasAccount = await hasAccount(address ?? "");
+        const _hasAccount = await hasAccount(smartAccount?.address ?? "");
         if (!_hasAccount) {
           // アカウントがない場合
           onPageChange(1);
@@ -60,7 +66,7 @@ export const LoginPage: FC<LoginPageProps> = ({
     console.log("me: ", me);
     if (me?.isLogin) {
       checkAccount();
-    } else if (address) {
+    } else if (smartAccount?.address) {
       setIsOpen(false);
       if (isWhitelisted) {
         setIsConnecting(true);
@@ -69,35 +75,44 @@ export const LoginPage: FC<LoginPageProps> = ({
         setIsConnecting(false);
       }
     }
-  }, [address, isWhitelisted, me]);
+  }, [smartAccount?.address, isWhitelisted, me]);
 
   // ウォレットによるサインイン
   const signIn = async () => {
-    if (!address) return;
-    console.log("Signing in...");
+    if (!smartAccount?.address) return;
     let nonce = 0;
 
+    // create account
+    sendTx(smartAccount?.address);
+
     try {
-      const nonceRes = await fetch("/api/auth/nonce?address=" + address);
+      const nonceRes = await fetch(
+        "/api/auth/nonce?address=" + smartAccount?.address
+      );
       const { nonce: _nonce } = await nonceRes.json();
       nonce = _nonce;
+      console.log(`nonce: ${nonce}`);
     } catch (e) {
       console.error(e);
       return;
     }
 
     try {
-      const signature = await signMessageAsync({ message: String(nonce) });
+      const signature = await smartAccount?.signMessage({
+        message: String(nonce),
+      });
+      console.log(`signature: ${signature}`);
       const verifyRes = await fetch("/api/auth/generateJWT", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          address,
+          address: smartAccount?.address,
           signature,
           nonce: String(nonce),
         }),
       });
+      console.log(`verifyRes: ${verifyRes}`);
 
       const data = await verifyRes.json();
       if (verifyRes.ok) {
@@ -106,12 +121,16 @@ export const LoginPage: FC<LoginPageProps> = ({
       } else {
         console.error("Verification failed", data);
         setIsConnecting(false);
-        disconnect();
+        if (smartWallet) {
+          disconnect(smartWallet);
+        }
       }
     } catch (e) {
-      console.error(e);
+      console.error(`Error signing in: ${e}`);
       setIsConnecting(false);
-      disconnect();
+      if (smartWallet) {
+        disconnect(smartWallet);
+      }
     }
   };
 
@@ -126,7 +145,9 @@ export const LoginPage: FC<LoginPageProps> = ({
         />
 
         <LoginWidget
-          variant={address && !isWhitelisted ? "whitelist" : "connect"}
+          variant={
+            smartAccount?.address && !isWhitelisted ? "whitelist" : "connect"
+          }
           isConnecting={isConnecting || isLoadingCompany}
           connectButtonOptions={{
             onPress: () => {

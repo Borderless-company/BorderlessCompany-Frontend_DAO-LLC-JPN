@@ -1,15 +1,18 @@
 import { useRouter } from "next/router";
-import { useDisconnect } from "wagmi";
+import { useActiveWallet, useDisconnect } from "thirdweb/react";
 import { useMe } from "./useMe";
 
 export const useSignOut = () => {
   const router = useRouter();
+  const smartWallet = useActiveWallet();
   const { disconnect } = useDisconnect();
   const { refetch } = useMe();
 
   const signOut = async () => {
     try {
-      await disconnect();
+      if (smartWallet) {
+        disconnect(smartWallet);
+      }
       await fetch("/api/auth/logout", {
         method: "POST",
         credentials: "include",
