@@ -4,6 +4,7 @@ import { serialize } from "cookie";
 import { ethers } from "ethers";
 import jwt from "jsonwebtoken";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { ADMIN_CONTRACT_ACCOUNT } from "@/constants";
 // 環境変数からSupabaseクライアントの初期化
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || "",
@@ -87,7 +88,7 @@ export default async function handler(
   console.log("address", address);
   try {
     const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
-    const contract = new ethers.Contract(address, contractABI, provider);
+    const contract = new ethers.Contract(ADMIN_CONTRACT_ACCOUNT, contractABI, provider);
 
     const messageHash = ethers.hashMessage(message);
     const hashBytes = ethers.getBytes(messageHash);

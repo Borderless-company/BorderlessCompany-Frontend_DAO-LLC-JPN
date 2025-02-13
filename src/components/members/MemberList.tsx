@@ -18,6 +18,15 @@ import { shortenAddress } from "@/utils/web3";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
 import { Address } from "thirdweb";
+import {
+  useCreateProposal,
+  useMintExeToken,
+  useNftContract,
+  useVote,
+  useVoteContract,
+} from "@/hooks/useContract";
+import { useActiveAccount } from "thirdweb/react";
+
 const columns = [
   { name: "Name", uid: "name" },
   { name: "Address", uid: "address" },
@@ -59,6 +68,23 @@ export const RenderCell = ({ item, columnKey }: Props) => {
   }, [item, columnKey]);
   const cellValue = item[columnKey as keyof MemberRow];
   const { t } = useTranslation("common");
+
+  const smartAccount = useActiveAccount();
+  const { sendTx: sendMintExeTokenTx } = useMintExeToken();
+  const { data: nftContract } = useNftContract(smartAccount?.address ?? "");
+
+  const handleMintExeToken = async (memberAddress: string) => {
+    console.log("smartAccount?.address:", smartAccount?.address);
+    console.log("nftContract:", nftContract);
+    console.log("memberAddress:", memberAddress);
+    if (!nftContract) {
+      console.error("NFT contract is undefined");
+      return;
+    }
+    console.log("run sendMintExeTokenTx");
+    await sendMintExeTokenTx(nftContract, memberAddress);
+    console.log("sendMintExeTokenTx done");
+  };
 
   switch (columnKey) {
     case "name":
@@ -106,9 +132,7 @@ export const RenderCell = ({ item, columnKey }: Props) => {
           radius="sm"
           className="h-6 w-fit"
           isDisabled={item.actions.isMinted}
-          onPress={() => {
-            console.log("item:", item);
-          }}
+          onPress={() => handleMintExeToken(item.actions.mintTo)}
         >
           <span className="text-xs font-semibold">{t("Issue")}</span>
         </Button>
@@ -121,6 +145,10 @@ export const RenderCell = ({ item, columnKey }: Props) => {
 const MemberList = ({ companyId }: { companyId: string }) => {
   const { members } = useMembersByCompanyId(companyId);
   const { t, i18n } = useTranslation("common");
+  const smartAccount = useActiveAccount();
+  const { sendTx: sendCreateProposalTx } = useCreateProposal();
+  const { data: voteContract } = useVoteContract(smartAccount?.address ?? "");
+  const { sendTx: sendVoteTx } = useVote();
 
   const memberData = useMemo(() => {
     return members?.map((member) => {
@@ -149,6 +177,28 @@ const MemberList = ({ companyId }: { companyId: string }) => {
   useEffect(() => {
     console.log("memberData:", memberData);
   }, [memberData]);
+
+  const handleCreateProposal = async () => {
+    console.log("run sendCreateProposalTx");
+    console.log("voteContract:", voteContract);
+    if (!voteContract) {
+      console.error("Vote contract is undefined");
+      return;
+    }
+    await sendCreateProposalTx(voteContract, smartAccount?.address ?? "");
+    console.log("sendCreateProposalTx done");
+  };
+
+  const handleVote = async () => {
+    console.log("run sendVoteTx");
+    console.log("voteContract:", voteContract);
+    if (!voteContract) {
+      console.error("Vote contract is undefined");
+      return;
+    }
+    await sendVoteTx("1", voteContract, 0);
+    console.log("sendVoteTx done");
+  };
 
   return (
     <>
@@ -196,6 +246,8 @@ const MemberList = ({ companyId }: { companyId: string }) => {
               </Table>
             </>
           )}
+          <Button onPress={handleCreateProposal}>Create Proposal</Button>
+          <Button onPress={handleVote}>Vote</Button>
         </div>
       )}
     </>
