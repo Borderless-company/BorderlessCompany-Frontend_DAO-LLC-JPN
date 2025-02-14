@@ -128,6 +128,8 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       console.log(`aoi?.establishment_date ${aoi?.establishment_date}`);
       console.log(`company?.jurisdiction ${company?.jurisdiction}`);
       console.log(`aoi?.location ${aoi?.location}`);
+      console.log(`smartAccount?.address ${smartAccount?.address}`);
+      console.log(`company?.company_number ${company?.company_number}`);
 
       if (
         !formData?.company_number ||
@@ -136,29 +138,28 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
         !aoi?.establishment_date ||
         !company?.jurisdiction ||
         !aoi?.location ||
-        !smartAccount?.address ||
-        !company?.company_number
+        !smartAccount?.address
       ) {
         throw new Error("Company data is missing");
       }
 
       sendCreateCompanyTx(
-          ethers.encodeBytes32String(company?.company_number),
-          SC_JP_DAO_LLC_ADDRESS,
-          // company?.company_type,
-          "SC_JP_DAOLLC",
-          company?.company_name,
-          aoi?.establishment_date,
-          company?.jurisdiction,
-          company?.company_type,
-          "",
-          [aoi?.location, aoi?.location, aoi?.location, aoi?.location], 
-          [
-            GOVERNANCE_JP_LLC_ADDRESS,
-            LETS_JP_LLC_EXECUTIVE_ADDRESS,
-            LETS_JP_LLC_NON_EXECUTIVE_ADDRESS,
-          ],
-          ["", executiveTokenExtraParams, nonExecutiveTokenExtraParams],
+        ethers.encodeBytes32String(formData?.company_number),
+        SC_JP_DAO_LLC_ADDRESS,
+        // company?.company_type,
+        "SC_JP_DAOLLC",
+        company?.company_name,
+        aoi?.establishment_date,
+        company?.jurisdiction,
+        company?.company_type,
+        "",
+        [aoi?.location, aoi?.location, aoi?.location, aoi?.location],
+        [
+          GOVERNANCE_JP_LLC_ADDRESS,
+          LETS_JP_LLC_EXECUTIVE_ADDRESS,
+          LETS_JP_LLC_NON_EXECUTIVE_ADDRESS,
+        ],
+        ["", executiveTokenExtraParams, nonExecutiveTokenExtraParams]
       );
 
       setTimeout(async () => {
