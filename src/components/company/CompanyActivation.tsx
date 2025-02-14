@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -16,19 +16,34 @@ import { useCompany } from "@/hooks/useCompany";
 import { Stack } from "@/sphere/Stack";
 import { useTaskStatus } from "@/hooks/useTaskStatus";
 import { motion } from "framer-motion";
-
+import { useCreateCompany } from "@/hooks/useContract";
+import { ethers } from "ethers";
 type CompanyActivationProps = {
   company?: Tables<"COMPANY">;
 } & Omit<ModalProps, "children">;
+import { useActiveAccount } from "thirdweb/react";
+import {
+  GOVERNANCE_JP_LLC_ADDRESS,
+  LETS_JP_LLC_EXECUTIVE_ADDRESS,
+  SC_JP_DAO_LLC_ADDRESS,
+  LETS_JP_LLC_NON_EXECUTIVE_ADDRESS,
+} from "@/constants";
+import { useTokenByCompanyId } from "@/hooks/useToken";
+import { useAOIByCompanyId } from "@/hooks/useAOI";
 
 export const CompanyActivation: FC<CompanyActivationProps> = ({
   company,
   ...props
 }) => {
+  const smartAccount = useActiveAccount();
   const [isDepoying, setIsDepoying] = useState(false);
   const [isDeployed, setIsDeployed] = useState(false);
   const { updateCompany } = useCompany(company?.id);
+  const { tokens, isLoadingTokens, isErrorTokens, refetchTokens } =
+    useTokenByCompanyId(company?.id);
+  const { aoi } = useAOIByCompanyId(company?.id);
   const { createTaskStatus, deleteTaskStatusByIds } = useTaskStatus();
+  const { sendTx: sendCreateCompanyTx } = useCreateCompany();
   const [formData, setFormData] = useState<Partial<Tables<"COMPANY">>>({
     company_number: company?.company_number || "",
     is_active: company?.is_active || false,
@@ -44,6 +59,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log(`company?.id ${company?.id}`);
     if (!company?.id) return;
 
     try {
@@ -74,7 +90,77 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
 
       setIsDepoying(true);
 
-      // TODO-Contract: SCRを実行する
+      // Create Company
+
+      const abiCoder = new ethers.AbiCoder();
+
+      console.log(`token?.name ${tokens?.[0]?.name}`);
+      console.log(`token?.symbol ${tokens?.[0]?.symbol}`);
+
+      const executiveTokenExtraParams = abiCoder.encode(
+        ["string", "string", "string", "string", "string"],
+        [
+          tokens?.[0]?.name,
+          tokens?.[0]?.symbol,
+          "https://example.com/metadata/",
+          ".json",
+          GOVERNANCE_JP_LLC_ADDRESS,
+        ]
+      );
+      console.log(`executiveTokenExtraParams: ${executiveTokenExtraParams}`);
+      const nonExecutiveTokenExtraParams = abiCoder.encode(
+        ["string", "string", "string", "string", "string"],
+        [
+          tokens?.[0]?.name,
+          tokens?.[0]?.symbol,
+          "https://example.com/metadata/",
+          ".json",
+          GOVERNANCE_JP_LLC_ADDRESS,
+        ]
+      );
+      console.log(
+        `nonExecutiveTokenExtraParams: ${nonExecutiveTokenExtraParams}`
+      );
+
+      console.log(`formData?.company_number ${formData?.company_number}`);
+      console.log(`company?.company_type ${company?.company_type}`);
+      console.log(`company?.company_name ${company?.company_name}`);
+      console.log(`aoi?.establishment_date ${aoi?.establishment_date}`);
+      console.log(`company?.jurisdiction ${company?.jurisdiction}`);
+      console.log(`aoi?.location ${aoi?.location}`);
+      console.log(`smartAccount?.address ${smartAccount?.address}`);
+      console.log(`company?.company_number ${company?.company_number}`);
+
+      if (
+        !formData?.company_number ||
+        !company?.company_type ||
+        !company?.company_name ||
+        !aoi?.establishment_date ||
+        !company?.jurisdiction ||
+        !aoi?.location ||
+        !smartAccount?.address
+      ) {
+        throw new Error("Company data is missing");
+      }
+
+      sendCreateCompanyTx(
+        ethers.encodeBytes32String(formData?.company_number),
+        SC_JP_DAO_LLC_ADDRESS,
+        // company?.company_type,
+        "SC_JP_DAOLLC",
+        company?.company_name,
+        aoi?.establishment_date,
+        company?.jurisdiction,
+        company?.company_type,
+        "",
+        [aoi?.location, aoi?.location, aoi?.location, aoi?.location],
+        [
+          GOVERNANCE_JP_LLC_ADDRESS,
+          LETS_JP_LLC_EXECUTIVE_ADDRESS,
+          LETS_JP_LLC_NON_EXECUTIVE_ADDRESS,
+        ],
+        ["", executiveTokenExtraParams, nonExecutiveTokenExtraParams]
+      );
 
       setTimeout(async () => {
         setIsDepoying(false);

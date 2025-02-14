@@ -19,3 +19,18 @@ pnpm dev
 - NEXT_PUBLIC_BASE_URL を変更する
 - Dev サーバー: metis-testnet.apps.borderless.company
 - 本番サーバー: apps.borderless.company
+
+## DB
+
+- login supabase
+
+```bash
+npx supabase login
+```
+
+- generate types
+
+```bash
+pnpm supabase:type
+```
+

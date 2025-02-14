@@ -82,6 +82,8 @@ export const LoginPage: FC<LoginPageProps> = ({
     if (!smartAccount?.address) return;
     let nonce = 0;
 
+    console.log("signIn: smartAccount?.address: ", smartAccount?.address);
+
     // create account
     sendTx(smartAccount?.address);
 
