@@ -20,8 +20,10 @@ import { AoIBuilder } from "./AoIBuilder";
 import { useCompany } from "@/hooks/useCompany";
 import { CompanyProfileEdit } from "./CompanyProfileEdit";
 import { ExecutiveTokenInfoEdit } from "./ExecutiveTokenInfoEdit";
+import { CompanyActivation } from "./CompanyActivation";
 import { useSignOut } from "@/hooks/useSignOut";
 import { useTaskStatusByCompany } from "@/hooks/useTaskStatus";
+import { motion } from "framer-motion";
 
 export type CompanyHomePageProps = {
   companyId?: string;
@@ -46,6 +48,12 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
     isOpen: isOpenExecutiveTokenInfoEdit,
     onOpen: onOpenExecutiveTokenInfoEdit,
     onOpenChange: onOpenChangeExecutiveTokenInfoEdit,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenCompanyActivation,
+    onOpen: onOpenCompanyActivation,
+    onOpenChange: onOpenChangeCompanyActivation,
   } = useDisclosure();
 
   const { company, isLoading, isError } = useCompany(companyId);
@@ -84,10 +92,19 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                 {company?.display_name || "Your Company"}
               </div>
               <Chip
+                className="transition-colors duration-150"
                 variant="bordered"
                 size="lg"
+                color={company?.is_active ? "primary" : "default"}
                 startContent={
-                  <PiPowerBold color="var(--bls-neutral)" size={20} />
+                  <PiPowerBold
+                    color={
+                      company?.is_active
+                        ? "var(--bls-primary)"
+                        : "var(--bls-neutral)"
+                    }
+                    size={20}
+                  />
                 }
               >
                 {company?.is_active ? "Active" : "Inactive"}
@@ -138,10 +155,24 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
             <Stack h className="items-center gap-2">
               <PiKanbanDuotone className="text-primary" size={32} />
               <h3 className="w-full font-headline-sm text-foreground">
-                {"Complete Tasks to Activate Your Company"}
+                {company?.is_active
+                  ? "Level Up Your Company!"
+                  : "Complete Tasks to Activate Your Company"}
               </h3>
             </Stack>
             <div className="w-full grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
+              {taskStatus?.every((task) => task.status === "completed") && (
+                <TaskCard
+                  title={`Activate ${
+                    company?.display_name ||
+                    company?.COMPANY_NAME?.["ja-jp"] ||
+                    "Your Company"
+                  }`}
+                  status="completed"
+                  variant="activation"
+                  onPress={onOpenCompanyActivation}
+                />
+              )}
               {taskStatus?.map((task) => (
                 <>
                   {task.task_id === "create-aoi" && (
@@ -195,48 +226,107 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
           onOpenChange={onOpenChangeExecutiveTokenInfoEdit}
         />
       )}
+      {isOpenCompanyActivation && (
+        <CompanyActivation
+          company={company}
+          isOpen={isOpenCompanyActivation}
+          onOpenChange={onOpenChangeCompanyActivation}
+        />
+      )}
     </>
   );
 };
 
 export type TaskCardProps = {
   title: string;
+  variant?: "task" | "activation";
   status: "completed" | "todo" | "inProgress";
 } & RACButtonProps;
 
-export const TaskCard: FC<TaskCardProps> = ({ title, status, ...props }) => {
-  return (
-    <RACButton
-      className={cn(
-        "relative transition-colors duration-150 appearance-none  h-28 flex flex-col gap-2 items-start justify-start p-3 border-1 border-primary-outline rounded-xl ",
-        "data-[focused]:outline-none ",
-        status !== "completed" && "data-[hovered]:bg-primary-backing",
-        status === "completed" &&
-          "border-neutral data-[hovered]:bg-neutral-backing"
-      )}
-      {...props}
-    >
-      {status === "completed" && (
-        <PiCheckCircleFill className="text-neutral " size={32} />
-      )}
-      {status === "todo" && (
-        <PiCheckCircle className="text-primary opacity-40" size={32} />
-      )}
-      {status === "inProgress" && (
-        <PiCheckCircle className="text-primary opacity-40" size={32} />
-      )}
-      <p
+export const TaskCard: FC<TaskCardProps> = ({
+  title,
+  status,
+  variant = "task",
+  ...props
+}) => {
+  if (variant === "task") {
+    return (
+      <RACButton
         className={cn(
-          "w-fit font-title-md px-1 text-start",
-          status !== "completed" && "text-primary",
-          status === "completed" && "text-neutral"
+          "relative transition-colors duration-150 appearance-none  h-28 flex flex-col gap-2 items-start justify-start p-3 border-1 border-primary-outline rounded-xl ",
+          "data-[focused]:outline-none ",
+          status !== "completed" && "data-[hovered]:bg-primary-backing",
+          status === "completed" &&
+            "border-neutral data-[hovered]:bg-neutral-backing"
         )}
+        {...props}
       >
-        {title}
-      </p>
-      <TaskStatusChip status={status} className="absolute top-2 right-2" />
-    </RACButton>
-  );
+        {status === "completed" && (
+          <PiCheckCircleFill className="text-neutral " size={32} />
+        )}
+        {status === "todo" && (
+          <PiCheckCircle className="text-primary opacity-40" size={32} />
+        )}
+        {status === "inProgress" && (
+          <PiCheckCircle className="text-primary opacity-40" size={32} />
+        )}
+        <p
+          className={cn(
+            "w-fit font-title-md px-1 text-start",
+            status !== "completed" && "text-primary",
+            status === "completed" && "text-neutral"
+          )}
+        >
+          {title}
+        </p>
+        <TaskStatusChip status={status} className="absolute top-2 right-2" />
+      </RACButton>
+    );
+  } else {
+    return (
+      <motion.div
+        className="rounded-xl "
+        initial={{ opacity: 0, y: 0, scale: 1.2 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
+      >
+        <motion.div
+          className="rounded-xl "
+          animate={{
+            boxShadow: [
+              "0 0 10px rgba(110, 191, 184, 0.7)",
+              "0 0 20px rgba(110, 191, 184, 1)",
+              "0 0 10px rgba(110, 191, 184, 0.7)",
+            ],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          <RACButton
+            className={cn(
+              "dark relative transition-colors duration-150 appearance-none h-28 flex flex-col gap-2 items-start justify-start p-3 rounded-xl",
+              "data-[focused]:outline-none bg-background",
+              "data-[hovered]:scale-[1.02] transition-transform duration-300 ease-out"
+            )}
+            {...props}
+          >
+            <PiPower className="text-[#8ED3CC] " size={32} />
+
+            <p
+              className={cn(
+                "dark w-fit font-title-md px-1 text-start text-[#8ED3CC]"
+              )}
+            >
+              {title}
+            </p>
+          </RACButton>
+        </motion.div>
+      </motion.div>
+    );
+  }
 };
 
 export type TaskStatusChipProps = {

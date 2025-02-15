@@ -7,7 +7,7 @@ import { Stack } from "@/sphere/Stack";
 import { Button } from "@heroui/react";
 import { useSignOut } from "@/hooks/useSignOut";
 import { useUser } from "@/hooks/useUser";
-import { useAccount } from "wagmi";
+import { useActiveAccount } from "thirdweb/react";
 import { usePrivacyPolicy } from "@/hooks/usePrivacyPolicy";
 import { useTermsOfUse } from "@/hooks/useTermsOfUse";
 import { useAgreement } from "@/hooks/useAgreement";
@@ -28,17 +28,21 @@ export const AgreementPage: FC<AgreementPageProps> = ({
   const [activeAcceptButton, setActiveAcceptButton] = useState(false);
   const { signOut } = useSignOut();
   const { t } = useTranslation();
+  const smartAccount = useActiveAccount();
   const { createUser } = useUser();
-  const { address } = useAccount();
   const { latest: latestPrivacyPolicy } = usePrivacyPolicy();
   const { latest: latestTermsOfUse } = useTermsOfUse();
   const { createAgreement } = useAgreement();
   const router = useRouter();
   const onAccept = async () => {
+    if (!smartAccount) {
+      return;
+    }
     try {
       setIsAccepting(true);
+      console.log("smartAccount AgreementPage", smartAccount);
       const createdUser = await createUser({
-        evm_address: address,
+        evm_address: smartAccount?.address,
       });
       const createdAgreement = await createAgreement({
         user_id: createdUser.evm_address,

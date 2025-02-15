@@ -1,4 +1,4 @@
-import { Address } from "viem";
+import { Address } from "thirdweb";
 
 export const BlockExplorerUrl: { [chain: string]: string } = {
   Sepolia: "https://sepolia.etherscan.io",

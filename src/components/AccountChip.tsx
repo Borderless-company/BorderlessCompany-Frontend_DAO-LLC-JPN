@@ -10,7 +10,7 @@ import {
 } from "@heroui/react";
 import { FC, useEffect, useState } from "react";
 import { Button } from "react-aria-components";
-import { useAccount } from "wagmi";
+import { useActiveAccount } from "thirdweb/react";
 import Image from "next/image";
 import { PiDotsThreeVertical } from "react-icons/pi";
 import { Balance } from "./wallet/balance";
@@ -20,7 +20,7 @@ export type AccountChipProps = {
 };
 
 export const AccountChip: FC<AccountChipProps> = ({ name }) => {
-  const { address } = useAccount();
+  const smartAccount = useActiveAccount();
   const { signOut } = useSignOut();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [mounted, setMounted] = useState(false);
@@ -51,7 +51,7 @@ export const AccountChip: FC<AccountChipProps> = ({ name }) => {
             className="rounded-md flex-shrink-0"
           />
           <p className="w-32 text-foreground font-label-lg overflow-hidden text-ellipsis whitespace-nowrap">
-            {name || address}
+            {name || smartAccount?.address}
           </p>
         </div>
         <div className="flex-shrink-0">
@@ -66,10 +66,10 @@ export const AccountChip: FC<AccountChipProps> = ({ name }) => {
             </ModalHeader>
             <ModalBody>
               <div className="flex flex-col gap-1">
-                {address && (
+                {smartAccount?.address && (
                   <NextUIButton
                     color="secondary"
-                    onPress={() => navigator.clipboard.writeText(address)}
+                    onPress={() => navigator.clipboard.writeText(smartAccount?.address)}
                   >
                     Copy Address
                   </NextUIButton>

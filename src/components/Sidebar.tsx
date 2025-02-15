@@ -47,28 +47,28 @@ export const Sidebar: FC<SidebarProps> = ({ companyId }) => {
           icon={<PiUsersThree size={24} />}
           isActive={pathname === `/company/${companyId}/members`}
           href={`/company/${companyId}/members`}
-          isLocked={true}
+          isLocked={!company?.is_active}
         />
         <SidebarItem
           title="Tokens"
           icon={<PiCoins size={24} />}
           isActive={pathname === `/company/${companyId}/tokens`}
           href={`/company/${companyId}/tokens`}
-          isLocked={true}
+          isLocked={!company?.is_active}
         />
-        <SidebarItem
+        {/* <SidebarItem
           title="Estuary"
           icon={<PiStorefront size={24} />}
           isActive={pathname === `/company/${companyId}/estuary`}
           href={`/company/${companyId}/estuary`}
-          isLocked={true}
-        />
+          isLocked={!company?.is_active}
+        /> */}
         <SidebarItem
           title="Votings"
           icon={<PiGavel size={24} />}
           isActive={pathname === `/company/${companyId}/votings`}
           href={`/company/${companyId}/votings`}
-          isLocked={true}
+          isLocked={!company?.is_active}
         />
         {/* <SidebarItem
           title="Settings"

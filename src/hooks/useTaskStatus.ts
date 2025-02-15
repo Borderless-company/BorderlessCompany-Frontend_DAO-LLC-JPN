@@ -110,10 +110,62 @@ export const useTaskStatus = (id?: string) => {
     },
   });
 
+  const { mutateAsync: deleteTaskStatus } = useMutation<void, Error, string>({
+    mutationFn: async (id: string) => {
+      const response = await fetch(`/api/task-status?id=${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!response.ok) {
+        const json = await response.json();
+        throw new Error(json.error);
+      }
+    },
+    onError: (error) => {
+      console.error("[ERROR] Failed to delete task status: ", error);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["taskStatus"] });
+    },
+  });
+
+  const { mutateAsync: deleteTaskStatusByIds } = useMutation<
+    void,
+    Error,
+    { company_id: string; task_id: string }
+  >({
+    mutationFn: async ({ company_id, task_id }) => {
+      const response = await fetch(
+        `/api/task-status?company_id=${company_id}&task_id=${task_id}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (!response.ok) {
+        const json = await response.json();
+        throw new Error(json.error);
+      }
+    },
+    onError: (error) => {
+      console.error("[ERROR] Failed to delete task status: ", error);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["taskStatus", "company", variables.company_id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["taskStatus", "task", variables.task_id],
+      });
+    },
+  });
+
   return {
     createTaskStatus,
     updateTaskStatus,
     updateTaskStatusByIds,
+    deleteTaskStatus,
+    deleteTaskStatusByIds,
   };
 };
 

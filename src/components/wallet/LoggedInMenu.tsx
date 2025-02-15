@@ -1,4 +1,4 @@
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useActiveAccount, useConnect, useDisconnect } from "thirdweb/react";
 import { Balance } from "@/components/wallet/balance";
 import React, { useState, useEffect } from "react";
 import {
@@ -12,14 +12,13 @@ import {
 } from "@heroui/react";
 
 export function LoggedInMenu() {
-  const { address, connector, isConnected } = useAccount();
-  const { connect, connectors, error } = useConnect();
+  const smartAccount = useActiveAccount();
   const { disconnect } = useDisconnect();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
     <div>
-      <Button onPress={onOpen}>{address}</Button>
+      <Button onPress={onOpen}>{smartAccount?.address}</Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           <>
@@ -28,10 +27,10 @@ export function LoggedInMenu() {
             </ModalHeader>
             <ModalBody>
               <div className="flex flex-col gap-1">
-                {address && (
+                {smartAccount?.address && (
                   <Button
                     color="secondary"
-                    onPress={() => navigator.clipboard.writeText(address)}
+                    onPress={() => navigator.clipboard.writeText(smartAccount.address)}
                   >
                     アドレスをコピー
                   </Button>

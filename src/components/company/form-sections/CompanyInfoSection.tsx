@@ -39,6 +39,14 @@ export const CompanyInfoSection: FC<CompanyInfoSectionProps> = ({
         labelPlacement="outside"
         placeholder="Enter your business purpose"
       />
+      <Input
+        name="location"
+        value={formData.location}
+        onChange={handleInputChange}
+        label="Location"
+        labelPlacement="outside"
+        placeholder="Enter your location"
+      />
     </>
   );
 };
