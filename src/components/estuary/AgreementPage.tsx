@@ -35,7 +35,7 @@ const AgreementPage: FC = () => {
   const { updateUser, user } = useUser(account?.address);
   const [pollingCount, setPollingCount] = useState(0);
   const { updatePayment } = usePayment();
-  const { createMember } = useMember({});
+  const { createMember } = useMember();
   const { estuary } = useEstuary(estId as string);
 
   const onClickPay = async () => {
