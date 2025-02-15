@@ -161,46 +161,48 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
               </h3>
             </Stack>
             <div className="w-full grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
-              {taskStatus?.every((task) => task.status === "completed") && (
-                <TaskCard
-                  title={`Activate ${
-                    company?.display_name ||
-                    company?.COMPANY_NAME?.["ja-jp"] ||
-                    "Your Company"
-                  }`}
-                  status="completed"
-                  variant="activation"
-                  onPress={onOpenCompanyActivation}
-                />
-              )}
-              {taskStatus?.map((task) => (
-                <>
-                  {task.task_id === "create-aoi" && (
-                    <TaskCard
-                      key={task.id}
-                      title={"Create AoI"}
-                      status={task.status || "todo"}
-                      onPress={onOpenAoiBuilder}
-                    />
-                  )}
-                  {task.task_id === "enter-company-profile" && (
-                    <TaskCard
-                      key={task.id}
-                      title={"Enter Company Profile"}
-                      status={task.status || "todo"}
-                      onPress={onOpenCompanyProfileEdit}
-                    />
-                  )}
-                  {task.task_id === "enter-executive-token-info" && (
-                    <TaskCard
-                      key={task.id}
-                      title={"Enter Executive Member Token Info"}
-                      status={task.status || "todo"}
-                      onPress={onOpenExecutiveTokenInfoEdit}
-                    />
-                  )}
-                </>
-              ))}
+              {!company?.is_active &&
+                taskStatus?.every((task) => task.status === "completed") && (
+                  <TaskCard
+                    title={`Activate ${
+                      company?.display_name ||
+                      company?.COMPANY_NAME?.["ja-jp"] ||
+                      "Your Company"
+                    }`}
+                    status="completed"
+                    variant="activation"
+                    onPress={onOpenCompanyActivation}
+                  />
+                )}
+              {!company?.is_active &&
+                taskStatus?.map((task) => (
+                  <>
+                    {task.task_id === "create-aoi" && (
+                      <TaskCard
+                        key={task.id}
+                        title={"Create AoI"}
+                        status={task.status || "todo"}
+                        onPress={onOpenAoiBuilder}
+                      />
+                    )}
+                    {task.task_id === "enter-company-profile" && (
+                      <TaskCard
+                        key={task.id}
+                        title={"Enter Company Profile"}
+                        status={task.status || "todo"}
+                        onPress={onOpenCompanyProfileEdit}
+                      />
+                    )}
+                    {task.task_id === "enter-executive-token-info" && (
+                      <TaskCard
+                        key={task.id}
+                        title={"Enter Executive Member Token Info"}
+                        status={task.status || "todo"}
+                        onPress={onOpenExecutiveTokenInfoEdit}
+                      />
+                    )}
+                  </>
+                ))}
             </div>
           </Stack>
         </Stack>
@@ -307,7 +309,7 @@ export const TaskCard: FC<TaskCardProps> = ({
         >
           <RACButton
             className={cn(
-              "dark relative transition-colors duration-150 appearance-none h-28 flex flex-col gap-2 items-start justify-start p-3 rounded-xl",
+              "dark relative transition-colors duration-150 appearance-none h-28 w-full flex flex-col gap-2 items-start justify-start p-3 rounded-xl",
               "data-[focused]:outline-none bg-background",
               "data-[hovered]:scale-[1.02] transition-transform duration-300 ease-out"
             )}

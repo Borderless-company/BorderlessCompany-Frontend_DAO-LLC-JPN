@@ -54,7 +54,7 @@ export const Sidebar: FC<SidebarProps> = ({ companyId }) => {
           icon={<PiCoins size={24} />}
           isActive={pathname === `/company/${companyId}/tokens`}
           href={`/company/${companyId}/tokens`}
-          isLocked={!company?.is_active}
+          isLocked={true}
         />
         {/* <SidebarItem
           title="Estuary"
@@ -68,7 +68,7 @@ export const Sidebar: FC<SidebarProps> = ({ companyId }) => {
           icon={<PiGavel size={24} />}
           isActive={pathname === `/company/${companyId}/votings`}
           href={`/company/${companyId}/votings`}
-          isLocked={!company?.is_active}
+          isLocked={true}
         />
         {/* <SidebarItem
           title="Settings"

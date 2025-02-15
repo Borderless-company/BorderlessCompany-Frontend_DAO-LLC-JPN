@@ -30,6 +30,7 @@ import {
 } from "@/constants";
 import { useTokenByCompanyId } from "@/hooks/useToken";
 import { useAOIByCompanyId } from "@/hooks/useAOI";
+import { useMember, useMembersByCompanyId } from "@/hooks/useMember";
 
 export const CompanyActivation: FC<CompanyActivationProps> = ({
   company,
@@ -41,6 +42,8 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
   const { updateCompany } = useCompany(company?.id);
   const { tokens, isLoadingTokens, isErrorTokens, refetchTokens } =
     useTokenByCompanyId(company?.id);
+  const { updateMember } = useMember();
+  const { members } = useMembersByCompanyId(company?.id);
   const { aoi } = useAOIByCompanyId(company?.id);
   const { createTaskStatus, deleteTaskStatusByIds } = useTaskStatus();
   const { sendTx: sendCreateCompanyTx } = useCreateCompany();
@@ -63,29 +66,6 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
     if (!company?.id) return;
 
     try {
-      // 既存のタスクステータスを削除
-      // await Promise.all([
-      //   deleteTaskStatusByIds({
-      //     company_id: company.id,
-      //     task_id: "create-aoi",
-      //   }),
-      //   deleteTaskStatusByIds({
-      //     company_id: company.id,
-      //     task_id: "enter-company-profile",
-      //   }),
-      //   deleteTaskStatusByIds({
-      //     company_id: company.id,
-      //     task_id: "enter-executive-token-info",
-      //   }),
-      // ]);
-
-      // 新しいタスクを追加
-      // await createTaskStatus({
-      //   company_id: company.id,
-      //   task_id: "mint-exe-token",
-      //   status: "todo",
-      // });
-
       // 会社を有効化
 
       setIsDepoying(true);
@@ -161,6 +141,48 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
         ],
         ["", executiveTokenExtraParams, nonExecutiveTokenExtraParams]
       );
+
+      //既存のタスクステータスを削除
+      await Promise.all([
+        deleteTaskStatusByIds({
+          company_id: company.id,
+          task_id: "create-aoi",
+        }),
+        deleteTaskStatusByIds({
+          company_id: company.id,
+          task_id: "enter-company-profile",
+        }),
+        deleteTaskStatusByIds({
+          company_id: company.id,
+          task_id: "enter-executive-token-info",
+        }),
+      ]);
+
+      //新しいタスクを追加;
+      await createTaskStatus({
+        company_id: company.id,
+        task_id: "mint-exe-token",
+        status: "todo",
+      });
+
+      // メンバーを追加
+
+      if (members?.length) {
+        await Promise.all(
+          members.map(async (member) => {
+            await updateMember({
+              user_id: member.user_id,
+              company_id: company.id,
+              token_id: tokens?.[0]?.id,
+              is_minted: member.user_id === smartAccount?.address,
+              date_of_employment:
+                member.user_id === smartAccount?.address
+                  ? new Date().toISOString()
+                  : null,
+            });
+          })
+        );
+      }
 
       setTimeout(async () => {
         setIsDepoying(false);

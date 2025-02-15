@@ -8,7 +8,7 @@ export type UseMemberProps = {
   daoId?: string;
 };
 
-export const useMember = ({ userId, daoId }: UseMemberProps) => {
+export const useMember = () => {
   const queryClient = useQueryClient();
 
   const { mutateAsync: updateMember } = useMutation<
@@ -32,8 +32,8 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
     onError: (error) => {
       console.error("[ERROR] Failed to update member: ", error);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["member", userId, daoId] });
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["member", data.user_id] });
     },
   });
 
@@ -60,7 +60,7 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
     },
     onSuccess: (_, props) => {
       queryClient.invalidateQueries({
-        queryKey: ["member", props.user_id, props.company_id],
+        queryKey: ["member", props.user_id],
       });
     },
   });
@@ -88,35 +88,6 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["members"] });
-    },
-  });
-
-  const { data: member } = useQuery<
-    (Tables<"MEMBER"> & { token: Tables<"TOKEN"> }) | undefined,
-    Error
-  >({
-    queryKey: ["member", userId, daoId],
-    queryFn: async () => {
-      if (!userId || !daoId) return undefined;
-      const { data: member, error: memberError } = await supabase
-        .from("MEMBER")
-        .select()
-        .eq("user_id", userId)
-        .eq("dao_id", daoId)
-        .single();
-      if (memberError) {
-        throw new Error(memberError.message);
-      }
-
-      const { data: token, error: tokenError } = await supabase
-        .from("TOKEN")
-        .select()
-        .eq("id", member?.token_id!)
-        .single();
-      if (tokenError) {
-        throw new Error(tokenError.message);
-      }
-      return { ...member, token };
     },
   });
 
@@ -198,7 +169,6 @@ export const useMember = ({ userId, daoId }: UseMemberProps) => {
     updateMember,
     createMember,
     deleteMember,
-    member,
     getMembers,
     getMembersByDaoId,
   };

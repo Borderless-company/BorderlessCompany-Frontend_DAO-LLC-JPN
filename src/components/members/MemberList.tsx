@@ -26,6 +26,7 @@ import {
   useVoteContract,
 } from "@/hooks/useContract";
 import { useActiveAccount } from "thirdweb/react";
+import { useTokenByCompanyId } from "@/hooks/useToken";
 
 const columns = [
   { name: "Name", uid: "name" },
@@ -49,6 +50,7 @@ type MemberRow = {
   status: string;
   isExecutive: string;
   actions: {
+    companyId: string;
     contractAddress: string;
     mintTo: string;
     isMinted: boolean;
@@ -62,6 +64,7 @@ interface Props {
 
 export const RenderCell = ({ item, columnKey }: Props) => {
   const router = useRouter();
+  const { updateMember } = useMember();
   useEffect(() => {
     console.log("item:", item);
     console.log("columnKey:", columnKey);
@@ -72,8 +75,10 @@ export const RenderCell = ({ item, columnKey }: Props) => {
   const smartAccount = useActiveAccount();
   const { sendTx: sendMintExeTokenTx } = useMintExeToken();
   const { data: nftContract } = useNftContract(smartAccount?.address ?? "");
+  const [isMinting, setIsMinting] = useState(false);
 
   const handleMintExeToken = async (memberAddress: string) => {
+    setIsMinting(true);
     console.log("smartAccount?.address:", smartAccount?.address);
     console.log("nftContract:", nftContract);
     console.log("memberAddress:", memberAddress);
@@ -84,6 +89,13 @@ export const RenderCell = ({ item, columnKey }: Props) => {
     console.log("run sendMintExeTokenTx");
     await sendMintExeTokenTx(nftContract, memberAddress);
     console.log("sendMintExeTokenTx done");
+    await updateMember({
+      user_id: memberAddress,
+      company_id: item.actions.companyId,
+      is_minted: true,
+      date_of_employment: new Date().toISOString(),
+    });
+    setIsMinting(false);
   };
 
   switch (columnKey) {
@@ -98,7 +110,11 @@ export const RenderCell = ({ item, columnKey }: Props) => {
         </span>
       );
     case "dateOfEmployment":
-      return <span className="whitespace-nowrap">{cellValue as string}</span>;
+      return (
+        <span className="whitespace-nowrap">
+          {cellValue ? (cellValue as string) : "Not issued"}
+        </span>
+      );
     case "investedAmount":
       return <span className="whitespace-nowrap">{cellValue as string}</span>;
     case "status":
@@ -131,6 +147,7 @@ export const RenderCell = ({ item, columnKey }: Props) => {
           color="primary"
           radius="sm"
           className="h-6 w-fit"
+          isLoading={isMinting}
           isDisabled={item.actions.isMinted}
           onPress={() => handleMintExeToken(item.actions.mintTo)}
         >
@@ -166,6 +183,7 @@ const MemberList = ({ companyId }: { companyId: string }) => {
         actions: {
           contractAddress: member.TOKEN?.contract_address ?? "",
           mintTo: member.USER?.evm_address ?? "",
+          companyId: member.company_id ?? "",
           isMinted: member.is_minted,
         },
         // receipt: member.receipt,
@@ -246,8 +264,8 @@ const MemberList = ({ companyId }: { companyId: string }) => {
               </Table>
             </>
           )}
-          <Button onPress={handleCreateProposal}>Create Proposal</Button>
-          <Button onPress={handleVote}>Vote</Button>
+          {/* <Button onPress={handleCreateProposal}>Create Proposal</Button>
+          <Button onPress={handleVote}>Vote</Button> */}
         </div>
       )}
     </>

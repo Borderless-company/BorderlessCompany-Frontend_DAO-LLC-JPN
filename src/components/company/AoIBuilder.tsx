@@ -64,7 +64,7 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ companyId, ...props }) => {
 
   const { updateCompanyName } = useCompanyName();
   const { createUser, deleteUser } = useUser();
-  const { createMember, deleteMember } = useMember({});
+  const { createMember, deleteMember } = useMember();
   const { updateAOI } = useAOI();
   const { updateTaskStatusByIds } = useTaskStatus();
 
