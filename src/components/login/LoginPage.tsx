@@ -39,10 +39,6 @@ export const LoginPage: FC<LoginPageProps> = ({
   const smartAccount = useActiveAccount();
   const smartWallet = useActiveWallet();
   const { disconnect } = useDisconnect();
-  const { useIsWhitelisted } = useWhitelist();
-  const { data: isWhitelisted, error: isWhitelistedError } = useIsWhitelisted(
-    smartAccount?.address ?? ""
-  );
   const { me, refetch } = useMe();
   const { sendTx } = useSetContractURI();
 
@@ -68,14 +64,10 @@ export const LoginPage: FC<LoginPageProps> = ({
       checkAccount();
     } else if (smartAccount?.address) {
       setIsOpen(false);
-      if (isWhitelisted) {
-        setIsConnecting(true);
-        signIn();
-      } else {
-        setIsConnecting(false);
-      }
+      setIsConnecting(true);
+      signIn();
     }
-  }, [smartAccount?.address, isWhitelisted, me]);
+  }, [smartAccount?.address, me]);
 
   // ウォレットによるサインイン
   const signIn = async () => {
@@ -147,9 +139,7 @@ export const LoginPage: FC<LoginPageProps> = ({
         />
 
         <LoginWidget
-          variant={
-            smartAccount?.address && !isWhitelisted ? "whitelist" : "connect"
-          }
+          variant={"connect"}
           isConnecting={isConnecting || isLoadingCompany}
           connectButtonOptions={{
             onPress: () => {
