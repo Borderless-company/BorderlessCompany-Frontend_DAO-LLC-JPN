@@ -32,8 +32,11 @@ export const useMember = () => {
     onError: (error) => {
       console.error("[ERROR] Failed to update member: ", error);
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["member", data.user_id] });
+    onSuccess: (data, props) => {
+      queryClient.invalidateQueries({ queryKey: ["member", props.user_id] });
+      queryClient.invalidateQueries({
+        queryKey: ["members", props.company_id],
+      });
     },
   });
 
@@ -62,6 +65,9 @@ export const useMember = () => {
       queryClient.invalidateQueries({
         queryKey: ["member", props.user_id],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["members", props.company_id],
+      });
     },
   });
 
@@ -86,8 +92,10 @@ export const useMember = () => {
     onError: (error) => {
       console.error("[ERROR] Failed to delete member: ", error);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["members"] });
+    onSuccess: (_, props) => {
+      queryClient.invalidateQueries({
+        queryKey: ["members", props.company_id],
+      });
     },
   });
 
