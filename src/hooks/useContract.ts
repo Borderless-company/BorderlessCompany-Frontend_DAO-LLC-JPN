@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { client } from "@/utils/client";
 import {
   Address,
@@ -63,10 +63,11 @@ export const exeTokenContract = (address: string) => {
 // write
 
 export const useSetContractURI = () => {
+  const queryClient = useQueryClient();
   const { mutate: sendTransaction } = useSendTransaction();
+
   const sendTx = async (smartAccount: string) => {
     const account = smartAccountContract(smartAccount);
-
     if (!account) return;
 
     const transaction = prepareContractCall({
@@ -74,14 +75,25 @@ export const useSetContractURI = () => {
       method: "function setContractURI(string _uri)",
       params: [account.address],
     }) as any;
-    sendTransaction(transaction);
+
+    sendTransaction(transaction, {
+      onSuccess: () => {
+        console.log("[SUCCESS] Contract URI set");
+        queryClient.invalidateQueries({ queryKey: ["smartAccount", smartAccount] });
+      },
+      onError: (error) => {
+        console.error("[ERROR] Failed to set contract URI:", error);
+      },
+    });
   };
 
   return { sendTx };
 };
 
 export const useExecuteTransaction = () => {
+  const queryClient = useQueryClient();
   const { mutate: sendTransaction } = useSendTransaction();
+
   const sendTx = async (
     smartAccount: string,
     target: Address,
@@ -89,7 +101,6 @@ export const useExecuteTransaction = () => {
     calldata: `0x${string}`
   ) => {
     const account = smartAccountContract(smartAccount);
-
     if (!account) return;
 
     const transaction = prepareContractCall({
@@ -98,15 +109,26 @@ export const useExecuteTransaction = () => {
         "function execute(address _target, uint256 _value, bytes _calldata)",
       params: [target, BigInt(value), calldata],
     });
+
     console.log(JSON.stringify(transaction));
-    sendTransaction(transaction);
+    sendTransaction(transaction, {
+      onSuccess: () => {
+        console.log("[SUCCESS] Transaction executed");
+        queryClient.invalidateQueries({ queryKey: ["smartAccount", smartAccount] });
+      },
+      onError: (error) => {
+        console.error("[ERROR] Failed to execute transaction:", error);
+      },
+    });
   };
 
   return { sendTx };
 };
 
 export const useCreateCompany = () => {
+  const queryClient = useQueryClient();
   const { mutate: sendTransaction } = useSendTransaction();
+
   const sendTx = async (
     scId: string,
     scImplementation: string,
@@ -124,7 +146,7 @@ export const useCreateCompany = () => {
     const transaction = prepareContractCall({
       contract: contract,
       method:
-        "function createSmartCompany(bytes calldata _scid, address _scImplementation, string calldata _legalEntityCode, string calldata _companyName, string calldata _establishmentDate, string calldata _jurisdiction,string calldata _entityType, bytes calldata _scExtraParams, string[] calldata _otherInfo, address[] calldata _scsAddresses, bytes[] calldata _scsExtraParams)",
+        "function createSmartCompany(bytes calldata _scid, address _scImplementation, string calldata _legalEntityCode, string calldata _companyName, string calldata _establishmentDate, string calldata _jurisdiction, string calldata _entityType, bytes calldata _scExtraParams, string[] calldata _otherInfo, address[] calldata _scsAddresses, bytes[] calldata _scsExtraParams)",
       params: [
         scId as `0x${string}`,
         scImplementation,
@@ -139,14 +161,25 @@ export const useCreateCompany = () => {
         scsExtraParams as readonly `0x${string}`[],
       ],
     });
-    sendTransaction(transaction);
+
+    sendTransaction(transaction, {
+      onSuccess: () => {
+        console.log("[SUCCESS] Company created");
+        queryClient.invalidateQueries({ queryKey: ["smartCompany", scId] });
+      },
+      onError: (error) => {
+        console.error("[ERROR] Failed to create company:", error);
+      },
+    });
   };
 
   return { sendTx };
 };
 
 export const useMintExeToken = () => {
-  const { mutate: sendTransaction } = useSendTransaction();
+  const queryClient = useQueryClient();
+  const { mutate: sendTransaction, data: txData } = useSendTransaction();
+
   const sendTx = async (exeTokenAddress: string, to: string) => {
     const contract = exeTokenContract(exeTokenAddress);
     const transaction = prepareContractCall({
@@ -154,14 +187,25 @@ export const useMintExeToken = () => {
       method: "function mint(address to)",
       params: [to],
     });
-    sendTransaction(transaction);
+
+    sendTransaction(transaction, {
+      onSuccess: () => {
+        console.log("[SUCCESS] Token minted");
+        queryClient.invalidateQueries({ queryKey: ["exeToken", exeTokenAddress] });
+      },
+      onError: (error) => {
+        console.error("[ERROR] Failed to mint token:", error);
+      },
+    });
   };
 
-  return { sendTx };
+  return { sendTx, txData };
 };
 
 export const useVote = () => {
+  const queryClient = useQueryClient();
   const { mutate: sendTransaction } = useSendTransaction();
+
   const sendTx = async (
     proposalId: string,
     voteContractAddress: string,
@@ -174,14 +218,25 @@ export const useVote = () => {
         "function vote(string calldata proposalId, uint8 voteType)",
       params: [proposalId, voteType],
     });
-    sendTransaction(transaction);
+
+    sendTransaction(transaction, {
+      onSuccess: () => {
+        console.log("[SUCCESS] Voted successfully");
+        queryClient.invalidateQueries({ queryKey: ["proposal", proposalId] });
+      },
+      onError: (error) => {
+        console.error("[ERROR] Failed to vote:", error);
+      },
+    });
   };
 
   return { sendTx };
 };
 
 export const useCreateProposal = () => {
+  const queryClient = useQueryClient();
   const { mutate: sendTransaction } = useSendTransaction();
+
   const sendTx = async (voteContractAddress: string, executor: string) => {
     const contract = voteContract(voteContractAddress);
     const now = Math.floor(Date.now() / 1000);
@@ -190,7 +245,16 @@ export const useCreateProposal = () => {
       method: "function createProposal(address executor, string memory proposalId, uint256 quorum, uint256 threshold, uint256 startTime, uint256 endTime)",
       params: [executor, "1", BigInt(10), BigInt(10), BigInt(now), BigInt(now + 30 * 24 * 60 * 60)],
     });
-    sendTransaction(transaction);
+
+    sendTransaction(transaction, {
+      onSuccess: () => {
+        console.log("[SUCCESS] Proposal created");
+        queryClient.invalidateQueries({ queryKey: ["proposals", voteContractAddress] });
+      },
+      onError: (error) => {
+        console.error("[ERROR] Failed to create proposal:", error);
+      },
+    });
   };
 
   return { sendTx };
