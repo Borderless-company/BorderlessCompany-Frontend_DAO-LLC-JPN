@@ -183,6 +183,8 @@ export const useMember = () => {
 };
 
 export const useMembersByCompanyId = (companyId?: string) => {
+  const queryClient = useQueryClient();
+
   const {
     data: members,
     isLoading: isLoadingMembers,
