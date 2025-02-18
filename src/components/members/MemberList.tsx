@@ -261,7 +261,7 @@ const MemberList = ({ companyId }: { companyId: string }) => {
 
     await handleBulkMintExeToken(addresses);
   };
-  
+
   useEffect(() => {
     console.log("mintExeTokenTxData:", mintExeTokenTxData);
   }, [mintExeTokenTxData]);
