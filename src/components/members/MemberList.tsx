@@ -11,6 +11,7 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
+  useDisclosure,
 } from "@heroui/react";
 import { downloadCsv } from "@/utils/csv";
 import { shortenAddress } from "@/utils/web3";
@@ -25,6 +26,11 @@ import {
 } from "@/hooks/useContract";
 import { useActiveAccount } from "thirdweb/react";
 import { ethers } from "ethers"
+import { useTokenByCompanyId } from "@/hooks/useToken";
+import { Stack } from "@/sphere/Stack";
+import { PiPlus } from "react-icons/pi";
+import AddMemberModal from "./AddMemberModal";
+import { useCompanybyFounderId } from "@/hooks/useCompany";
 
 const columns = [
   { name: "Name", uid: "name" },
@@ -166,6 +172,17 @@ const MemberList = ({ companyId }: { companyId: string }) => {
   const { sendTx: sendVoteTx } = useVote();
   const { sendTx: sendMintExeTokenTx, txData: mintExeTokenTxData } = useMintExeToken();
   const { data: nftContract } = useNftContract(smartAccount?.address ?? "");
+  const {
+    isOpen: isOpenAddMember,
+    onOpen: onOpenAddMember,
+    onOpenChange: onOpenChangeAddMember,
+  } = useDisclosure();
+  const {
+    company,
+    isLoading: isLoadingCompany,
+    isError,
+  } = useCompanybyFounderId(smartAccount?.address || "");
+
   const memberData = useMemo(() => {
     return members?.map((member) => {
       return {
@@ -276,16 +293,27 @@ const MemberList = ({ companyId }: { companyId: string }) => {
         <div className="w-full flex flex-col gap-4">
           {memberData && (
             <>
-              <Button
-                onClick={() => {
-                  const dataWithoutActions = memberData?.map(
-                    ({ actions, ...rest }) => rest
-                  );
-                  downloadCsv(columns.slice(0, -1), dataWithoutActions);
-                }}
-              >
-                {t("Download as CSV")}
-              </Button>
+              <Stack h className="justify-between w-full">
+                <Button
+                  onClick={() => {
+                    const dataWithoutActions = memberData?.map(
+                      ({ actions, ...rest }) => rest
+                    );
+                    downloadCsv(columns.slice(0, -1), dataWithoutActions);
+                  }}
+                >
+                  {t("Download as CSV")}
+                </Button>
+                <Button
+                  color="primary"
+                  startContent={<PiPlus />}
+                  onPress={() => {
+                    onOpenAddMember();
+                  }}
+                >
+                  Add Executive
+                </Button>
+              </Stack>
               <Table aria-label="MembershipTokenHolders">
                 <TableHeader columns={columns}>
                   {(column) => (
@@ -319,6 +347,11 @@ const MemberList = ({ companyId }: { companyId: string }) => {
           </Button>
         </div>
       )}
+      <AddMemberModal
+        isOpen={isOpenAddMember}
+        onOpenChange={onOpenChangeAddMember}
+        company={company}
+      />
     </>
   );
 };
