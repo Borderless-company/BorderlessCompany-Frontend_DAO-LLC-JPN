@@ -1,15 +1,48 @@
-import { Database } from '@/types/schema';
-import { createClient } from '@supabase/supabase-js';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { Database, Tables } from "@/types/schema";
+import { createClient } from "@supabase/supabase-js";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { bypassAuthForGet } from "@/utils/bypassAuthForGet";
+
 const serviveRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabase = createClient<Database>(supabaseUrl!, serviveRoleKey!);
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query as { id?: string };
 
   switch (req.method) {
-    case 'POST': {
+    case "GET": {
+      if (!id) {
+        return res.status(400).json({ error: "id is required" });
+      }
+
+      if (Array.isArray(id)) {
+        return res.status(400).json({ error: "id is not an array" });
+      }
+
+      const { data: estuary, error } = await supabase
+        .from("ESTUARY")
+        .select(
+          `
+          *,
+          tokens:TOKEN(*),
+          company:COMPANY(
+            *,
+            COMPANY_NAME(*)
+          )
+        `
+        )
+        .eq("id", id)
+        .single();
+
+      if (error) {
+        return res.status(400).json({ error: error.message });
+      }
+
+      return res.status(200).json({ data: estuary });
+    }
+
+    case "POST": {
       // POSTではidは必須ではない想定
       const {
         org_name,
@@ -33,7 +66,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           start_date,
           end_date,
           payment_methods,
-          dao_id
+          dao_id,
         })
         .select();
 
@@ -47,7 +80,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     case "PUT": {
       // PUTの場合はidが必要
       if (!id) {
-        return res.status(400).json({ error: 'Missing id in query parameters' });
+        return res
+          .status(400)
+          .json({ error: "Missing id in query parameters" });
       }
 
       const {
@@ -58,7 +93,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         start_date,
         end_date,
         payment_methods,
-        dao_id
+        dao_id,
       } = req.body;
 
       const { data, error } = await supabase
@@ -71,7 +106,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           start_date,
           end_date,
           payment_methods,
-          dao_id
+          dao_id,
         })
         .eq("id", id)
         .select();
@@ -80,11 +115,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ error: error.message });
       }
 
-      const result = data[0];
-      return res.status(200).json({ result });
+      return res.status(200).json({ data: data[0] });
     }
 
     default:
-      return res.status(405).json({ error: 'Method not allowed' });
+      return res.status(405).json({ error: "Method not allowed" });
   }
 }
+
+export default bypassAuthForGet(handler);

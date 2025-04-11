@@ -21,11 +21,9 @@ export const getServerSideProps = async ({ locale }: { locale: string }) => {
 
 const Estuary: NextPage<EstuaryProps> = () => {
   return (
-    <ThirdwebProvider>
-      <EstuaryProvider>
-        <EstuaryContainer />
-      </EstuaryProvider>
-    </ThirdwebProvider>
+    <EstuaryProvider>
+      <EstuaryContainer />
+    </EstuaryProvider>
   );
 };
 
