@@ -1,6 +1,5 @@
 import { useSetContractURI } from "@/hooks/useContract";
 import { useMe } from "@/hooks/useMe";
-import { useWhitelist } from "@/hooks/useWhitelist";
 import { hasAccount } from "@/utils/api/user";
 import { Button, ButtonProps } from "@heroui/react";
 import clsx from "clsx";
@@ -14,7 +13,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { PiArrowSquareOut, PiWalletFill } from "react-icons/pi";
+import { PiArrowSquareOut, PiGoogleLogo, PiWalletFill } from "react-icons/pi";
 import {
   useActiveAccount,
   useActiveWallet,
@@ -25,7 +24,6 @@ import { inAppWallet } from "thirdweb/wallets";
 import { defineChain } from "thirdweb/chains";
 import { client } from "@/utils/client";
 import { ACCOUNT_FACTORY_ADDRESS } from "@/constants";
-// import { ConnectorSelectionModal } from "./ConnectorSelectionModal";
 
 type LoginPageProps = {
   page: number;
@@ -59,11 +57,16 @@ export const LoginPage: FC<LoginPageProps> = ({
     try {
       connect(async () => {
         const wallet = inAppWallet();
-        await wallet.connect({
-          client,
-          chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
-          strategy: "google",
-        });
+        try {
+          await wallet.connect({
+            client,
+            chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
+            strategy: "google",
+          });
+        } catch (error) {
+          console.error("接続エラー:", error);
+          setIsConnecting(false);
+        }
         return wallet;
       });
     } catch (error) {
@@ -218,49 +221,33 @@ export const LoginWidget: FC<LoginWidgetProps> = ({
   ...props
 }) => {
   const { t } = useTranslation();
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const fontClass =
+    variant === "connect" ? "font-headline-sm" : "font-title-md";
+  const textContent =
+    variant === "connect" ? t("Sign In") : t("Borderless is in beta");
+  const buttonText =
+    variant === "connect"
+      ? isConnecting
+        ? t("Connecting...")
+        : t("Sign In with Google")
+      : t("Join Waitlist");
 
-  const fontClass = useMemo(
-    () =>
-      mounted
-        ? variant === "connect"
-          ? "font-headline-sm"
-          : "font-title-md"
-        : "font-headline-sm",
-    [mounted, variant]
-  );
+  return (
+    <div
+      className={clsx(
+        "flex flex-col items-center gap-3 w-full max-w-80 p-6 bg-background/20 rounded-2xl border-1 border-divider",
+        "shadow-[77px_83px_32px_0px_rgba(0,0,0,0.00),50px_53px_29px_0px_rgba(0,0,0,0.01),28px_30px_24px_0px_rgba(0,0,0,0.02),12px_13px_18px_0px_rgba(0,0,0,0.03),3px_3px_10px_0px_rgba(0,0,0,0.04)]",
+        "backdrop-blur-[2px]",
+        className
+      )}
+      {...props}
+    >
+      <p className={clsx("text-foreground text-center", fontClass)}>
+        {textContent}
+      </p>
 
-  const textContent = useMemo(
-    () =>
-      mounted
-        ? variant === "connect"
-          ? t("Sign In")
-          : t("Borderless is in beta")
-        : t("Sign In"),
-    [mounted, variant, t]
-  );
-
-  const buttonText = useMemo(
-    () =>
-      mounted
-        ? variant === "connect"
-          ? isConnecting
-            ? t("Connecting...")
-            : t("Connect Wallet")
-          : t("Join Waitlist")
-        : "",
-    [mounted, variant, isConnecting, t]
-  );
-
-  const renderButton = () => {
-    if (!mounted) return null;
-
-    if (variant === "connect") {
-      return (
+      {variant === "connect" ? (
         <Button
           className="gap-1"
           color="primary"
@@ -270,7 +257,7 @@ export const LoginWidget: FC<LoginWidgetProps> = ({
           style={{ fontFamily: "inherit" }}
           startContent={
             !isConnecting && (
-              <PiWalletFill className="w-6 h-6 text-primary-foreground" />
+              <PiGoogleLogo className="w-6 h-6 text-primary-foreground" />
             )
           }
           {...connectButtonOptions}
@@ -278,11 +265,7 @@ export const LoginWidget: FC<LoginWidgetProps> = ({
         >
           {buttonText}
         </Button>
-      );
-    }
-
-    return (
-      <>
+      ) : (
         <Button
           className="gap-1"
           color="secondary"
@@ -299,24 +282,7 @@ export const LoginWidget: FC<LoginWidgetProps> = ({
         >
           {buttonText}
         </Button>
-      </>
-    );
-  };
-
-  return (
-    <div
-      className={clsx(
-        "flex flex-col items-center gap-3 w-full max-w-80 p-6 bg-background/20 rounded-2xl border-1 border-divider",
-        "shadow-[77px_83px_32px_0px_rgba(0,0,0,0.00),50px_53px_29px_0px_rgba(0,0,0,0.01),28px_30px_24px_0px_rgba(0,0,0,0.02),12px_13px_18px_0px_rgba(0,0,0,0.03),3px_3px_10px_0px_rgba(0,0,0,0.04)]",
-        "backdrop-blur-[2px]",
-        className
       )}
-      {...props}
-    >
-      <p className={clsx("text-foreground text-center", fontClass)}>
-        {textContent}
-      </p>
-      {renderButton()}
     </div>
   );
 };
