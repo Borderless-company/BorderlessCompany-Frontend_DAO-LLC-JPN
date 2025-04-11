@@ -19,8 +19,13 @@ import {
   useActiveAccount,
   useActiveWallet,
   useDisconnect,
+  useConnect,
 } from "thirdweb/react";
-import { ConnectorSelectionModal } from "./ConnectorSelectionModal";
+import { inAppWallet } from "thirdweb/wallets";
+import { defineChain } from "thirdweb/chains";
+import { client } from "@/utils/client";
+import { ACCOUNT_FACTORY_ADDRESS } from "@/constants";
+// import { ConnectorSelectionModal } from "./ConnectorSelectionModal";
 
 type LoginPageProps = {
   page: number;
@@ -34,13 +39,38 @@ export const LoginPage: FC<LoginPageProps> = ({
   isLoadingCompany,
 }) => {
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
   const smartAccount = useActiveAccount();
   const smartWallet = useActiveWallet();
   const { disconnect } = useDisconnect();
   const { me, refetch } = useMe();
   const { sendTx } = useSetContractURI();
+  const { connect } = useConnect({
+    client,
+    accountAbstraction: {
+      chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
+      factoryAddress: ACCOUNT_FACTORY_ADDRESS,
+      sponsorGas: true,
+    },
+  });
+
+  const connectToSmartAccount = async () => {
+    setIsConnecting(true);
+    try {
+      connect(async () => {
+        const wallet = inAppWallet();
+        await wallet.connect({
+          client,
+          chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
+          strategy: "google",
+        });
+        return wallet;
+      });
+    } catch (error) {
+      console.error("接続エラー:", error);
+      setIsConnecting(false);
+    }
+  };
 
   useEffect(() => {
     const checkAccount = async () => {
@@ -63,7 +93,6 @@ export const LoginPage: FC<LoginPageProps> = ({
     if (me?.isLogin) {
       checkAccount();
     } else if (smartAccount?.address) {
-      setIsOpen(false);
       setIsConnecting(true);
       signIn();
     }
@@ -92,8 +121,31 @@ export const LoginPage: FC<LoginPageProps> = ({
     }
 
     try {
+      // SIWE (EIP-4361) フォーマットのメッセージを作成
+      const domain = window.location.host;
+      const origin = window.location.origin;
+      const statement =
+        "Borderlessアプリにログインして、あなたのアイデンティティを確認します。";
+      const expirationTime = new Date(
+        Date.now() + 1000 * 60 * 60 * 24 * 3
+      ).toISOString(); // 3日後に期限切れ
+
+      const siweMessage = `${domain} wants you to sign in with your Ethereum account:
+${smartAccount.address}
+
+${statement}
+
+URI: ${origin}
+Version: 1
+Chain ID: ${process.env.NEXT_PUBLIC_CHAIN_ID}
+Nonce: ${nonce}
+Issued At: ${new Date().toISOString()}
+Expiration Time: ${expirationTime}`;
+
+      console.log(`SIWE message: ${siweMessage}`);
+
       const signature = await smartAccount?.signMessage({
-        message: String(nonce),
+        message: siweMessage,
       });
       console.log(`signature: ${signature}`);
       const verifyRes = await fetch("/api/auth/generateJWT", {
@@ -103,6 +155,7 @@ export const LoginPage: FC<LoginPageProps> = ({
         body: JSON.stringify({
           address: smartAccount?.address,
           signature,
+          message: siweMessage,
           nonce: String(nonce),
         }),
       });
@@ -142,19 +195,11 @@ export const LoginPage: FC<LoginPageProps> = ({
           variant={"connect"}
           isConnecting={isConnecting || isLoadingCompany}
           connectButtonOptions={{
-            onPress: () => {
-              setIsConnecting(true);
-              setIsOpen(true);
-            },
+            onPress: connectToSmartAccount,
           }}
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
         />
       </div>
-      <ConnectorSelectionModal
-        isOpen={isOpen}
-        onOpenChange={setIsOpen}
-        onClose={() => setIsConnecting(false)}
-      />
     </>
   );
 };

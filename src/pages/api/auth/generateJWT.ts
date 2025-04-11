@@ -48,13 +48,14 @@ export default async function handler(
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const { address, signature, nonce } = req.body as {
+  const { address, signature, nonce, message } = req.body as {
     address?: string;
     signature?: string;
     nonce?: string;
+    message?: string;
   };
 
-  if (!address || !signature || !nonce) {
+  if (!address || !signature || !nonce || !message) {
     return res.status(400).json({ error: "Missing parameters" });
   }
 
@@ -82,11 +83,32 @@ export default async function handler(
     return res.status(401).json({ error: "Invalid nonce or address" });
   }
 
-  const message = nonceNumber.toString();
-  console.log("message", message);
-  console.log("signature", signature);
-  console.log("address", address);
+  // SIWEメッセージの検証
   try {
+    // メッセージの解析とバリデーション
+    const siweMessageLines = message.split("\n");
+
+    // 基本的な検証 - アドレスの確認
+    const messageDomain = siweMessageLines[0].split(
+      " wants you to sign in with your Ethereum account:"
+    )[0];
+    const messageAddress = siweMessageLines[1].trim();
+
+    if (messageAddress.toLowerCase() !== address.toLowerCase()) {
+      return res
+        .status(401)
+        .json({ error: "Message address does not match signing address" });
+    }
+
+    // ナンスの確認 - メッセージ内のナンスが正しいことを確認
+    const nonceMatch = message.match(/Nonce: (\d+)/);
+    if (!nonceMatch || parseInt(nonceMatch[1], 10) !== nonceNumber) {
+      return res
+        .status(401)
+        .json({ error: "Message nonce does not match expected nonce" });
+    }
+
+    // EIP-1271を使用して署名検証
     const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
     const contract = new ethers.Contract(address, contractABI, provider);
 
@@ -98,6 +120,7 @@ export default async function handler(
       return res.status(401).json({ error: "Signature verification failed" });
     }
 
+    // nonceをインクリメント
     const { error: updateError } = await supabase
       .from("NONCE")
       .update({ nonce: nonceNumber + 1 })
@@ -108,6 +131,7 @@ export default async function handler(
       return res.status(500).json({ error: "Failed to update nonce" });
     }
 
+    // JWTの生成と保存
     const token = jwt.sign({ address: address.toLowerCase() }, JWT_SECRET, {
       expiresIn: "24h",
     });

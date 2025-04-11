@@ -9,20 +9,20 @@ const initialPages = ["/login", "/estuary/[estId]"];
 export const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   const router = useRouter();
   const smartAccount = useActiveAccount();
-  const { me } = useMe();
+  const { me, isLoading: isMeLoading } = useMe();
   const { signOut } = useSignOut();
 
   useEffect(() => {
-    console.log("initialPages: ", router.pathname);
     if (initialPages.includes(router.pathname)) {
       return;
     }
-    if (!smartAccount) {
-      console.log("me: ", me);
-      console.log("address: ", smartAccount);
+    console.log("smartAccount: ", smartAccount);
+    if (!isMeLoading && !me) {
+      console.log("logout-me: ", me);
+      console.log("logout-address: ", smartAccount);
       signOut();
     }
-  }, [me, smartAccount, router]);
+  }, [me, smartAccount, router, isMeLoading]);
 
   return <>{children}</>;
 };
