@@ -60,7 +60,7 @@ export const TokenSelection: FC = () => {
       {/* Header */}
       <div className="flex flex-col gap-1 md:gap-2 p-6 pb-0">
         <Image
-          src={(estuary?.org_logo as string) || "/estuary_logo_sample.png"}
+          src={(estuary?.company?.icon as string) || "/estuary_logo_sample.png"}
           alt="DAO LLC Logo"
           width={48}
           height={48}
@@ -74,15 +74,17 @@ export const TokenSelection: FC = () => {
         />
         <h1 className="text-xl md:text-[28px] leading-8 font-bold text-slate-800">
           {i18n.language === "ja"
-            ? `${estuary?.org_name} ${t("Invest")}`
-            : `${t("Invest")} ${estuary?.org_name}`}
+            ? `${estuary?.company?.COMPANY_NAME?.["ja-jp"]} ${t("Invest")}`
+            : `${t("Invest")} ${estuary?.company?.COMPANY_NAME?.["en-us"]}`}
         </h1>
       </div>
 
       {/* Content */}
-      <div className="flex flex-col gap-2 md:gap-4 flex-1 py-2 md:py-6">
+      <div className="flex flex-col gap-2 md:gap-4 flex-1 py-2 md:py-1">
         <p className="text-slate-800 text-base md:text-lg font-semibold pl-6">
-          {t("Select Token")}
+          {estuary?.tokens[0].is_executable
+            ? "業務執行社員権トークンを購入する"
+            : "非業務執行社員権トークンを購入する"}
         </p>
         <RadioGroup
           value={selectedTokenId}
@@ -90,7 +92,7 @@ export const TokenSelection: FC = () => {
           orientation="horizontal"
           classNames={{
             wrapper: cn(
-              "flex gap-3 px-6 pt-1 pb-6 overflow-x-scroll flex-nowrap"
+              "flex gap-3 px-6 pt-1 pb-6 overflow-x-scroll flex-nowrap justify-center"
             ),
           }}
         >
