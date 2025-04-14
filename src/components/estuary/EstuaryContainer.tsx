@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 import { supabase } from "@/utils/supabase";
 import AlreadyMember from "./AlreadyMemberPage";
 import { useTranslation } from "next-i18next";
+import PaymentPage from "./PaymentPage";
 
 export const EstuaryContainer: FC = () => {
   const { t } = useTranslation("estuary");
@@ -33,7 +34,7 @@ export const EstuaryContainer: FC = () => {
           .eq("user_id", account?.address)
           .eq("dao_id", estuary?.dao_id as string);
         if (data && data?.length > 0) {
-          setPage(6);
+          setPage(7);
         }
       }
     };
@@ -61,8 +62,10 @@ export const EstuaryContainer: FC = () => {
         ) : page === 4 ? (
           <AgreementPage />
         ) : page === 5 ? (
-          <ReceivedPage />
+          <PaymentPage />
         ) : page === 6 ? (
+          <ReceivedPage />
+        ) : page === 7 ? (
           <AlreadyMember
             orgLogo={estuary?.org_logo as string}
             orgName={estuary?.org_name as string}

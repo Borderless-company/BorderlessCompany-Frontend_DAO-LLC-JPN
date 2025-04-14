@@ -9,18 +9,8 @@ import Image from "next/image";
 import { estuarySample } from "@/types";
 import { TermCheckbox } from "./TermCheckbox";
 import { useEstuaryContext } from "./EstuaryContext";
-import { createPaymentLink } from "@/utils/stripe";
-import { useActiveAccount } from "thirdweb/react";
-import { useUser } from "@/hooks/useUser";
-import { supabase } from "@/utils/supabase";
-import { usePayment } from "@/hooks/usePayment";
-import { useMember } from "@/hooks/useMember";
-import { useEstuary } from "@/hooks/useEstuary";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
-
-const POLLING_INTERVAL = 3000;
-const MAX_POLLING_TIME = 600000;
 
 const AgreementPage: FC = () => {
   const { t } = useTranslation("estuary");
@@ -30,29 +20,10 @@ const AgreementPage: FC = () => {
   const [paymentStatus, setPaymentStatus] = useState<
     "initial" | "pending" | "success" | "failed"
   >("initial");
-  const { token, price, page, setPage } = useEstuaryContext();
-  const account = useActiveAccount();
-  const { updateUser, user } = useUser(account?.address);
-  const [pollingCount, setPollingCount] = useState(0);
-  const { updatePayment } = usePayment();
-  const { createMember } = useMember();
-  const { estuary } = useEstuary(estId as string);
+  const { token, price, setPage } = useEstuaryContext();
 
-  const onClickPay = async () => {
-    console.log("product ID: ", token);
-    console.log("price: ", price);
-    if (!token?.product_id || !price) return;
-    setPaymentStatus("pending");
-    const paymentLink = await createPaymentLink(token.product_id, price);
-    console.log("paymentLink:", paymentLink);
-    const payment = await updatePayment({
-      user_id: account?.address,
-      payment_link: paymentLink.id,
-      price: price,
-    });
-    console.log("updated user:", user);
-    await startPolling();
-    window.open(paymentLink.url, "_blank");
+  const onClickPay = () => {
+    setPage((page) => page + 1);
   };
 
   const onClickBack = () => {
@@ -62,53 +33,6 @@ const AgreementPage: FC = () => {
   const isAllChecked = useMemo(() => {
     return termChecked.length === estuarySample.termSheet.length;
   }, [termChecked]);
-
-  useEffect(() => {
-    const addMember = async () => {
-      await createMember({
-        dao_id: token?.dao_id,
-        user_id: account?.address,
-        date_of_employment: new Date().toISOString(),
-        is_admin: false,
-        is_executive: token?.is_executable,
-        token_id: token?.id,
-        invested_amount: price,
-        is_minted: false,
-      });
-    };
-
-    if (paymentStatus === "success") {
-      addMember();
-      setPage((page) => page + 1);
-    }
-  }, [paymentStatus]);
-
-  const startPolling = async () => {
-    const pollInterval = setInterval(async () => {
-      if (!account?.address) return;
-      // TODO: read supabase
-      const { data: status } = await supabase
-        .from("PAYMENT")
-        .select("payment_status")
-        .eq("user_id", account?.address);
-
-      console.log("status:", status);
-      setPollingCount((count) => count + 1);
-
-      if (status && status[0]?.payment_status === "done") {
-        setPaymentStatus("success");
-        clearInterval(pollInterval);
-      }
-
-      if (pollingCount * POLLING_INTERVAL >= MAX_POLLING_TIME) {
-        clearInterval(pollInterval);
-        setPaymentStatus("failed");
-      }
-    }, POLLING_INTERVAL);
-
-    // コンポーネントのアンマウント時にポーリングを停止
-    return () => clearInterval(pollInterval);
-  };
 
   return (
     <>
@@ -162,7 +86,7 @@ const AgreementPage: FC = () => {
             startContent={
               <PiArrowLeft color="blue" className="flex-shrink-0" />
             }
-            onClick={onClickBack}
+            onPress={onClickBack}
             variant="bordered"
             color="primary"
             size="lg"
@@ -176,7 +100,7 @@ const AgreementPage: FC = () => {
                 <PiCreditCardFill className="flex-shrink-0" />
               )
             }
-            onClick={onClickPay}
+            onPress={onClickPay}
             variant="solid"
             color="primary"
             size="lg"

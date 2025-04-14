@@ -5,30 +5,31 @@ import Image from "next/image";
 import { Button } from "@heroui/react";
 import { PiArrowRight, PiSignIn } from "react-icons/pi";
 import { TokenCard } from "./TokenCard";
-import { useActiveAccount, useConnectModal } from "thirdweb/react";
-import { client } from "@/utils/client";
+import { useActiveAccount } from "thirdweb/react";
 import { useEstuaryContext } from "./EstuaryContext";
 import { useToken, createProduct } from "@/hooks/useToken";
 import { useEstuary } from "@/hooks/useEstuary";
-import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
+import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 
 export const TokenSelection: FC = () => {
   const { t, i18n } = useTranslation("estuary");
   const account = useActiveAccount();
-  const { connect } = useConnectModal();
   const { setPage, setPrice, setToken } = useEstuaryContext();
   const [selectedTokenId, setSelectedTokenId] = useState<string>();
   const { token, updateToken } = useToken(selectedTokenId);
   const router = useRouter();
   const { estId } = router.query;
-  const { estuary } = useEstuary(estId as string);
-
-  useEffect(() => {
-    console.log("estID", estId);
-    console.log("estuary: ", estuary);
-  }, [estuary]);
+  const { estuary, isLoading } = useEstuary(estId as string);
+  const { connectWithGoogle, signIn, isConnecting } = useGoogleAuth({
+    onSignInSuccess: () => {
+      console.log("サインイン成功");
+    },
+    onSignInError: (error) => {
+      console.error("サインインエラー:", error);
+    },
+  });
 
   const onClickNext = async () => {
     const product = await createProduct(
@@ -45,14 +46,26 @@ export const TokenSelection: FC = () => {
   };
 
   useEffect(() => {
-    console.log("[DEBUG] selected token: ", token);
+    if (isLoading) {
+      return;
+    }
+    setSelectedTokenId(estuary?.tokens[0].id);
+  }, [estuary, isLoading]);
+
+  useEffect(() => {
     setSelectedTokenId(selectedTokenId);
   }, [token, selectedTokenId]);
 
   const handleConnect = async () => {
-    const wallet = await connect({ client });
-    console.log("Connected wallet: ", wallet);
+    try {
+      await connectWithGoogle();
+      // Googleで接続した後、SIWEサインインを実行
+      await signIn();
+    } catch (error) {
+      console.error("接続エラー:", error);
+    }
   };
+
   console.log("language: ", i18n.language);
 
   return (
@@ -60,7 +73,7 @@ export const TokenSelection: FC = () => {
       {/* Header */}
       <div className="flex flex-col gap-1 md:gap-2 p-6 pb-0">
         <Image
-          src={(estuary?.org_logo as string) || "/estuary_logo_sample.png"}
+          src={(estuary?.company?.icon as string) || "/estuary_logo_sample.png"}
           alt="DAO LLC Logo"
           width={48}
           height={48}
@@ -74,15 +87,17 @@ export const TokenSelection: FC = () => {
         />
         <h1 className="text-xl md:text-[28px] leading-8 font-bold text-slate-800">
           {i18n.language === "ja"
-            ? `${estuary?.org_name} ${t("Invest")}`
-            : `${t("Invest")} ${estuary?.org_name}`}
+            ? `${estuary?.company?.COMPANY_NAME?.["ja-jp"]} ${t("Invest")}`
+            : `${t("Invest")} ${estuary?.company?.COMPANY_NAME?.["en-us"]}`}
         </h1>
       </div>
 
       {/* Content */}
-      <div className="flex flex-col gap-2 md:gap-4 flex-1 py-2 md:py-6">
+      <div className="flex flex-col gap-2 md:gap-4 flex-1 py-2 md:py-1">
         <p className="text-slate-800 text-base md:text-lg font-semibold pl-6">
-          {t("Select Token")}
+          {estuary?.tokens[0].is_executable
+            ? "業務執行社員権トークンを購入する"
+            : "非業務執行社員権トークンを購入する"}
         </p>
         <RadioGroup
           value={selectedTokenId}
@@ -90,7 +105,7 @@ export const TokenSelection: FC = () => {
           orientation="horizontal"
           classNames={{
             wrapper: cn(
-              "flex gap-3 px-6 pt-1 pb-6 overflow-x-scroll flex-nowrap"
+              "flex gap-3 px-6 pt-1 pb-6 overflow-x-scroll flex-nowrap justify-center"
             ),
           }}
         >
@@ -128,7 +143,7 @@ export const TokenSelection: FC = () => {
             <Button
               className="w-full bg-yellow-700 text-white text-base font-semibold"
               endContent={<PiArrowRight color="white" />}
-              onClick={onClickNext}
+              onPress={onClickNext}
               isDisabled={!token || !selectedTokenId}
               size="lg"
             >
@@ -138,10 +153,11 @@ export const TokenSelection: FC = () => {
             <Button
               startContent={<PiSignIn color="white" />}
               className="w-full bg-purple-700 text-white text-base font-semibold"
-              onClick={handleConnect}
+              onPress={handleConnect}
+              isLoading={isConnecting}
               size="lg"
             >
-              {t("Sign In")}
+              {isConnecting ? t("Connecting...") : t("Sign In")}
             </Button>
           )}
         </div>

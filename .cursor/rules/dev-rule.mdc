@@ -1,0 +1,31 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 開発ルール
+- HeroUIを使って実装してください (https://www.heroui.com/docs/components/accordion)。HeroUI以外の外部UIライブラリは用いず、HeroUI上にコンポーネントがない場合は、tailwindでスタイリングしてください。
+- タイポグラフィについては、 [globals.css](mdc:src/styles/globals.css) の `font-` から始まるクラスをできるだけ用いてください
+- カラーテーマについては、 [tailwind.config.ts](mdc:tailwind.config.ts) にカスタムテーマを用意しています。
+- パッケージマネージャは pnpm を使ってください。
+- アイコンは phpsophor iconを使っていますが、react-icons/piに置き換えてください。
+
+## データアクセス設計
+### API Route
+- フロントエンドからのDBアクセスは直接Supabaseクライアントを使用せず、API Routeを経由してください。
+- API Routeは`src/pages/api/`配下に作成し、RESTfulな設計に従ってください。
+- 認証が必要なエンドポイントには`authMiddleware`を使用してください。
+- 参照系の操作（GET）のみ認証をバイパスしたい場合は`bypassAuthForGet`ミドルウェアを使用してください。
+- レスポンスは統一された形式で返してください（例：`{ data: データ }`, `{ error: エラーメッセージ }`）。
+
+### React Query Hooks
+- データフェッチには@tanstack/react-queryを使用してください。
+- モデルごとにカスタムフックを作成し、`src/hooks/use[モデル名].ts`に配置してください。
+- フックは以下の機能を含めてください：
+  - データ取得（`useQuery`）
+  - データ作成（`useMutation`）
+  - データ更新（`useMutation`）
+  - 必要に応じてデータ削除（`useMutation`）
+- 型定義を適切に行い、戻り値には`isLoading`, `isError`, `refetch`などの便利なプロパティを含めてください。
+- キャッシュの更新は`queryClient.invalidateQueries`を使用してください。
+

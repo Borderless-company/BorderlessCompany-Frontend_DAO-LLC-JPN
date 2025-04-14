@@ -1,9 +1,8 @@
 import { NextPage } from "next";
 import { EstuaryContainer } from "../../../components/estuary/EstuaryContainer";
-import { ThirdwebProvider } from "thirdweb/react";
 import { EstuaryProvider } from "@/components/estuary/EstuaryContext";
-import { useParams } from "next/navigation";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import ThirdwebProviderWrapper from "@/components/provider/ThirdwebProviderWrapper";
 
 type EstuaryProps = {
   logoSrc: string;
@@ -21,11 +20,11 @@ export const getServerSideProps = async ({ locale }: { locale: string }) => {
 
 const Estuary: NextPage<EstuaryProps> = () => {
   return (
-    <ThirdwebProvider>
+    <ThirdwebProviderWrapper>
       <EstuaryProvider>
         <EstuaryContainer />
       </EstuaryProvider>
-    </ThirdwebProvider>
+    </ThirdwebProviderWrapper>
   );
 };
 

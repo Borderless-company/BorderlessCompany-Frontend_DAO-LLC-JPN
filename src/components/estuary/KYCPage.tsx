@@ -5,11 +5,21 @@ import { useEstuaryContext } from "./EstuaryContext";
 import { v4 as uuidv4 } from "uuid";
 import { EventPayload } from "@sumsub/websdk/types/types";
 import { useActiveAccount } from "thirdweb/react";
+import { useUser } from "@/hooks/useUser";
 
 const KYCPage: FC = () => {
   const { page, setPage } = useEstuaryContext();
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const account = useActiveAccount();
+  const { updateUser, user } = useUser(account?.address);
+
+  // ユーザーのKYCステータスが「done」の場合は次のページに自動的に進む
+  useEffect(() => {
+    if (user && user.kyc_status === "done") {
+      console.log("KYC already completed, skipping to next page");
+      setPage((page) => page + 1);
+    }
+  }, [user, setPage]);
 
   const onClickBack = () => {
     setPage((page) => page - 1);
@@ -32,15 +42,17 @@ const KYCPage: FC = () => {
       }
     };
     generateSDKLink();
-  }, []);
+  }, [account?.address]);
 
   useEffect(() => {
     const getAccessToken = async () => {
+      if (!account?.address) return;
+
       try {
         const accessToken = await fetch("/api/kyc/accessToken", {
           method: "POST",
           body: JSON.stringify({
-            userId: account?.address,
+            userId: account.address,
             levelName: "borderless-kyc-level",
           }),
         });
@@ -52,18 +64,25 @@ const KYCPage: FC = () => {
       }
     };
     getAccessToken();
-  }, []);
+  }, [account?.address]);
 
   const expirationHandler = async () => {
-    const accessToken = await fetch("/api/kyc/accessToken", {
-      method: "POST",
-      body: JSON.stringify({
-        userId: account?.address,
-        levelName: "borderless-kyc-level",
-      }),
-    });
-    return accessToken.json();
+    try {
+      const accessToken = await fetch("/api/kyc/accessToken", {
+        method: "POST",
+        body: JSON.stringify({
+          userId: account?.address,
+          levelName: "borderless-kyc-level",
+        }),
+      });
+      const response = await accessToken.json();
+      return response;
+    } catch (error) {
+      console.error("Error in expiration handler:", error);
+      throw error;
+    }
   };
+
   const kycMessageHandler: MessageHandler = (type, payload) => {
     if (type === "idCheck.onApplicantSubmitted") {
       console.log("onApplicantSubmitted: ", payload);
@@ -74,6 +93,11 @@ const KYCPage: FC = () => {
       const CastedPayload =
         payload as EventPayload<"idCheck.onApplicantStatusChanged">;
       if (CastedPayload.reviewStatus === "completed") {
+        // KYCの審査が完了したらユーザーのKYCステータスを更新
+        updateUser({ kyc_status: "done" })
+          .then(() => console.log("KYC status updated to done"))
+          .catch((err) => console.error("Failed to update KYC status:", err));
+
         setPage((page) => page + 1);
       }
     }
@@ -88,6 +112,15 @@ const KYCPage: FC = () => {
     }
   };
 
+  // KYCが既に完了している場合はローディング表示だけして自動的に次のページに進む
+  if (user && user.kyc_status === "done") {
+    return (
+      <div className="flex justify-center items-center p-4">
+        <div className="animate-pulse h-6 w-24 bg-gray-200 rounded"></div>
+      </div>
+    );
+  }
+
   return (
     <>
       {accessToken ? (
@@ -95,71 +128,28 @@ const KYCPage: FC = () => {
           onMessage={kycMessageHandler}
           accessToken={accessToken}
           expirationHandler={expirationHandler}
-          options={{ adaptIframeHeight: true, addViewportTag: false }}
-          config={{ lang: "ja" }}
+          options={{
+            adaptIframeHeight: true,
+            addViewportTag: false,
+          }}
+          config={{
+            lang: "ja",
+            i18n: {
+              ja: {
+                document_photo: {
+                  loader: {
+                    initial: "読み込み中...",
+                  },
+                },
+              },
+            },
+          }}
+          onError={(error) => console.error("Sumsub SDK error:", error)}
         />
       ) : (
-        <>
-          {/* Header */}
-          {/* <div className="flex flex-col gap-2 p-6 pb-0">
-            <PiIdentificationCardFill size={48} className="text-purple-600" />
-            <h1 className="text-[28px] leading-8 font-bold text-slate-800">
-              本人確認をしてください
-            </h1>
-          </div> */}
-
-          {/* Content */}
-          {/* <div className="flex flex-col gap-4 flex-1 py-6 justify-center items-center">
-            <Image
-              src={"/QR_sample.png"}
-              alt="QR code"
-              width={216}
-              height={216}
-            />
-            <div className="flex flex-col gap-2 items-center">
-              <p className="text-slate-700 text-xl text-center font-semibold">
-                QRコードを携帯端末から読み取って、
-                <br /> 本人確認を行ってください
-              </p>
-              <Button
-                className="text-sm w-fit"
-                size="sm"
-                variant="light"
-                color="primary"
-                // onClick={onClickKYC}
-              >
-                読み取れない方はこちら
-              </Button>
-            </div>
-          </div> */}
-
-          {/* Footer */}
-          {/* <div className="flex flex-col gap-4 p-6 pt-0 pb-4">
-            <div className="flex flex-col">
-              <Button
-                className="w-fit text-base font-semibold"
-                startContent={<PiArrowLeft color="blue" />}
-                onClick={onClickBack}
-                variant="bordered"
-                color="primary"
-                size="lg"
-              >
-                戻る
-              </Button>
-            </div>
-            <div className="w-full flex justify-end items-center gap-2 px-2">
-              <div className="w-fit text-slate-600 text-xs leading-3 font-normal font-mono pt-[2px]">
-                powered by
-              </div>
-              <Image
-                src={"/borderless_logotype.png"}
-                alt="borderless logo"
-                width={87}
-                height={14}
-              />
-            </div>
-          </div> */}
-        </>
+        <div className="flex justify-center items-center p-4">
+          <div className="animate-pulse h-6 w-24 bg-gray-200 rounded"></div>
+        </div>
       )}
     </>
   );

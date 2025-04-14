@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useMembersByCompanyId, useMember } from "@/hooks/useMember";
+import { useMembersByCompanyId } from "@/hooks/useMember";
 import {
   Button,
   Chip,
@@ -13,10 +13,12 @@ import {
   TableRow,
   useDisclosure,
 } from "@heroui/react";
+import { useMember } from "@/hooks/useMember";
 import { downloadCsv } from "@/utils/csv";
 import { shortenAddress } from "@/utils/web3";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
+import { Address } from "thirdweb";
 import {
   useCreateProposal,
   useMintExeToken,
@@ -25,7 +27,6 @@ import {
   useVoteContract,
 } from "@/hooks/useContract";
 import { useActiveAccount } from "thirdweb/react";
-import { ethers } from "ethers"
 import { useTokenByCompanyId } from "@/hooks/useToken";
 import { Stack } from "@/sphere/Stack";
 import { PiPlus } from "react-icons/pi";
@@ -170,8 +171,6 @@ const MemberList = ({ companyId }: { companyId: string }) => {
   const { sendTx: sendCreateProposalTx } = useCreateProposal();
   const { data: voteContract } = useVoteContract(smartAccount?.address ?? "");
   const { sendTx: sendVoteTx } = useVote();
-  const { sendTx: sendMintExeTokenTx, txData: mintExeTokenTxData } = useMintExeToken();
-  const { data: nftContract } = useNftContract(smartAccount?.address ?? "");
   const {
     isOpen: isOpenAddMember,
     onOpen: onOpenAddMember,
@@ -234,55 +233,6 @@ const MemberList = ({ companyId }: { companyId: string }) => {
     console.log("sendVoteTx done");
   };
 
-  const handleBulkMintExeToken = async (addresses: string[]) => {
-    if (!nftContract) {
-      console.error("NFT contract is undefined");
-      return;
-    }
-    console.log("smartAccount?.address:", smartAccount?.address);
-    console.log("nftContract:", nftContract);
-    console.log("run sendMintExeTokenTx");
-    for (const address of addresses) {
-      sendMintExeTokenTx(nftContract, address);
-    }
-    console.log("sendMintExeTokenTx done");
-  };
-
-  const handleBulkCreateMembers = async () => {
-    const addresses = Array.from(
-      { length: 50 },
-      () => ethers.Wallet.createRandom().address
-    );
-    console.log("addresses:", addresses);
-
-    if (!nftContract) {
-      console.error("NFT contract is undefined");
-      return;
-    }
-
-    // for (const randomAddress of addresses) {
-    //   await createUser({
-    //     evm_address: randomAddress,
-    //     address: randomAddress,
-    //     name: randomAddress,
-    //   });
-
-    //   await createMember({
-    //     dao_id: token?.dao_id,
-    //     user_id: randomAddress,
-    //     company_id: companyId,
-    //     is_minted: true,
-    //     invested_amount: 0,
-    //   });
-    // }
-
-    await handleBulkMintExeToken(addresses);
-  };
-
-  useEffect(() => {
-    console.log("mintExeTokenTxData:", mintExeTokenTxData);
-  }, [mintExeTokenTxData]);
-
   return (
     <>
       {memberData?.length === 0 ? (
@@ -342,9 +292,6 @@ const MemberList = ({ companyId }: { companyId: string }) => {
           )}
           {/* <Button onPress={handleCreateProposal}>Create Proposal</Button>
           <Button onPress={handleVote}>Vote</Button> */}
-          <Button onPress={() => handleBulkCreateMembers()}>
-            Bulk Mint NFTs
-          </Button>
         </div>
       )}
       <AddMemberModal

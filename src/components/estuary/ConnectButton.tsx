@@ -2,76 +2,71 @@ import { FC, useEffect } from "react";
 import { client } from "@/utils/client";
 import { Button, ButtonProps } from "@heroui/react";
 import {
-  useConnectModal,
   useActiveAccount,
   useSocialProfiles,
   useWalletDetailsModal,
 } from "thirdweb/react";
-import { PiSignIn } from "react-icons/pi";
-import { defineChain } from "thirdweb";
+import { PiGoogleLogo } from "react-icons/pi";
 import { useTranslation } from "next-i18next";
+import { useGoogleAuth } from "@/hooks/useGoogleAuth";
+import { useGoogleEmail } from "@/hooks/useGoogleEmail";
 
 type ConnectButtonProps = {} & ButtonProps;
 
 export const ConnectButton: FC<ConnectButtonProps> = ({ ...props }) => {
   const { t } = useTranslation("estuary");
-  const { connect, isConnecting } = useConnectModal();
   const account = useActiveAccount();
-  const { data: socialProfiles } = useSocialProfiles({
-    client,
-    address: account?.address || undefined,
-  });
   const walletDetail = useWalletDetailsModal();
+  const { connectWithGoogle, isConnecting } = useGoogleAuth();
+  const { email, picture } = useGoogleEmail();
 
-  const handleConnect = async () => {
-    const wallet = await connect({
-      client,
-    });
-    console.log("Connected wallet: ", wallet);
+  // プロフィール画像を決定する関数
+  const getProfileImage = () => {
+    if (picture) {
+      return (
+        <img src={picture} className="w-5 h-5 rounded-full" alt="Profile" />
+      );
+    }
+
+    // デフォルトのアバター
+    return <div className="w-5 h-5 rounded-full bg-purple-900"></div>;
   };
-
-  useEffect(() => {
-    console.log("Social profiles: ", socialProfiles);
-    console.log("Account: ", account);
-  }, [socialProfiles, account]);
 
   return (
     <>
       {account ? (
-        <Button
-          radius="full"
-          size="md"
-          className="bg-white border-1 border-stone-200 text-stone-900"
-          startContent={
-            socialProfiles?.length !== 0 ? (
-              socialProfiles?.[0].avatar ? (
-                <img
-                  src={socialProfiles?.[0].avatar}
-                  className="w-5 h-5 rounded-full"
-                />
-              ) : (
-                <div className="w-5 h-5 rounded-full bg-purple-900"></div>
-              )
-            ) : (
-              <div className="w-5 h-5 rounded-full bg-purple-900"></div>
-            )
-          }
-          onPress={() => {
-            walletDetail.open({ client, theme: "light" });
-          }}
-        >
-          {`${account.address.slice(0, 4)}...${account.address.slice(-4)}`}
-        </Button>
+        <div>
+          <Button
+            radius="full"
+            size="md"
+            className="bg-white border-1 border-stone-200 text-stone-900"
+            startContent={getProfileImage()}
+            onPress={() => {
+              walletDetail.open({ client, theme: "light" });
+            }}
+          >
+            {email
+              ? email.length > 10
+                ? `${email.slice(0, 8)}...`
+                : email
+              : `${account.address.slice(0, 4)}...${account.address.slice(-4)}`}
+          </Button>
+        </div>
       ) : (
         <Button
-          startContent={<PiSignIn className="w-5 h-5 text-purple-900" />}
-          onPress={handleConnect}
+          startContent={
+            !isConnecting && (
+              <PiGoogleLogo className="w-5 h-5 text-purple-900" />
+            )
+          }
+          onPress={connectWithGoogle}
           radius="full"
           size="md"
           className="bg-purple-200 text-purple-900 border-1 border-purple-300"
+          isLoading={isConnecting}
           {...props}
         >
-          {t("Sign In")}
+          {isConnecting ? t("Connecting...") : t("Sign In with Google")}
         </Button>
       )}
     </>

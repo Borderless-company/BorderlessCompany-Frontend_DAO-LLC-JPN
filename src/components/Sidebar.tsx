@@ -54,7 +54,7 @@ export const Sidebar: FC<SidebarProps> = ({ companyId }) => {
           icon={<PiCoins size={24} />}
           isActive={pathname === `/company/${companyId}/tokens`}
           href={`/company/${companyId}/tokens`}
-          isLocked={true}
+          isLocked={!company?.is_active}
         />
         {/* <SidebarItem
           title="Estuary"
