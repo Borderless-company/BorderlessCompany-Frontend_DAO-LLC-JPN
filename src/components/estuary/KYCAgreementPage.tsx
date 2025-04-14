@@ -1,5 +1,5 @@
-import { Button, CheckboxGroup, Input } from "@heroui/react";
-import { FC, useState, useMemo } from "react";
+import { Button, CheckboxGroup, Input, Spinner } from "@heroui/react";
+import { FC, useState, useMemo, useEffect } from "react";
 import {
   PiArrowRight,
   PiArrowLeft,
@@ -28,9 +28,9 @@ const KYCAgreementPage: FC = () => {
   const { t } = useTranslation("estuary");
   const { setPage, tokenId, price } = useEstuaryContext();
   const [termChecked, setTermChecked] = useState<string[]>([]);
-  const { register, handleSubmit } = useForm<InputType>();
+  const { register, handleSubmit, setValue } = useForm<InputType>();
   const account = useActiveAccount();
-  const { createUser } = useUser();
+  const { createUser, user } = useUser(account?.address);
   const { createPayment, getPayments } = usePayment();
   const router = useRouter();
   const { data: payments } = getPayments({
@@ -42,6 +42,41 @@ const KYCAgreementPage: FC = () => {
     return PRODUCT_TERMS.every((term) => termChecked.includes(term.id));
   }, [termChecked]);
 
+  // ユーザー情報が既に存在する場合はフォームに設定
+  useEffect(() => {
+    if (user) {
+      if (user.name) setValue("name", user.name);
+      if (user.furigana) setValue("furigana", user.furigana);
+      if (user.address) setValue("address", user.address);
+
+      // 全ての必要な情報が設定されていれば次のページに進む
+      if (user.name && user.furigana && user.address) {
+        console.log("User information already exists, skipping to next page");
+        // 支払い情報がまだなければ作成
+        if (!payments || payments.length === 0) {
+          createPayment({
+            user_id: user.evm_address,
+            estuary_id: router.query.estId as string,
+            price: price,
+            payment_status: "yet",
+          }).then(() => {
+            setPage((page) => page + 1);
+          });
+        } else {
+          setPage((page) => page + 1);
+        }
+      }
+    }
+  }, [
+    user,
+    setValue,
+    payments,
+    createPayment,
+    router.query.estId,
+    price,
+    setPage,
+  ]);
+
   const onSubmit = async (data: InputType) => {
     const user = await createUser({
       evm_address: account?.address,
@@ -49,7 +84,6 @@ const KYCAgreementPage: FC = () => {
     });
     console.log("user:", user);
     const payment = await createPayment({
-      id: payments && payments?.length != 0 ? payments[0].id : undefined,
       user_id: user.evm_address,
       estuary_id: router.query.estId as string,
       price: price,
@@ -59,6 +93,15 @@ const KYCAgreementPage: FC = () => {
     console.log("payment:", payment);
     setPage((page) => page + 1);
   };
+
+  // ユーザー情報の読み込み中は読み込み表示
+  if (user && user.name && user.furigana && user.address) {
+    return (
+      <div className="flex justify-center items-center p-4 h-full">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <>

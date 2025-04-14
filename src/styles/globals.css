@@ -27,6 +27,9 @@
     @apply text-[32px] font-bold leading-[36px] tracking-[-0.5px];
   }
   .font-headline-sm {
+    @apply text-[28px] font-bold leading-[32px] tracking-[-0.5px];
+  }
+  .font-headline-sm {
     @apply text-[24px] font-bold leading-[28px] tracking-[-0.5px];
   }
   .font-title-lg {

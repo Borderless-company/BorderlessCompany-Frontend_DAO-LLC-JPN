@@ -170,8 +170,7 @@ export const useVote = () => {
     const contract = voteContract(voteContractAddress);
     const transaction = prepareContractCall({
       contract: contract,
-      method:
-        "function vote(string calldata proposalId, uint8 voteType)",
+      method: "function vote(string calldata proposalId, uint8 voteType)",
       params: [proposalId, voteType],
     });
     sendTransaction(transaction);
@@ -187,8 +186,16 @@ export const useCreateProposal = () => {
     const now = Math.floor(Date.now() / 1000);
     const transaction = prepareContractCall({
       contract: contract,
-      method: "function createProposal(address executor, string memory proposalId, uint256 quorum, uint256 threshold, uint256 startTime, uint256 endTime)",
-      params: [executor, "1", BigInt(10), BigInt(10), BigInt(now), BigInt(now + 30 * 24 * 60 * 60)],
+      method:
+        "function createProposal(address executor, string memory proposalId, uint256 quorum, uint256 threshold, uint256 startTime, uint256 endTime)",
+      params: [
+        executor,
+        "1",
+        BigInt(10),
+        BigInt(10),
+        BigInt(now),
+        BigInt(now + 30 * 24 * 60 * 60),
+      ],
     });
     sendTransaction(transaction);
   };

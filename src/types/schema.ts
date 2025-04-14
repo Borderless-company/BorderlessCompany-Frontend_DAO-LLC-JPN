@@ -402,7 +402,6 @@ export type Database = {
           created_at: string
           estuary_id: string | null
           id: string
-          payment_link: string | null
           payment_status: Database["public"]["Enums"]["PaymentStatus"] | null
           price: number | null
           user_id: string | null
@@ -411,7 +410,6 @@ export type Database = {
           created_at?: string
           estuary_id?: string | null
           id?: string
-          payment_link?: string | null
           payment_status?: Database["public"]["Enums"]["PaymentStatus"] | null
           price?: number | null
           user_id?: string | null
@@ -420,7 +418,6 @@ export type Database = {
           created_at?: string
           estuary_id?: string | null
           id?: string
-          payment_link?: string | null
           payment_status?: Database["public"]["Enums"]["PaymentStatus"] | null
           price?: number | null
           user_id?: string | null
