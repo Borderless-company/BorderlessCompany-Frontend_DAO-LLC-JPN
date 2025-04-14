@@ -1,29 +1,12 @@
-import { useSetContractURI } from "@/hooks/useContract";
-import { useMe } from "@/hooks/useMe";
-import { hasAccount } from "@/utils/api/user";
 import { Button, ButtonProps } from "@heroui/react";
 import clsx from "clsx";
 import { useTranslation } from "next-i18next";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import {
-  ComponentPropsWithoutRef,
-  FC,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { PiArrowSquareOut, PiGoogleLogo, PiWalletFill } from "react-icons/pi";
-import {
-  useActiveAccount,
-  useActiveWallet,
-  useDisconnect,
-  useConnect,
-} from "thirdweb/react";
-import { inAppWallet } from "thirdweb/wallets";
-import { defineChain } from "thirdweb/chains";
-import { client } from "@/utils/client";
-import { ACCOUNT_FACTORY_ADDRESS } from "@/constants";
+import { ComponentPropsWithoutRef, FC, useEffect } from "react";
+import { PiArrowSquareOut, PiGoogleLogo } from "react-icons/pi";
+import { useActiveAccount } from "thirdweb/react";
+import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 
 type LoginPageProps = {
   page: number;
@@ -37,152 +20,21 @@ export const LoginPage: FC<LoginPageProps> = ({
   isLoadingCompany,
 }) => {
   const router = useRouter();
-  const [isConnecting, setIsConnecting] = useState<boolean>(false);
   const smartAccount = useActiveAccount();
-  const smartWallet = useActiveWallet();
-  const { disconnect } = useDisconnect();
-  const { me, refetch } = useMe();
-  const { sendTx } = useSetContractURI();
-  const { connect } = useConnect({
-    client,
-    accountAbstraction: {
-      chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
-      factoryAddress: ACCOUNT_FACTORY_ADDRESS,
-      sponsorGas: true,
-    },
-  });
-
-  const connectToSmartAccount = async () => {
-    setIsConnecting(true);
-    try {
-      connect(async () => {
-        const wallet = inAppWallet();
-        try {
-          await wallet.connect({
-            client,
-            chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
-            strategy: "google",
-          });
-        } catch (error) {
-          console.error("接続エラー:", error);
-          setIsConnecting(false);
-        }
-        return wallet;
-      });
-    } catch (error) {
-      console.error("接続エラー:", error);
-      setIsConnecting(false);
-    }
-  };
+  const { connectWithGoogle, signIn, checkAccount, isConnecting, me } =
+    useGoogleAuth({
+      onNoAccount: () => {
+        onPageChange(1);
+      },
+    });
 
   useEffect(() => {
-    const checkAccount = async () => {
-      try {
-        const _hasAccount = await hasAccount(smartAccount?.address ?? "");
-        if (!_hasAccount) {
-          // アカウントがない場合
-          onPageChange(1);
-        } else {
-          // アカウントがある場合
-        }
-      } catch (e) {
-        console.error(e);
-        setIsConnecting(false);
-        return;
-      }
-    };
-
-    console.log("me: ", me);
     if (me?.isLogin) {
       checkAccount();
     } else if (smartAccount?.address) {
-      setIsConnecting(true);
       signIn();
     }
   }, [smartAccount?.address, me]);
-
-  // ウォレットによるサインイン
-  const signIn = async () => {
-    if (!smartAccount?.address) return;
-    let nonce = 0;
-
-    console.log("signIn: smartAccount?.address: ", smartAccount?.address);
-
-    // create account
-    sendTx(smartAccount?.address);
-
-    try {
-      const nonceRes = await fetch(
-        "/api/auth/nonce?address=" + smartAccount?.address
-      );
-      const { nonce: _nonce } = await nonceRes.json();
-      nonce = _nonce;
-      console.log(`nonce: ${nonce}`);
-    } catch (e) {
-      console.error(e);
-      return;
-    }
-
-    try {
-      // SIWE (EIP-4361) フォーマットのメッセージを作成
-      const domain = window.location.host;
-      const origin = window.location.origin;
-      const statement =
-        "Borderlessアプリにログインして、あなたのアイデンティティを確認します。";
-      const expirationTime = new Date(
-        Date.now() + 1000 * 60 * 60 * 24 * 3
-      ).toISOString(); // 3日後に期限切れ
-
-      const siweMessage = `${domain} wants you to sign in with your Ethereum account:
-${smartAccount.address}
-
-${statement}
-
-URI: ${origin}
-Version: 1
-Chain ID: ${process.env.NEXT_PUBLIC_CHAIN_ID}
-Nonce: ${nonce}
-Issued At: ${new Date().toISOString()}
-Expiration Time: ${expirationTime}`;
-
-      console.log(`SIWE message: ${siweMessage}`);
-
-      const signature = await smartAccount?.signMessage({
-        message: siweMessage,
-      });
-      console.log(`signature: ${signature}`);
-      const verifyRes = await fetch("/api/auth/generateJWT", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          address: smartAccount?.address,
-          signature,
-          message: siweMessage,
-          nonce: String(nonce),
-        }),
-      });
-      console.log(`verifyRes: ${verifyRes}`);
-
-      const data = await verifyRes.json();
-      if (verifyRes.ok) {
-        setIsConnecting(false);
-        await refetch();
-      } else {
-        console.error("Verification failed", data);
-        setIsConnecting(false);
-        if (smartWallet) {
-          disconnect(smartWallet);
-        }
-      }
-    } catch (e) {
-      console.error(`Error signing in: ${e}`);
-      setIsConnecting(false);
-      if (smartWallet) {
-        disconnect(smartWallet);
-      }
-    }
-  };
 
   return (
     <>
@@ -198,7 +50,7 @@ Expiration Time: ${expirationTime}`;
           variant={"connect"}
           isConnecting={isConnecting || isLoadingCompany}
           connectButtonOptions={{
-            onPress: connectToSmartAccount,
+            onPress: connectWithGoogle,
           }}
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
         />
