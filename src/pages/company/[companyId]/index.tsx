@@ -3,6 +3,7 @@ import { SHCLayout } from "@/components/layout/SHCLayout";
 import { NavBar } from "@/components/NavBar";
 import { Sidebar } from "@/components/Sidebar";
 import { NextPage } from "next";
+import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export const getServerSideProps = async ({
@@ -15,16 +16,17 @@ export const getServerSideProps = async ({
   return {
     props: {
       companyId: params.companyId,
-      ...(await serverSideTranslations(locale, ["common"])),
+      ...(await serverSideTranslations(locale, ["common", "company"])),
     },
   };
 };
 
 const CompanyHome: NextPage<{ companyId: string }> = ({ companyId }) => {
+  const { t } = useTranslation("common");
   return (
     <SHCLayout
       Sidebar={<Sidebar companyId={companyId} />}
-      Header={<NavBar title="Home" />}
+      Header={<NavBar title={t("Home")} />}
     >
       <CompanyHomePage companyId={companyId} />
     </SHCLayout>

@@ -1,3 +1,5 @@
+import { ibmPlexSansJP } from "@/pages/_app";
+import clsx from "clsx";
 import { FC } from "react";
 
 type SHCLayoutProps = {
@@ -12,7 +14,12 @@ export const SHCLayout: FC<SHCLayoutProps> = ({
   children,
 }) => {
   return (
-    <main className="w-full h-screen grid grid-cols-[240px_1fr] overflow-hidden">
+    <main
+      className={clsx(
+        ibmPlexSansJP.className,
+        "w-full h-screen grid grid-cols-[240px_1fr] overflow-hidden"
+      )}
+    >
       <div className="w-full h-full">{Sidebar}</div>
       <div className="w-full h-full  grid grid-rows-[56px_1fr]">
         <nav className="w-full h-full">{Header}</nav>

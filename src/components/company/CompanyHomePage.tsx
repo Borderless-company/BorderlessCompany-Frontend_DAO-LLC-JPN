@@ -31,7 +31,7 @@ export type CompanyHomePageProps = {
 
 export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
   const { signOut } = useSignOut();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("company");
   const {
     isOpen: isOpenAoiBuilder,
     onOpen: onOpenAoiBuilder,
@@ -107,7 +107,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                   />
                 }
               >
-                {company?.is_active ? "Active" : "Inactive"}
+                {company?.is_active ? t("Active") : t("Inactive")}
               </Chip>
             </Stack>
             <Stack className="w-full h-fit gap-0 pb-6 border-b-1 border-b-divider">
@@ -115,7 +115,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                 h
                 className="w-full max-w-lg h-full gap-2 items-center justify-between py-3"
               >
-                <div className="font-label-md">{"Founder"}</div>
+                <div className="font-label-md">{t("Founder")}</div>
                 <div className=" font-label-md text-ellipsis overflow-hidden text-nowrap">
                   {company?.founder_id || "None"}
                 </div>
@@ -124,7 +124,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                 h
                 className="w-full max-w-lg h-full gap-2 items-center justify-between py-3"
               >
-                <div className="font-label-md">{"Jurisdiction"}</div>
+                <div className="font-label-md">{t("Jurisdiction")}</div>
                 <div className=" font-label-md">
                   {company?.jurisdiction?.toUpperCase() || "None"}
                 </div>
@@ -133,7 +133,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                 h
                 className="w-full max-w-lg h-full gap-2 items-center justify-between py-3"
               >
-                <div className="font-label-md">{"Company Type"}</div>
+                <div className="font-label-md">{t("Company Type")}</div>
                 <div className=" font-label-md">
                   {company?.company_type?.toUpperCase() || "None"}
                 </div>
@@ -143,7 +143,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                   h
                   className="w-full max-w-lg h-full gap-2 items-center justify-between py-3"
                 >
-                  <div className="font-label-md">{"Company Email"}</div>
+                  <div className="font-label-md">{t("Company Email")}</div>
                   <div className=" font-label-md">
                     {company?.email || "None"}
                   </div>
@@ -156,8 +156,8 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
               <PiKanbanDuotone className="text-primary" size={32} />
               <h3 className="w-full font-headline-sm text-foreground">
                 {company?.is_active
-                  ? "Level Up Your Company!"
-                  : "Complete Tasks to Activate Your Company"}
+                  ? t("Level Up Your Company!")
+                  : t("Complete Tasks to Activate Your Company")}
               </h3>
             </Stack>
             <div className="w-full grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">

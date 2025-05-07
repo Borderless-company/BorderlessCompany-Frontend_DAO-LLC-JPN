@@ -10,12 +10,13 @@ import ThirdwebProviderWrapper from "@/components/provider/ThirdwebProviderWrapp
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { Provider } from "jotai";
-import { Noto_Sans_JP } from "next/font/google";
+import { IBM_Plex_Sans_JP } from "next/font/google";
 import { RootLayout } from "@/components/layout/RootLayout";
 import { appWithTranslation } from "next-i18next";
 
-const notoSansJP = Noto_Sans_JP({
+export const ibmPlexSansJP = IBM_Plex_Sans_JP({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const queryClient = new QueryClient();

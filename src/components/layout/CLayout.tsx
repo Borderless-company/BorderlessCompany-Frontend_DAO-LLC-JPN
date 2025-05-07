@@ -2,7 +2,7 @@ import { ComponentPropsWithoutRef, FC } from "react";
 import { IBM_Plex_Sans_JP } from "next/font/google";
 import clsx from "clsx";
 
-const ibmPlexSansJP = IBM_Plex_Sans_JP({
+export const ibmPlexSansJP = IBM_Plex_Sans_JP({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
@@ -20,7 +20,6 @@ export const CLayout: FC<CLayoutProps> = ({
     <main
       className={clsx(
         ibmPlexSansJP.className,
-        "font-sans",
         "flex w-full h-screen items-center justify-center bg-background text-foreground",
         className
       )}

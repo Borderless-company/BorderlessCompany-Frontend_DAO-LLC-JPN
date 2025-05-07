@@ -37,20 +37,20 @@ export const Sidebar: FC<SidebarProps> = ({ companyId }) => {
       />
       <div className="flex-1 ">
         <SidebarItem
-          title="Home"
+          title={t("Home")}
           icon={<PiSquaresFour size={24} />}
           isActive={pathname === `/company/${companyId}`}
           href={`/company/${companyId}`}
         />
         <SidebarItem
-          title="Members"
+          title={t("Members")}
           icon={<PiUsersThree size={24} />}
           isActive={pathname === `/company/${companyId}/members`}
           href={`/company/${companyId}/members`}
           isLocked={!company?.is_active}
         />
         <SidebarItem
-          title="Tokens"
+          title={t("Tokens")}
           icon={<PiCoins size={24} />}
           isActive={pathname === `/company/${companyId}/tokens`}
           href={`/company/${companyId}/tokens`}
@@ -64,7 +64,7 @@ export const Sidebar: FC<SidebarProps> = ({ companyId }) => {
           isLocked={!company?.is_active}
         /> */}
         <SidebarItem
-          title="Votings"
+          title={t("Votings")}
           icon={<PiGavel size={24} />}
           isActive={pathname === `/company/${companyId}/votings`}
           href={`/company/${companyId}/votings`}

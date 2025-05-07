@@ -16,7 +16,7 @@ import { useActiveAccount } from "thirdweb/react";
 export const getServerSideProps = async ({ locale }: { locale: string }) => {
   return {
     props: {
-      ...(await serverSideTranslations(locale, ["common"])),
+      ...(await serverSideTranslations(locale, ["login"])),
     },
   };
 };

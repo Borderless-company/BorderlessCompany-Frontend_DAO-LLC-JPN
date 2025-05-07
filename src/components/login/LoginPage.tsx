@@ -19,7 +19,6 @@ export const LoginPage: FC<LoginPageProps> = ({
   onPageChange,
   isLoadingCompany,
 }) => {
-  const router = useRouter();
   const smartAccount = useActiveAccount();
   const { connectWithGoogle, signIn, checkAccount, isConnecting, me } =
     useGoogleAuth({
@@ -72,18 +71,7 @@ export const LoginWidget: FC<LoginWidgetProps> = ({
   isConnecting,
   ...props
 }) => {
-  const { t } = useTranslation();
-
-  const fontClass =
-    variant === "connect" ? "font-headline-sm" : "font-title-md";
-  const textContent =
-    variant === "connect" ? t("Sign In") : t("Borderless is in beta");
-  const buttonText =
-    variant === "connect"
-      ? isConnecting
-        ? t("Connecting...")
-        : t("Sign In with Google")
-      : t("Join Waitlist");
+  const { t } = useTranslation("login");
 
   return (
     <div
@@ -95,46 +83,26 @@ export const LoginWidget: FC<LoginWidgetProps> = ({
       )}
       {...props}
     >
-      <p className={clsx("text-foreground text-center", fontClass)}>
-        {textContent}
+      <p className={clsx("text-foreground text-center font-headline-sm")}>
+        {t("Sign In")}
       </p>
-
-      {variant === "connect" ? (
-        <Button
-          className="gap-1"
-          color="primary"
-          radius="md"
-          size="lg"
-          fullWidth
-          style={{ fontFamily: "inherit" }}
-          startContent={
-            !isConnecting && (
-              <PiGoogleLogo className="w-6 h-6 text-primary-foreground" />
-            )
-          }
-          {...connectButtonOptions}
-          isLoading={isConnecting}
-        >
-          {buttonText}
-        </Button>
-      ) : (
-        <Button
-          className="gap-1"
-          color="secondary"
-          size="lg"
-          fullWidth
-          style={{ fontFamily: "inherit" }}
-          endContent={<PiArrowSquareOut className="w-4 h-4" />}
-          onPress={() => {
-            window.open(
-              "https://docs.google.com/forms/d/1t3DdeJlV8NCDfr6hY4yynSYupcNDQYBRQMt90GsjXK8",
-              "_blank"
-            );
-          }}
-        >
-          {buttonText}
-        </Button>
-      )}
+      <Button
+        className="gap-1"
+        color="primary"
+        radius="md"
+        size="lg"
+        fullWidth
+        style={{ fontFamily: "inherit" }}
+        startContent={
+          !isConnecting && (
+            <PiGoogleLogo className="w-6 h-6 text-primary-foreground" />
+          )
+        }
+        {...connectButtonOptions}
+        isLoading={isConnecting}
+      >
+        {isConnecting ? t("Connecting...") : t("Sign In with Google")}
+      </Button>
     </div>
   );
 };
