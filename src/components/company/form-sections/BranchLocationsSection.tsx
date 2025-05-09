@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Button, Input } from "@heroui/react";
 import { PiPlusCircle, PiMinusCircle } from "react-icons/pi";
 import { AoIFormData } from "@/types/aoi";
-
+import { useTranslation } from "next-i18next";
 type BranchLocationsSectionProps = {
   formData: AoIFormData;
   setFormData: React.Dispatch<React.SetStateAction<AoIFormData>>;
@@ -12,6 +12,7 @@ export const BranchLocationsSection: FC<BranchLocationsSectionProps> = ({
   formData,
   setFormData,
 }) => {
+  const { t } = useTranslation("aoi");
   const handleBranchLocationChange = (index: number, value: string) => {
     if (value === "") {
       const newBranchLocations = formData.branchLocations.filter(
@@ -37,7 +38,7 @@ export const BranchLocationsSection: FC<BranchLocationsSectionProps> = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="font-label-md text-foreground">Branch Location</p>
+      <p className="font-label-md text-foreground">{t("Branch Location")}</p>
       {formData.branchLocations.map((location, index) => (
         <div key={index} className="flex gap-1 items-center">
           <Input
@@ -45,7 +46,7 @@ export const BranchLocationsSection: FC<BranchLocationsSectionProps> = ({
             name={`branchLocation-${index}`}
             value={location}
             onChange={(e) => handleBranchLocationChange(index, e.target.value)}
-            label={`Branch Location ${index + 1}`}
+            label={`${t("Branch Location")} ${index + 1}`}
             labelPlacement="inside"
           />
           <Button
@@ -71,7 +72,7 @@ export const BranchLocationsSection: FC<BranchLocationsSectionProps> = ({
           }));
         }}
       >
-        Add Branch Location
+        {t("Add Branch Location")}
       </Button>
     </div>
   );

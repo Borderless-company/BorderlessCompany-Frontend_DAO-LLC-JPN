@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { Input, Textarea } from "@heroui/react";
 import { AoIFormData } from "@/types/aoi";
+import { useTranslation } from "next-i18next";
 
 type CompanyInfoSectionProps = {
   formData: AoIFormData;
@@ -13,13 +14,14 @@ export const CompanyInfoSection: FC<CompanyInfoSectionProps> = ({
   formData,
   handleInputChange,
 }) => {
+  const { t } = useTranslation("aoi");
   return (
     <>
       <Input
         name="companyNameJp"
         value={formData.companyNameJp}
         onChange={handleInputChange}
-        label="Company Name (JP)"
+        label={t("Company Name JP")}
         labelPlacement="outside"
         placeholder="ネクストコミュニティ DAO, LLC"
       />
@@ -27,7 +29,7 @@ export const CompanyInfoSection: FC<CompanyInfoSectionProps> = ({
         name="companyNameEn"
         value={formData.companyNameEn}
         onChange={handleInputChange}
-        label="Company Name (EN)"
+        label={t("Company Name EN")}
         labelPlacement="outside"
         placeholder="Next Community DAO, LLC"
       />
@@ -35,7 +37,7 @@ export const CompanyInfoSection: FC<CompanyInfoSectionProps> = ({
         name="businessPurpose"
         value={formData.businessPurpose}
         onChange={handleInputChange}
-        label="Business Purpose"
+        label={t("Business Purpose")}
         labelPlacement="outside"
         placeholder="Enter your business purpose"
       />
@@ -43,7 +45,7 @@ export const CompanyInfoSection: FC<CompanyInfoSectionProps> = ({
         name="location"
         value={formData.location}
         onChange={handleInputChange}
-        label="Location"
+        label={t("Location")}
         labelPlacement="outside"
         placeholder="Enter your location"
       />

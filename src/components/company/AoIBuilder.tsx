@@ -22,6 +22,7 @@ import { ExecutiveMembersSection } from "./form-sections/ExecutiveMembersSection
 import { BusinessDatesSection } from "./form-sections/BusinessDatesSection";
 import { AoIPreview } from "./AoIPreview";
 import { getInitialFormData } from "@/utils/aoi";
+import { useTranslation } from "next-i18next";
 
 type AoIBuilderProps = {
   companyId?: string;
@@ -32,6 +33,7 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ companyId, ...props }) => {
   const { company, refetch } = useCompany(companyId);
   const { members } = useMembersByCompanyId(companyId);
   const { aoi } = useAOIByCompanyId(companyId);
+  const { t } = useTranslation(["aoi", "common"]);
 
   const [formData, setFormData] = useState<AoIFormData>(
     getInitialFormData(company, aoi)
@@ -251,10 +253,11 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ companyId, ...props }) => {
           <>
             <Stack className="flex-1 h-full">
               <DrawerHeader className="flex flex-col gap-2">
-                <h2 className="font-headline-sm text-primary">Create AoI</h2>
+                <h2 className="font-headline-sm text-primary">
+                  {t("Create AoI")}
+                </h2>
                 <p className="font-body-md text-neutral">
-                  Please enter the information of AoI below to activate your
-                  company.
+                  {t("Please enter the information")}
                 </p>
               </DrawerHeader>
               <DrawerBody>
@@ -289,7 +292,7 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ companyId, ...props }) => {
                   isDisabled={isSaving}
                   onPress={onClose}
                 >
-                  Close
+                  {t("Close", { ns: "common" })}
                 </Button>
                 <Button
                   color="primary"
@@ -297,7 +300,7 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ companyId, ...props }) => {
                   form="aoi-form"
                   isLoading={isSaving}
                 >
-                  Save
+                  {t("Save", { ns: "common" })}
                 </Button>
               </DrawerFooter>
             </Stack>

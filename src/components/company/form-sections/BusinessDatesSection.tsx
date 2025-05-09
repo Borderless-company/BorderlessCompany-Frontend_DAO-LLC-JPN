@@ -4,7 +4,7 @@ import { LuJapaneseYen } from "react-icons/lu";
 import { AoIFormData } from "@/types/aoi";
 import { DateValue } from "@heroui/react";
 import { CalendarDate, ZonedDateTime } from "@internationalized/date";
-
+import { useTranslation } from "next-i18next";
 type BusinessDatesSectionProps = {
   formData: AoIFormData;
   setFormData: React.Dispatch<React.SetStateAction<AoIFormData>>;
@@ -14,6 +14,7 @@ export const BusinessDatesSection: FC<BusinessDatesSectionProps> = ({
   formData,
   setFormData,
 }) => {
+  const { t } = useTranslation("aoi");
   const handleDateChange = (name: string, value: DateValue | null) => {
     setFormData((prev) => ({
       ...prev,
@@ -36,7 +37,7 @@ export const BusinessDatesSection: FC<BusinessDatesSectionProps> = ({
         //@ts-ignore
         value={formData.businessStartDate as DateValue}
         onChange={(value) => handleDateChange("businessStartDate", value)}
-        label="Business Start Date"
+        label={t("Business Start Date")}
         labelPlacement="outside"
       />
       <DateInput
@@ -44,14 +45,14 @@ export const BusinessDatesSection: FC<BusinessDatesSectionProps> = ({
         //@ts-ignore
         value={formData.businessEndDate as DateValue}
         onChange={(value) => handleDateChange("businessEndDate", value)}
-        label="Business End Date"
+        label={t("Business End Date")}
         labelPlacement="outside"
       />
       <Input
         name="capital"
         value={formData.capital}
         onChange={handleInputChange}
-        label="Capital"
+        label={t("Capital")}
         labelPlacement="outside"
         inputMode="numeric"
         placeholder="100000000"
@@ -63,7 +64,7 @@ export const BusinessDatesSection: FC<BusinessDatesSectionProps> = ({
         //@ts-ignorepp
         value={formData.establishmentDate as DateValue}
         onChange={(value) => handleDateChange("establishmentDate", value)}
-        label="Establishment Date"
+        label={t("Establishment Date")}
         labelPlacement="outside"
       />
     </>

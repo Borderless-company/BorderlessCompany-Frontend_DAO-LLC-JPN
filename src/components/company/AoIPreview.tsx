@@ -1,14 +1,16 @@
 import { FC } from "react";
 import { AoIFormData } from "@/types/aoi";
+import { useTranslation } from "next-i18next";
 
 type AoIPreviewProps = {
   formData: AoIFormData;
 };
 
 export const AoIPreview: FC<AoIPreviewProps> = ({ formData }) => {
+  const { t } = useTranslation("aoi");
   return (
     <div className="flex flex-col gap-4 flex-1 h-full border-l-1 border-l-divider p-4 overflow-scroll">
-      <p className="font-label-lg text-neutral">Preview of AoI</p>
+      <p className="font-label-lg text-neutral">{t("Preview of AoI")}</p>
       <div>
         <h1 className="font-headline-lg text-foreground mb-4">定款</h1>
         <h2 className="font-headline-sm text-foreground mb-3">第１章 総則</h2>

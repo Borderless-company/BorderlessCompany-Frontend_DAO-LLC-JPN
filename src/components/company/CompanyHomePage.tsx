@@ -2,7 +2,6 @@ import { FC, useEffect, useMemo } from "react";
 import { useTranslation } from "next-i18next";
 import { Chip, ChipProps, cn, Spinner, useDisclosure } from "@heroui/react";
 import Image from "next/image";
-import { useRouter } from "next/router";
 import { Stack } from "@/sphere/Stack";
 import {
   PiCheckCircle,
@@ -157,18 +156,18 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
               <h3 className="w-full font-headline-sm text-foreground">
                 {company?.is_active
                   ? t("Level Up Your Company!")
-                  : t("Complete Tasks to Activate Your Company")}
+                  : t("Complete Tasks")}
               </h3>
             </Stack>
             <div className="w-full grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
               {!company?.is_active &&
                 taskStatus?.every((task) => task.status === "completed") && (
                   <TaskCard
-                    title={`Activate ${
+                    title={`${t("Activate")} ${
                       company?.display_name ||
                       company?.COMPANY_NAME?.["ja-jp"] ||
                       "Your Company"
-                    }`}
+                    }${t("を起動する")}`}
                     status="completed"
                     variant="activation"
                     onPress={onOpenCompanyActivation}
@@ -180,7 +179,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                     {task.task_id === "create-aoi" && (
                       <TaskCard
                         key={task.id}
-                        title={"Create AoI"}
+                        title={t("Create AoI")}
                         status={task.status || "todo"}
                         onPress={onOpenAoiBuilder}
                       />
@@ -188,7 +187,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                     {task.task_id === "enter-company-profile" && (
                       <TaskCard
                         key={task.id}
-                        title={"Enter Company Profile"}
+                        title={t("Enter Company Profile")}
                         status={task.status || "todo"}
                         onPress={onOpenCompanyProfileEdit}
                       />
@@ -196,7 +195,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                     {task.task_id === "enter-executive-token-info" && (
                       <TaskCard
                         key={task.id}
-                        title={"Enter Executive Member Token Info"}
+                        title={t("Enter Executive Member Token Info")}
                         status={task.status || "todo"}
                         onPress={onOpenExecutiveTokenInfoEdit}
                       />

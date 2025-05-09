@@ -6,5 +6,10 @@
   "Company Type": "法人タイプ",
   "Company Email": "会社メールアドレス",
   "Level Up Your Company!": "会社を次のステップに進めましょう！",
-  "Complete Tasks": "タスクを完了して会社を起動しましょう！"
+  "Complete Tasks": "タスクを完了して会社を起動しましょう！",
+  "Activate": "",
+  "を起動する": "を起動する",
+  "Create AoI": "定款を作成する",
+  "Enter Company Profile": "会社プロフィールを入力する",
+  "Enter Executive Member Token Info": "業務執行社員トークン情報を入力する"
 }

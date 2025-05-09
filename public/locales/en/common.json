@@ -12,6 +12,7 @@
   "Back to DAO list": "Back to DAO list",
   "Executive": "Executive",
   "Non-executive": "Non-executive",
+  "Representative": "Representative",
   "Symbol": "Symbol",
   "Name": "Name",
   "Contract Address": "Token Address",
@@ -77,5 +78,7 @@
   "Sign In": "Welcome to Borderless (beta)",
   "Join Waitlist": "Join Waitlist",
   "Borderless is in beta": "Borderless is in beta. Please join our waitlist to use it",
-  "I agree to": "I agree to "
+  "I agree to": "I agree to ",
+  "Close": "Close",
+  "Save": "Save"
 }

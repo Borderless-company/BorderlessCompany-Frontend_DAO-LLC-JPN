@@ -1,0 +1,20 @@
+{
+  "Create AoI": "定款を作成する",
+  "Please enter the information": "会社を起動するための定款の情報を入力してください",
+  "Company Name JP": "会社名 (日本語)",
+  "Company Name EN": "会社名 (英語)",
+  "Business Purpose": "事業目的",
+  "Location": "本店の所在地",
+  "Branch Location": "支店の所在地",
+  "Add Branch Location": "追加する",
+  "Preview of AoI": "プレビュー",
+  "Name": "指名",
+  "Address": "住所",
+  "Wallet Address": "ウォレットアドレス",
+  "Investment Amount": "出資額",
+  "Add Executive": "追加する",
+  "Business Start Date": "事業開始日",
+  "Business End Date": "事業終了日",
+  "Capital": "資本金",
+  "Establishment Date": "設立日"
+}

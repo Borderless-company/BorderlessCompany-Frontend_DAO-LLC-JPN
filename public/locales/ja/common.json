@@ -12,6 +12,7 @@
   "Back to DAO list": "DAO一覧に戻る",
   "Executive": "業務執行社員",
   "Non-executive": "非業務執行社員",
+  "Representative": "代表社員",
   "Symbol": "シンボル",
   "Name": "名前",
   "Contract Address": "コントラクトアドレス",
@@ -78,5 +79,7 @@
   "Join Whitelist": "ホワイトリストに登録",
   "Join Waitlist": "順番待ちリストに登録",
   "Borderless is in beta": "Borderlessはベータ版です。順番待ちリストに登録して連絡をお待ちください。",
-  "I agree to": " に同意します"
+  "I agree to": " に同意します",
+  "Close": "閉じる",
+  "Save": "保存"
 }

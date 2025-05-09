@@ -4,6 +4,7 @@ import { PiPlusCircle, PiMinusCircle } from "react-icons/pi";
 import { LuJapaneseYen } from "react-icons/lu";
 import { AoIFormData } from "@/types/aoi";
 import { Tables } from "@/types/schema";
+import { useTranslation } from "next-i18next";
 
 type ExecutiveMembersSectionProps = {
   formData: AoIFormData;
@@ -16,6 +17,7 @@ export const ExecutiveMembersSection: FC<ExecutiveMembersSectionProps> = ({
   setFormData,
   company,
 }) => {
+  const { t } = useTranslation(["aoi", "common"]);
   const handleExecutiveMemberChange = (
     index: number,
     field: keyof AoIFormData["executiveMembers"][0],
@@ -70,7 +72,7 @@ export const ExecutiveMembersSection: FC<ExecutiveMembersSectionProps> = ({
         <div key={index} className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <p className="font-label-md text-foreground">
-              Executive Member {index + 1}
+              {t("Executive", { ns: "common" })} {index + 1}
             </p>
             {index > 0 && (
               <Button
@@ -90,7 +92,7 @@ export const ExecutiveMembersSection: FC<ExecutiveMembersSectionProps> = ({
             onChange={(e) =>
               handleExecutiveMemberChange(index, "name", e.target.value)
             }
-            label="Name"
+            label={t("Name")}
             placeholder={index !== 0 ? "John Doe" : "Your Name"}
             labelPlacement="inside"
           />
@@ -100,7 +102,7 @@ export const ExecutiveMembersSection: FC<ExecutiveMembersSectionProps> = ({
             onChange={(e) =>
               handleExecutiveMemberChange(index, "address", e.target.value)
             }
-            label="Address"
+            label={t("Address")}
             placeholder="1-1-1 Chiyoda, Chiyoda, Tokyo"
             labelPlacement="inside"
           />
@@ -115,7 +117,7 @@ export const ExecutiveMembersSection: FC<ExecutiveMembersSectionProps> = ({
               )
             }
             isReadOnly={index === 0}
-            label="Wallet Address"
+            label={t("Wallet Address")}
             placeholder="0x1234567890abcdef"
             labelPlacement="inside"
           />
@@ -125,7 +127,7 @@ export const ExecutiveMembersSection: FC<ExecutiveMembersSectionProps> = ({
             onChange={(e) =>
               handleExecutiveMemberChange(index, "investment", e.target.value)
             }
-            label="Investment Amount"
+            label={t("Investment Amount")}
             placeholder="1000000"
             labelPlacement="inside"
             type="number"
@@ -138,7 +140,7 @@ export const ExecutiveMembersSection: FC<ExecutiveMembersSectionProps> = ({
               handleExecutiveMemberChange(index, "isRepresentative", checked)
             }
           >
-            Representative Member
+            {t("Representative", { ns: "common" })}
           </Checkbox>
         </div>
       ))}
@@ -164,7 +166,7 @@ export const ExecutiveMembersSection: FC<ExecutiveMembersSectionProps> = ({
           }));
         }}
       >
-        Add Executive Member
+        {t("Add Executive")}
       </Button>
     </div>
   );

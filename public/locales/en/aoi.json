@@ -1,0 +1,20 @@
+{
+  "Create AoI": "Create AoI",
+  "Please enter the information": "Please enter the information of AoI below to activate your company.",
+  "Company Name JP": "Company Name (JP)",
+  "Company Name EN": "Company Name (EN)",
+  "Business Purpose": "Business Purpose",
+  "Location": "Location",
+  "Branch Location": "Branch Location",
+  "Add Branch Location": "Add Branch Location",
+  "Preview of AoI": "Preview of AoI",
+  "Name": "Name",
+  "Address": "Address",
+  "Wallet Address": "Wallet Address",
+  "Investment Amount": "Investment Amount",
+  "Add Executive": "Add Executive",
+  "Business Start Date": "Business Start Date",
+  "Business End Date": "Business End Date",
+  "Capital": "Capital",
+  "Establishment Date": "Establishment Date"
+}
