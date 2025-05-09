@@ -248,7 +248,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
                 </ModalBody>
                 <ModalFooter>
                   <Button color="default" variant="light" onPress={onClose}>
-                    {t("Cancel")}
+                    {t("Cancel", { ns: "common" })}
                   </Button>
                   <Button
                     color="primary"
