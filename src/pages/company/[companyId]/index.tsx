@@ -16,7 +16,12 @@ export const getServerSideProps = async ({
   return {
     props: {
       companyId: params.companyId,
-      ...(await serverSideTranslations(locale, ["common", "company", "aoi"])),
+      ...(await serverSideTranslations(locale, [
+        "common",
+        "company",
+        "aoi",
+        "token",
+      ])),
     },
   };
 };

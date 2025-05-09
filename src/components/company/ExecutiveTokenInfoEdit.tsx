@@ -20,6 +20,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useTaskStatus } from "@/hooks/useTaskStatus";
 import { useToken, useTokenByCompanyId } from "@/hooks/useToken";
 import { createNFTMetadata, uploadTokenMetadata } from "@/utils/token";
+import { useTranslation } from "next-i18next";
 
 type ExecutiveTokenInfoEditProps = {
   company?: Tables<"COMPANY">;
@@ -29,6 +30,7 @@ export const ExecutiveTokenInfoEdit: FC<ExecutiveTokenInfoEditProps> = ({
   company,
   ...props
 }) => {
+  const { t } = useTranslation(["token", "common"]);
   const { createToken } = useToken();
   const [selectedFile, setSelectedFile] = useAtom(selectedFileAtom);
   const [imgUrl, setImgUrl] = useState<string | undefined>(undefined);
@@ -143,51 +145,53 @@ export const ExecutiveTokenInfoEdit: FC<ExecutiveTokenInfoEditProps> = ({
           <>
             <ModalHeader className="flex flex-col gap-1">
               <h2 className="font-headline-sm text-primary">
-                Executive Member Token Info
+                {t("Executive Member Token Info")}
               </h2>
               <p className="font-body-md text-neutral">
-                Enter the token information for executive members.
+                {t("Enter the token information for executive members.")}
               </p>
             </ModalHeader>
             <form onSubmit={handleSubmit} id="token-edit-form">
               <ModalBody>
                 <Stack className="gap-4">
-                  <ImageUploader label="Token Image" />
+                  <ImageUploader label={t("Token Image")} />
                   <Input
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    label="Token Name"
+                    label={t("Token Name")}
                     labelPlacement="outside"
-                    placeholder="Enter token name"
-                    description="This will be the name of your executive member token."
+                    placeholder={t("Enter token name")}
+                    description={t("This will be the name")}
                   />
                   <Input
                     name="symbol"
                     value={formData.symbol}
                     onChange={handleInputChange}
-                    label="Token Symbol"
+                    label={t("Token Symbol")}
                     labelPlacement="outside"
-                    placeholder="e.g. EXT"
-                    description="A short identifier for your token (usually 3-4 characters)."
+                    placeholder={t("e.g. EXT")}
+                    description={t("A short identifier")}
                   />
                   <Textarea
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
-                    label="Token Description"
+                    label={t("Token Description")}
                     labelPlacement="outside"
-                    placeholder="Enter token description"
-                    description="Describe the purpose and benefits of this token."
+                    placeholder={t("Enter token description")}
+                    description={t(
+                      "Describe the purpose and benefits of this token."
+                    )}
                   />
                 </Stack>
               </ModalBody>
               <ModalFooter>
                 <Button color="default" variant="light" onPress={onClose}>
-                  Cancel
+                  {t("Cancel", { ns: "common" })}
                 </Button>
                 <Button color="primary" type="submit" form="token-edit-form">
-                  Save
+                  {t("Save", { ns: "common" })}
                 </Button>
               </ModalFooter>
             </form>

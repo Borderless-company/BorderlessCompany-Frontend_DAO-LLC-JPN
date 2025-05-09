@@ -80,5 +80,9 @@
   "Borderless is in beta": "Borderless is in beta. Please join our waitlist to use it",
   "I agree to": "I agree to ",
   "Close": "Close",
-  "Save": "Save"
+  "Save": "Save",
+  "Cancel": "Cancel",
+  "Completed": "Completed",
+  "ToDo": "ToDo",
+  "In Progress": "In Progress"
 }

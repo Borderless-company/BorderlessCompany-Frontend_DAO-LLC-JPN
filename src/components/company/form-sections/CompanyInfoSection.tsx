@@ -39,7 +39,7 @@ export const CompanyInfoSection: FC<CompanyInfoSectionProps> = ({
         onChange={handleInputChange}
         label={t("Business Purpose")}
         labelPlacement="outside"
-        placeholder="Enter your business purpose"
+        placeholder={t("Enter your business purpose")}
       />
       <Input
         name="location"
@@ -47,7 +47,7 @@ export const CompanyInfoSection: FC<CompanyInfoSectionProps> = ({
         onChange={handleInputChange}
         label={t("Location")}
         labelPlacement="outside"
-        placeholder="Enter your location"
+        placeholder={t("Enter your location")}
       />
     </>
   );

@@ -338,6 +338,7 @@ export const TaskStatusChip: FC<TaskStatusChipProps> = ({
   status,
   ...props
 }) => {
+  const { t } = useTranslation("common");
   const color = useMemo(() => {
     if (status === "completed") return "default";
     if (status === "todo") return "primary";
@@ -353,9 +354,9 @@ export const TaskStatusChip: FC<TaskStatusChipProps> = ({
       classNames={{ base: "rounded-md" }}
       {...props}
     >
-      {status === "completed" && "Completed"}
-      {status === "todo" && "ToDo"}
-      {status === "inProgress" && "In Progress"}
+      {status === "completed" && t("Completed")}
+      {status === "todo" && t("ToDo")}
+      {status === "inProgress" && t("In Progress")}
     </Chip>
   );
 };

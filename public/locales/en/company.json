@@ -11,5 +11,18 @@
   "を起動する": "",
   "Create AoI": "Create AoI",
   "Enter Company Profile": "Enter Company Profile",
-  "Enter Executive Member Token Info": "Enter Executive Member Token Info"
+  "Enter Executive Member Token Info": "Enter Executive Member Token Info",
+  "Edit Company Profile": "Edit Company Profile",
+  "Update your company's basic information.": "Update your company&apos;s basic information.",
+  "Company Icon": "Company Icon",
+  "This name is a display name": "This name is a display name for your company and doesn't have to be the same as your company name.",
+  "Enter your company name": "Enter your company name",
+  "Company Activation": "Company Activation",
+  "Enter your corporate number to activate your company.": "Enter your corporate number to activate your company.",
+  "Company Number": "Company Number",
+  "Enter your 13-digit company number": "Enter your 13-digit company number",
+  "Enter the 13-digit company number issued by the National Tax Agency.": "Enter the 13-digit company number issued by the National Tax Agency.",
+  "Activate Company": "Activate",
+  "Activating your company...": "Activating your company...",
+  "Activated": "Activated"
 }

@@ -93,7 +93,7 @@ export const ExecutiveMembersSection: FC<ExecutiveMembersSectionProps> = ({
               handleExecutiveMemberChange(index, "name", e.target.value)
             }
             label={t("Name")}
-            placeholder={index !== 0 ? "John Doe" : "Your Name"}
+            placeholder={index !== 0 ? t("John Doe") : t("Your Name")}
             labelPlacement="inside"
           />
           <Input
@@ -103,7 +103,7 @@ export const ExecutiveMembersSection: FC<ExecutiveMembersSectionProps> = ({
               handleExecutiveMemberChange(index, "address", e.target.value)
             }
             label={t("Address")}
-            placeholder="1-1-1 Chiyoda, Chiyoda, Tokyo"
+            placeholder={t("Chiyoda, Chiyoda, Tokyo")}
             labelPlacement="inside"
           />
           <Input

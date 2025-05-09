@@ -81,5 +81,9 @@
   "Borderless is in beta": "Borderlessはベータ版です。順番待ちリストに登録して連絡をお待ちください。",
   "I agree to": " に同意します",
   "Close": "閉じる",
-  "Save": "保存"
+  "Save": "保存",
+  "Cancel": "キャンセル",
+  "Completed": "完了",
+  "ToDo": "未着手",
+  "In Progress": "進行中"
 }

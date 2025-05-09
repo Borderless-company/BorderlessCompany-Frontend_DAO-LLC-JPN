@@ -18,6 +18,7 @@ import { selectedFileAtom } from "@/atoms";
 import { uploadFile } from "@/utils/supabase";
 import { v4 as uuidv4 } from "uuid";
 import { useTaskStatus } from "@/hooks/useTaskStatus";
+import { useTranslation } from "next-i18next";
 
 type CompanyProfileEditProps = {
   company?: Tables<"COMPANY">;
@@ -27,6 +28,7 @@ export const CompanyProfileEdit: FC<CompanyProfileEditProps> = ({
   company,
   ...props
 }) => {
+  const { t } = useTranslation(["company", "common"]);
   const { updateCompany } = useCompany(company?.id);
   const [selectedFile, setSelectedFile] = useAtom(selectedFileAtom);
   const [imgUrl, setImgUrl] = useState<string | undefined>(undefined);
@@ -119,30 +121,30 @@ export const CompanyProfileEdit: FC<CompanyProfileEditProps> = ({
           <>
             <ModalHeader className="flex flex-col gap-1">
               <h2 className="font-headline-sm text-primary">
-                Edit Company Profile
+                {t("Edit Company Profile")}
               </h2>
               <p className="font-body-md text-neutral">
-                Update your company&apos;s basic information.
+                {t("Update your company's basic information.")}
               </p>
             </ModalHeader>
             <form onSubmit={handleSubmit} id="company-edit-form">
               <ModalBody>
                 <Stack className="gap-4">
-                  <ImageUploader label="Company Icon" />
+                  <ImageUploader label={t("Company Icon")} />
                   <Input
                     name="display_name"
                     value={formData.display_name || ""}
                     onChange={handleInputChange}
-                    label="Company Name"
+                    label={t("Company Name", { ns: "common" })}
                     labelPlacement="outside"
-                    placeholder="Enter your company name"
-                    description="This name is a display name for your company and doesn't have to be the same as your company name."
+                    placeholder={t("Enter your company name")}
+                    description={t("This name is a display name")}
                   />
                   <Input
                     name="email"
                     value={formData.email || ""}
                     onChange={handleInputChange}
-                    label="Email Address"
+                    label={t("Company Email")}
                     labelPlacement="outside"
                     placeholder="company@example.com"
                     type="email"
@@ -151,10 +153,10 @@ export const CompanyProfileEdit: FC<CompanyProfileEditProps> = ({
               </ModalBody>
               <ModalFooter>
                 <Button color="default" variant="light" onPress={onClose}>
-                  Cancel
+                  {t("Cancel", { ns: "common" })}
                 </Button>
                 <Button color="primary" type="submit" form="company-edit-form">
-                  Save
+                  {t("Save", { ns: "common" })}
                 </Button>
               </ModalFooter>
             </form>

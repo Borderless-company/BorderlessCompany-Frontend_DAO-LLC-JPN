@@ -31,11 +31,13 @@ import {
 import { useTokenByCompanyId } from "@/hooks/useToken";
 import { useAOIByCompanyId } from "@/hooks/useAOI";
 import { useMember, useMembersByCompanyId } from "@/hooks/useMember";
+import { useTranslation } from "next-i18next";
 
 export const CompanyActivation: FC<CompanyActivationProps> = ({
   company,
   ...props
 }) => {
+  const { t } = useTranslation(["company", "common"]);
   const smartAccount = useActiveAccount();
   const [isDepoying, setIsDepoying] = useState(false);
   const [isDeployed, setIsDeployed] = useState(false);
@@ -218,10 +220,10 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
             {!isDepoying && !isDeployed && (
               <ModalHeader className="flex flex-col gap-1">
                 <h2 className="font-headline-sm text-primary">
-                  Company Activation
+                  {t("Company Activation")}
                 </h2>
                 <p className="font-body-md text-neutral">
-                  Enter your corporate number to activate your company.
+                  {t("Enter your corporate number to activate your company.")}
                 </p>
               </ModalHeader>
             )}
@@ -233,10 +235,12 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
                       name="company_number"
                       value={formData.company_number || ""}
                       onChange={handleInputChange}
-                      label="Company Number"
+                      label={t("Company Number")}
                       labelPlacement="outside"
-                      placeholder="Enter your 13-digit company number"
-                      description="Enter the 13-digit company number issued by the National Tax Agency."
+                      placeholder={t("Enter your 13-digit company number")}
+                      description={t(
+                        "Enter the 13-digit company number issued by the National Tax Agency."
+                      )}
                       pattern="[0-9]{13}"
                       required
                     />
@@ -244,14 +248,14 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
                 </ModalBody>
                 <ModalFooter>
                   <Button color="default" variant="light" onPress={onClose}>
-                    Cancel
+                    {t("Cancel")}
                   </Button>
                   <Button
                     color="primary"
                     type="submit"
                     form="company-activation-form"
                   >
-                    Activate
+                    {t("Activate Company")}
                   </Button>
                 </ModalFooter>
               </form>
@@ -266,7 +270,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
                 >
                   <Spinner />
                   <p className="font-body-md text-primary font-mono">
-                    Activating your company...
+                    {t("Activating your company...")}
                   </p>
                 </motion.div>
               </ModalBody>
@@ -280,7 +284,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
                   transition={{ duration: 0.3 }}
                 >
                   <p className="font-body-md text-primary font-mono">
-                    Activated
+                    {t("Activated")}
                   </p>
                 </motion.div>
               </ModalBody>
