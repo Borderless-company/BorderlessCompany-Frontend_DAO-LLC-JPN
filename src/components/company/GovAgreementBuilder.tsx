@@ -95,11 +95,12 @@ export const GovAgreementBuilder: FC<GovAgreementBuilderProps> = ({
   useEffect(() => {
     if (govAgreement) {
       reset({
-        communicationTool: govAgreement?.communicationTool,
-        recommenders: govAgreement?.recommenders?.map((token) =>
-          token.is_executable ? "executive" : "non-executive"
-        ),
-        recommendationRate: govAgreement?.recommendationRate,
+        communicationTool: govAgreement?.communicationTool || "",
+        recommenders:
+          govAgreement?.recommenders?.map((token) =>
+            token.is_executable ? "executive" : "non-executive"
+          ) || [],
+        recommendationRate: govAgreement?.recommendationRate || 60,
         votingLevels: [
           {
             level: 1,

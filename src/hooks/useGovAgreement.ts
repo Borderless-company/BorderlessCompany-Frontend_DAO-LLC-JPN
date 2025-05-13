@@ -2,7 +2,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Tables } from "@/types/schema";
 
 // 必要な型定義
-export type Token = Tables<"TOKEN">;
+export type Token = Tables<"TOKEN"> & {
+  is_recommender?: boolean;
+};
 export type Member = Tables<"MEMBER"> & {
   USER: Tables<"USER">;
   TOKEN: Tables<"TOKEN">;
@@ -314,7 +316,9 @@ export const useGovAgreementByCompanyId = (companyId?: string) => {
         id: baseData.id,
         companyName: baseData.company_name,
         communicationTool: baseData.commucation_tool,
-        recommenders: recommenderJson.data,
+        recommenders: recommenderJson.data.filter(
+          (token: Token) => token.is_recommender === true
+        ),
         recommendationRate: baseData.recommendation_rate,
         votingLevels: votingLevelsJson.data,
         emergencyVoting: emergencyVoting,

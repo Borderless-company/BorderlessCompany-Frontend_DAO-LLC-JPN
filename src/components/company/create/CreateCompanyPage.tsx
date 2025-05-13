@@ -41,14 +41,15 @@ export const CreateCompanyPage: FC = () => {
     try {
       const companyName = await createCompanyName({});
       const aoi = await createAOI({});
-      const govAgreement = await createGovAgreement({});
       const company = await createCompany({
         founder_id: smartAccount?.address,
         jurisdiction: "jp",
         company_type: "llc",
         company_name: companyName.id,
         aoi: aoi.id,
-        governance_agreement: govAgreement.id,
+      });
+      const govAgreement = await createGovAgreement({
+        company_id: company.id,
       });
 
       // 業務執行社員トークンの箱だけ作成
