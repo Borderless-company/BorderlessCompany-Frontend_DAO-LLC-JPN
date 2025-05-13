@@ -25,5 +25,16 @@
   "Enter the 13-digit company number issued by the National Tax Agency.": "Enter the 13-digit company number issued by the National Tax Agency.",
   "Activate Company": "Activate",
   "Activating your company...": "Activating your company...",
-  "Activated": "Activated"
+  "Activated": "Activated",
+  "Create a new company": "Create a new company",
+  "Japan": "Japan",
+  "Switzerland": "Switzerland",
+  "United States": "United States",
+  "United Arab Emirates (UAE)": "United Arab Emirates (UAE)",
+  "LLC": "LLC",
+  "Inc": "Inc",
+  "GIA": "GIA",
+  "Create": "Create",
+  "Select the company type": "Select a company type",
+  "LLC is a limited liability company that allows for the use of digital employee rights.": "LLC is a limited liability company that allows for the use of digital employee rights."
 }

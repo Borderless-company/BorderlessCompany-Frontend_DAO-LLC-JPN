@@ -27,7 +27,7 @@ export const AgreementPage: FC<AgreementPageProps> = ({
   const [isAccepting, setIsAccepting] = useState(false);
   const [activeAcceptButton, setActiveAcceptButton] = useState(false);
   const { signOut } = useSignOut();
-  const { t } = useTranslation();
+  const { t } = useTranslation(["login", "common"]);
   const smartAccount = useActiveAccount();
   const { createUser } = useUser();
   const { latest: latestPrivacyPolicy } = usePrivacyPolicy();
@@ -113,7 +113,7 @@ export const AgreementPage: FC<AgreementPageProps> = ({
           }}
           isLoading={isSigningOut}
         >
-          {t("Back")}
+          {t("Back", { ns: "common" })}
         </Button>
         <Button
           color="primary"

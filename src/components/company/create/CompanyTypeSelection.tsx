@@ -1,13 +1,7 @@
 import { Stack } from "@/sphere/Stack";
-import {
-  Button,
-  RadioGroup,
-  Radio,
-  RadioProps,
-  cn,
-  Chip,
-} from "@heroui/react";
+import { Button, RadioGroup, Radio, RadioProps, cn, Chip } from "@heroui/react";
 import { motion } from "framer-motion";
+import { useTranslation } from "next-i18next";
 import { FC, useState } from "react";
 import { Button as RACButton } from "react-aria-components";
 
@@ -22,6 +16,7 @@ export const CompanyTypeSelection: FC<CompanyTypeSelectionProps> = ({
   onBack,
   onNext,
 }) => {
+  const { t } = useTranslation(["company", "common"]);
   return (
     <motion.div
       className="flex flex-col items-start justify-center gap-4 w-full max-w-3xl p-8"
@@ -33,7 +28,7 @@ export const CompanyTypeSelection: FC<CompanyTypeSelectionProps> = ({
       }}
     >
       <h2 className="text-2xl font-bold w-full text-start">
-        Select the company type
+        {t("Select a company type")}
       </h2>
       <RadioGroup
         orientation="horizontal"
@@ -44,28 +39,30 @@ export const CompanyTypeSelection: FC<CompanyTypeSelectionProps> = ({
       >
         <CompanyTypeSelectionItem
           value="llc"
-          title="LLC"
-          description="LLC is a limited liability company that allows for the use of digital employee rights."
+          title={t("LLC")}
+          description={t(
+            "LLC is a limited liability company that allows for the use of digital employee rights."
+          )}
         />
         <CompanyTypeSelectionItem
           value="inc"
-          title="Inc"
+          title={t("Inc")}
           isComingSoon={true}
           isDisabled={true}
         />
         <CompanyTypeSelectionItem
           value="gia"
-          title="GIA"
+          title={t("GIA")}
           isComingSoon={true}
           isDisabled={true}
         />
       </RadioGroup>
       <Stack h className="gap-2 justify-end">
         <Button color="primary" variant="bordered" onPress={onBack}>
-          Back
+          {t("Back", { ns: "common" })}
         </Button>
         <Button color="primary" variant="solid" onPress={onNext}>
-          Create
+          {t("Create")}
         </Button>
       </Stack>
     </motion.div>

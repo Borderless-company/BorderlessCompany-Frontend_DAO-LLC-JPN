@@ -25,5 +25,16 @@
   "Enter the 13-digit company number issued by the National Tax Agency.": "国税庁が発行した13桁の法人番号を入力してください。",
   "Activate Company": "起動する",
   "Activating your company...": "会社を起動しています...",
-  "Activated": "起動完了"
+  "Activated": "起動完了",
+  "Create a new company": "会社を作成する",
+  "Japan": "日本",
+  "Switzerland": "スイス",
+  "United States": "アメリカ",
+  "United Arab Emirates (UAE)": "アラブ首長国連邦 (UAE)",
+  "LLC": "LLC",
+  "Inc": "Inc",
+  "GIA": "GIA",
+  "Create": "作成する",
+  "Select a company type": "法人タイプを選択してください",
+  "LLC is a limited liability company that allows for the use of digital employee rights.": "LLCは、社員権トークンの使用を可能にする有限責任会社です。"
 }
