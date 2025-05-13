@@ -8,6 +8,12 @@ export type UseMemberProps = {
   daoId?: string;
 };
 
+// MemberWithRelationsの型を定義
+export type MemberWithRelations = Tables<"MEMBER"> & {
+  USER: Tables<"USER">;
+  TOKEN: Tables<"TOKEN"> | null;
+};
+
 export const useMember = () => {
   const queryClient = useQueryClient();
 
@@ -111,14 +117,14 @@ export const useMember = () => {
       return useQuery({
         queryKey: ["members", daoId],
         queryFn: async () => {
-          const { data, error } = await supabase
-            .from("MEMBER")
-            .select(`*, USER (*), TOKEN (*)`)
-            .eq("dao_id", daoId);
-          if (error) {
-            throw new Error(error.message);
+          const response = await fetch(`/api/member?companyId=${daoId}`, {
+            method: "GET",
+          });
+          const json = await response.json();
+          if (!response.ok) {
+            throw new Error(json.error);
           }
-          return data;
+          return json.data;
         },
       });
     } else if (userId) {
@@ -126,14 +132,14 @@ export const useMember = () => {
       return useQuery({
         queryKey: ["members", userId],
         queryFn: async () => {
-          const { data, error } = await supabase
-            .from("MEMBER")
-            .select(`*, USER (*), TOKEN (*)`)
-            .eq("user_id", userId);
-          if (error) {
-            throw new Error(error.message);
+          const response = await fetch(`/api/member?userId=${userId}`, {
+            method: "GET",
+          });
+          const json = await response.json();
+          if (!response.ok) {
+            throw new Error(json.error);
           }
-          return data;
+          return json.data;
         },
       });
     } else if (userId && daoId) {
@@ -141,15 +147,17 @@ export const useMember = () => {
       return useQuery({
         queryKey: ["members", userId, daoId],
         queryFn: async () => {
-          const { data, error } = await supabase
-            .from("MEMBER")
-            .select(`*, USER (*), TOKEN (*)`)
-            .eq("user_id", userId)
-            .eq("dao_id", daoId);
-          if (error) {
-            throw new Error(error.message);
+          const response = await fetch(
+            `/api/member?user_id=${userId}&company_id=${daoId}`,
+            {
+              method: "GET",
+            }
+          );
+          const json = await response.json();
+          if (!response.ok) {
+            throw new Error(json.error);
           }
-          return data;
+          return json.data;
         },
       });
     } else {
@@ -162,14 +170,14 @@ export const useMember = () => {
     useQuery({
       queryKey: ["members", daoId],
       queryFn: async () => {
-        const { data, error } = await supabase
-          .from("MEMBER")
-          .select(`*, USER (*), TOKEN (*)`)
-          .eq("dao_id", daoId);
-        if (error) {
-          throw new Error(error.message);
+        const response = await fetch(`/api/member?companyId=${daoId}`, {
+          method: "GET",
+        });
+        const json = await response.json();
+        if (!response.ok) {
+          throw new Error(json.error);
         }
-        return data;
+        return json.data;
       },
     });
 
@@ -187,20 +195,25 @@ export const useMembersByCompanyId = (companyId?: string) => {
     data: members,
     isLoading: isLoadingMembers,
     error: membersError,
-  } = useQuery({
+    refetch,
+  } = useQuery<MemberWithRelations[], Error>({
     queryKey: ["members", companyId],
     queryFn: async () => {
-      if (!companyId) return undefined;
-      const { data, error } = await supabase
-        .from("MEMBER")
-        .select(`*, USER (*), TOKEN (*)`)
-        .eq("company_id", companyId);
-      if (error) {
-        throw new Error(error.message);
+      if (!companyId) return [];
+
+      const response = await fetch(`/api/member?companyId=${companyId}`, {
+        method: "GET",
+      });
+      const json = await response.json();
+
+      if (!response.ok) {
+        throw new Error(json.error);
       }
-      return data;
+
+      return json.data;
     },
+    enabled: !!companyId,
   });
 
-  return { members, isLoadingMembers, membersError };
+  return { members, isLoadingMembers, membersError, refetch };
 };

@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { Database, Tables } from "@/types/schema";
 import { createClient } from "@supabase/supabase-js";
 import { authMiddleware } from "@/utils/verifyJWT";
+import { bypassAuthForGet } from "@/utils/bypassAuthForGet";
 
 const serviveRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -10,6 +11,59 @@ const supabase = createClient<Database>(supabaseUrl!, serviveRoleKey!);
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   switch (req.method) {
+    case "GET": {
+      // メンバー情報取得
+      const { companyId, userId } = req.query;
+      if (companyId) {
+        // 特定の会社に所属するメンバー全員を取得
+        const { data, error } = await supabase
+          .from("MEMBER")
+          .select(`*, USER (*), TOKEN (*)`)
+          .eq(
+            "company_id",
+            Array.isArray(companyId) ? companyId[0] : companyId
+          );
+
+        if (error) {
+          return res.status(400).json({ error: error.message });
+        }
+
+        return res.status(200).json({ data });
+      } else if (userId && companyId) {
+        // 特定の会社の特定のユーザーを取得
+        const { data, error } = await supabase
+          .from("MEMBER")
+          .select(`*, USER (*), TOKEN (*)`)
+          .eq("user_id", Array.isArray(userId) ? userId[0] : userId)
+          .eq(
+            "company_id",
+            Array.isArray(companyId) ? companyId[0] : companyId
+          );
+
+        if (error) {
+          return res.status(400).json({ error: error.message });
+        }
+
+        return res.status(200).json({ data });
+      } else if (userId) {
+        // 特定のユーザーが所属する全ての会社の情報を取得
+        const { data, error } = await supabase
+          .from("MEMBER")
+          .select(`*, USER (*), TOKEN (*)`)
+          .eq("user_id", Array.isArray(userId) ? userId[0] : userId);
+
+        if (error) {
+          return res.status(400).json({ error: error.message });
+        }
+
+        return res.status(200).json({ data });
+      } else {
+        return res
+          .status(400)
+          .json({ error: "company_id または user_id が必要です" });
+      }
+    }
+
     case "POST": {
       // メンバー新規作成
       const {
@@ -22,6 +76,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         invested_amount,
         is_minted,
         is_representative,
+        is_initial_member,
       }: Tables<"MEMBER"> = req.body;
 
       const { data, error } = await supabase
@@ -37,6 +92,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             invested_amount,
             is_minted,
             is_representative,
+            is_initial_member,
           },
           {
             onConflict: "user_id,company_id",
@@ -63,6 +119,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         invested_amount,
         is_minted,
         is_representative,
+        is_initial_member,
       }: Tables<"MEMBER"> = req.body;
 
       if (!user_id || !company_id) {
@@ -82,6 +139,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           invested_amount,
           is_minted,
           is_representative,
+          is_initial_member,
         })
         .eq("user_id", user_id)
         .eq("company_id", company_id)

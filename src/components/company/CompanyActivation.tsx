@@ -76,14 +76,22 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
 
       const abiCoder = new ethers.AbiCoder();
 
-      console.log(`token?.name ${tokens?.[0]?.name}`);
-      console.log(`token?.symbol ${tokens?.[0]?.symbol}`);
+      console.log(
+        `token?.name ${
+          tokens?.filter((token) => token.is_executable === true)?.[0]?.name
+        }`
+      );
+      console.log(
+        `token?.symbol ${
+          tokens?.filter((token) => token.is_executable === true)?.[0]?.symbol
+        }`
+      );
 
       const executiveTokenExtraParams = abiCoder.encode(
         ["string", "string", "string", "string", "string"],
         [
-          tokens?.[0]?.name,
-          tokens?.[0]?.symbol,
+          tokens?.filter((token) => token.is_executable === true)?.[0]?.name,
+          tokens?.filter((token) => token.is_executable === true)?.[0]?.symbol,
           "https://example.com/metadata/",
           ".json",
           GOVERNANCE_JP_LLC_ADDRESS,
@@ -93,8 +101,8 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       const nonExecutiveTokenExtraParams = abiCoder.encode(
         ["string", "string", "string", "string", "string"],
         [
-          tokens?.[0]?.name,
-          tokens?.[0]?.symbol,
+          tokens?.filter((token) => token.is_executable === true)?.[0]?.name,
+          tokens?.filter((token) => token.is_executable === true)?.[0]?.symbol,
           "https://example.com/metadata/",
           ".json",
           GOVERNANCE_JP_LLC_ADDRESS,
@@ -158,6 +166,10 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
           company_id: company.id,
           task_id: "enter-executive-token-info",
         }),
+        deleteTaskStatusByIds({
+          company_id: company.id,
+          task_id: "create-gov-agreement",
+        }),
       ]);
 
       //新しいタスクを追加;
@@ -202,6 +214,8 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       }, 5000);
     } catch (error) {
       console.error("Failed to activate company:", error);
+      setIsDepoying(false);
+      setIsDeployed(false);
     }
   };
 

@@ -41,3 +41,6 @@ next-env.d.ts
 # 一時保存ファイル
 /tmp/
 .cursorrules
+
+# ref
+/ref/

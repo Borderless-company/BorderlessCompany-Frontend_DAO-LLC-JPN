@@ -12,6 +12,8 @@ import { useRouter } from "next/router";
 import { useTaskStatus } from "@/hooks/useTaskStatus";
 import { useAOI } from "@/hooks/useAOI";
 import { useCompanyName } from "@/hooks/useCompanyName";
+import { useGovAgreement } from "@/hooks/useGovAgreement";
+import { useToken } from "@/hooks/useToken";
 
 export const CreateCompanyPage: FC = () => {
   const [page, setPage] = useState<number>(0);
@@ -22,7 +24,9 @@ export const CreateCompanyPage: FC = () => {
   const router = useRouter();
   const { createTaskStatus } = useTaskStatus();
   const { createAOI } = useAOI();
+  const { createGovAgreement } = useGovAgreement();
   const { createCompanyName } = useCompanyName();
+  const { createToken } = useToken();
 
   const onBack = () => {
     setPage((prev) => prev - 1);
@@ -44,6 +48,21 @@ export const CreateCompanyPage: FC = () => {
         company_name: companyName.id,
         aoi: aoi.id,
       });
+      const govAgreement = await createGovAgreement({
+        company_id: company.id,
+      });
+
+      // 業務執行社員トークンの箱だけ作成
+      await createToken({
+        company_id: company.id,
+        is_executable: true,
+      });
+
+      // 非業務執行社員トークンの箱だけ作成
+      await createToken({
+        company_id: company.id,
+        is_executable: false,
+      });
 
       if (company.id) {
         await createTaskStatus({
@@ -61,6 +80,12 @@ export const CreateCompanyPage: FC = () => {
           task_id: "enter-executive-token-info",
           status: "todo",
         });
+        await createTaskStatus({
+          company_id: company.id,
+          task_id: "create-gov-agreement",
+          status: "todo",
+        });
+
         setTimeout(() => {
           router.push(`/company/${company.id}`);
         }, 3000);
