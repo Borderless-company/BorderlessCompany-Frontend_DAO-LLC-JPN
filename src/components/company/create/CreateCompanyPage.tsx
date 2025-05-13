@@ -14,6 +14,7 @@ import { useAOI } from "@/hooks/useAOI";
 import { useCompanyName } from "@/hooks/useCompanyName";
 import { useGovAgreement } from "@/hooks/useGovAgreement";
 import { useToken } from "@/hooks/useToken";
+import { useTranslation } from "next-i18next";
 
 export const CreateCompanyPage: FC = () => {
   const [page, setPage] = useState<number>(0);
@@ -27,6 +28,7 @@ export const CreateCompanyPage: FC = () => {
   const { createGovAgreement } = useGovAgreement();
   const { createCompanyName } = useCompanyName();
   const { createToken } = useToken();
+  const { t } = useTranslation(["company", "common"]);
 
   const onBack = () => {
     setPage((prev) => prev - 1);

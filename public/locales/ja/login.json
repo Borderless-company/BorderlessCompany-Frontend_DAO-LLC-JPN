@@ -2,5 +2,10 @@
   "Sign In": "Borderless (ベータ版) へようこそ",
   "Join Waitlist": "ウェイトリストに登録してください",
   "Sign In with Google": "Googleでサインイン",
-  "Connecting...": "サインイン中..."
+  "Connecting...": "サインイン中...",
+  "Terms and Conditions": "利用規約とプライバシーポリシー",
+  "Please review and accept our Terms of Use and Privacy Policy to continue": "利用規約とプライバシーポリシーを確認し、同意してください。",
+  "Accept": "同意する",
+  "Privacy Policy": "プライバシーポリシー",
+  "Terms of Use": "利用規約"
 }

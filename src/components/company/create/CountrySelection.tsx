@@ -4,6 +4,7 @@ import ReactCountryFlag from "react-country-flag";
 import { Button, ButtonProps, Chip, Divider } from "@heroui/react";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "next-i18next";
 
 type CountrySelectionProps = {
   isGoingBack: boolean;
@@ -14,6 +15,7 @@ export const CountrySelection: FC<CountrySelectionProps> = ({
   isGoingBack,
   onNext,
 }) => {
+  const { t } = useTranslation(["company", "common"]);
   return (
     <motion.div
       className="flex flex-col items-start justify-center gap-4 w-full max-w-lg p-8"
@@ -31,24 +33,24 @@ export const CountrySelection: FC<CountrySelectionProps> = ({
         <div className="flex items-center justify-start gap-1">
           <PiPlusCircleDuotone className="text-primary text-medium" size={24} />
           <h3 className="text-primary text-medium font-bold pt-[1.5px]">
-            Create a new company
+            {t("Create a new company")}
           </h3>
         </div>
         <div className="flex flex-col items-start justify-start gap-0 w-full h-auto overflow-hidden bg-primary-foreground rounded-xl border-1 border-primary-outline">
           <CountrySelectionItem countryCode="JP" onPress={onNext}>
-            Japan
+            {t("Japan")}
           </CountrySelectionItem>
           <Divider className="w-full bg-transparent bg-gradient-to-l from-primary-outline to-primary-outline/0 border-none" />
           <CountrySelectionItem countryCode="CH" isWIP>
-            Switzerland
+            {t("Switzerland")}
           </CountrySelectionItem>
           <Divider className="w-full bg-transparent bg-gradient-to-l from-primary-outline to-primary-outline/0 border-none" />
           <CountrySelectionItem countryCode="US" isWIP>
-            United States
+            {t("United States")}
           </CountrySelectionItem>
           <Divider className="w-full bg-transparent bg-gradient-to-l from-primary-outline to-primary-outline/0 border-none" />
           <CountrySelectionItem countryCode="AE" isWIP>
-            United Arab Emirates (UAE)
+            {t("United Arab Emirates (UAE)")}
           </CountrySelectionItem>
         </div>
       </div>
