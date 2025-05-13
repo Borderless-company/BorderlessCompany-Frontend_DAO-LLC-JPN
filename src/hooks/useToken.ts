@@ -4,7 +4,7 @@ import { Token } from "@/types";
 import stripe from "@/utils/stripe";
 import { Tables } from "@/types/schema";
 
-export type CreateTokenProps = Partial<Tables<"TOKEN">> & { name: string };
+export type CreateTokenProps = Partial<Tables<"TOKEN">>;
 
 export type UseTokenProps = {
   id?: string;

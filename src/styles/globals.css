@@ -48,3 +48,40 @@
     @apply text-[16px] font-medium leading-[24px] tracking-[0px];
   }
 }
+
+/* 汎用的な定款・規定プレビュー用スタイル */
+@layer components {
+  .prose-preview h1 {
+    @apply font-headline-lg text-foreground mb-6 mt-2;
+  }
+  .prose-preview h2 {
+    @apply font-headline-sm text-foreground mb-4 mt-6;
+  }
+  .prose-preview h3 {
+    @apply font-title-lg text-foreground mb-3 mt-4;
+  }
+  .prose-preview h4 {
+    @apply font-title-md text-foreground mb-2 mt-3;
+  }
+  .prose-preview h5 {
+    @apply font-label-lg text-foreground mb-2 mt-2;
+  }
+  .prose-preview h6 {
+    @apply font-label-md text-foreground mb-2 mt-2;
+  }
+  .prose-preview p {
+    @apply font-body-md text-foreground mb-2;
+  }
+  .prose-preview ul {
+    @apply list-disc pl-6 mb-2;
+  }
+  .prose-preview ol {
+    @apply list-decimal pl-6 mb-2;
+  }
+  .prose-preview li {
+    @apply mb-1;
+  }
+  .prose-preview {
+    @apply leading-relaxed;
+  }
+}

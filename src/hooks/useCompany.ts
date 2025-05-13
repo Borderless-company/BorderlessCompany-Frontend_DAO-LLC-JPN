@@ -41,6 +41,7 @@ export const useCompany = (id?: string) => {
   const { mutateAsync: updateCompany, isSuccess: isCompanyUpdated } =
     useMutation<Tables<"COMPANY">, Error, UpdateCompanyProps>({
       mutationFn: async (props: UpdateCompanyProps) => {
+        console.log("updateCompany props", props);
         const response = await fetch("/api/company", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

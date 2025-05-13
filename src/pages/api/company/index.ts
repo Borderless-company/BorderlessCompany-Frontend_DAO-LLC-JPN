@@ -11,38 +11,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   switch (req.method) {
     case "POST": {
       // CREATE / UPSERT COMPANY
-      const {
-        id,
-        company_name,
-        company_number,
-        company_type,
-        deployment_date,
-        founder_id,
-        jurisdiction,
-        sc_address,
-        display_name,
-        icon,
-        is_active,
-        email,
-        aoi,
-      }: Tables<"COMPANY"> = req.body;
+      const { id, ...rest }: Tables<"COMPANY"> = req.body;
 
       const { data, error } = await supabase
         .from("COMPANY")
         .upsert({
           id,
-          company_name,
-          company_number,
-          company_type,
-          deployment_date,
-          founder_id,
-          jurisdiction,
-          sc_address,
-          display_name,
-          icon,
-          is_active,
-          email,
-          aoi,
+          ...rest,
         })
         .select();
 
@@ -55,20 +30,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     case "PUT": {
       // UPDATE COMPANY
-      const {
-        id,
-        company_name,
-        company_number,
-        company_type,
-        deployment_date,
-        jurisdiction,
-        sc_address,
-        display_name,
-        icon,
-        is_active,
-        email,
-        aoi,
-      }: Tables<"COMPANY"> = req.body;
+      const { id, ...rest }: Tables<"COMPANY"> = req.body;
 
       if (!id) {
         return res.status(400).json({ error: "id is required" });
@@ -76,19 +38,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
       const { data, error } = await supabase
         .from("COMPANY")
-        .update({
-          company_name,
-          company_number,
-          company_type,
-          deployment_date,
-          jurisdiction,
-          sc_address,
-          display_name,
-          icon,
-          is_active,
-          email,
-          aoi,
-        })
+        .update(rest)
         .eq("id", id)
         .select();
 

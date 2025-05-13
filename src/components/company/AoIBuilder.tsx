@@ -148,6 +148,7 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ companyId, ...props }) => {
             is_executive: true,
             is_representative: member.isRepresentative,
             invested_amount: parseInt(member.investment) || 0,
+            is_initial_member: true,
           });
         }
       });

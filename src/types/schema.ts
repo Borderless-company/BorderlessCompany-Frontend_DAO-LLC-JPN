@@ -129,6 +129,7 @@ export type Database = {
           display_name: string | null
           email: string | null
           founder_id: string | null
+          governance_agreement: string | null
           icon: string | null
           id: string
           is_active: boolean | null
@@ -145,6 +146,7 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           founder_id?: string | null
+          governance_agreement?: string | null
           icon?: string | null
           id?: string
           is_active?: boolean | null
@@ -161,6 +163,7 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           founder_id?: string | null
+          governance_agreement?: string | null
           icon?: string | null
           id?: string
           is_active?: boolean | null
@@ -188,6 +191,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "USER"
             referencedColumns: ["evm_address"]
+          },
+          {
+            foreignKeyName: "COMPANY_governance_agreement_fkey"
+            columns: ["governance_agreement"]
+            isOneToOne: false
+            referencedRelation: "GOVERNANCE_AGREEMENT"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -302,6 +312,51 @@ export type Database = {
           },
         ]
       }
+      GOVERNANCE_AGREEMENT: {
+        Row: {
+          commucation_tool: string | null
+          company_id: string | null
+          company_name: string | null
+          created_at: string
+          enforcement_date: string | null
+          id: string
+          recommendation_rate: number | null
+        }
+        Insert: {
+          commucation_tool?: string | null
+          company_id?: string | null
+          company_name?: string | null
+          created_at?: string
+          enforcement_date?: string | null
+          id?: string
+          recommendation_rate?: number | null
+        }
+        Update: {
+          commucation_tool?: string | null
+          company_id?: string | null
+          company_name?: string | null
+          created_at?: string
+          enforcement_date?: string | null
+          id?: string
+          recommendation_rate?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "GOVERNANCE_AGREEMENT_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "COMPANY"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "GOVERNANCE_AGREEMENT_company_name_fkey"
+            columns: ["company_name"]
+            isOneToOne: false
+            referencedRelation: "COMPANY_NAME"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       MEMBER: {
         Row: {
           company_id: string | null
@@ -312,6 +367,7 @@ export type Database = {
           invested_amount: number | null
           is_admin: boolean | null
           is_executive: boolean | null
+          is_initial_member: boolean | null
           is_minted: boolean
           is_representative: boolean | null
           token_id: string | null
@@ -326,6 +382,7 @@ export type Database = {
           invested_amount?: number | null
           is_admin?: boolean | null
           is_executive?: boolean | null
+          is_initial_member?: boolean | null
           is_minted?: boolean
           is_representative?: boolean | null
           token_id?: string | null
@@ -340,6 +397,7 @@ export type Database = {
           invested_amount?: number | null
           is_admin?: boolean | null
           is_executive?: boolean | null
+          is_initial_member?: boolean | null
           is_minted?: boolean
           is_representative?: boolean | null
           token_id?: string | null
@@ -617,27 +675,6 @@ export type Database = {
         }
         Relationships: []
       }
-      TEST: {
-        Row: {
-          age: number | null
-          created_at: string
-          id: number
-          name: string | null
-        }
-        Insert: {
-          age?: number | null
-          created_at?: string
-          id?: number
-          name?: string | null
-        }
-        Update: {
-          age?: number | null
-          created_at?: string
-          id?: number
-          name?: string | null
-        }
-        Relationships: []
-      }
       TOKEN: {
         Row: {
           company_id: string | null
@@ -650,6 +687,7 @@ export type Database = {
           id: string
           image: string | null
           is_executable: boolean | null
+          is_recommender: boolean | null
           max_price: number | null
           min_price: number | null
           name: string | null
@@ -668,6 +706,7 @@ export type Database = {
           id?: string
           image?: string | null
           is_executable?: boolean | null
+          is_recommender?: boolean | null
           max_price?: number | null
           min_price?: number | null
           name?: string | null
@@ -686,6 +725,7 @@ export type Database = {
           id?: string
           image?: string | null
           is_executable?: boolean | null
+          is_recommender?: boolean | null
           max_price?: number | null
           min_price?: number | null
           name?: string | null
@@ -747,77 +787,79 @@ export type Database = {
         }
         Relationships: []
       }
-      VOTE: {
+      VOTING_LEVEL: {
         Row: {
+          company_id: string | null
           created_at: string
           id: string
-          proposal: string | null
-          vote: Database["public"]["Enums"]["VoteType"] | null
-          voter: string | null
+          is_emergency: boolean | null
+          level: number | null
+          name: string | null
+          quorum: number | null
+          voting_threshold: number | null
         }
         Insert: {
+          company_id?: string | null
           created_at?: string
           id?: string
-          proposal?: string | null
-          vote?: Database["public"]["Enums"]["VoteType"] | null
-          voter?: string | null
+          is_emergency?: boolean | null
+          level?: number | null
+          name?: string | null
+          quorum?: number | null
+          voting_threshold?: number | null
         }
         Update: {
+          company_id?: string | null
           created_at?: string
           id?: string
-          proposal?: string | null
-          vote?: Database["public"]["Enums"]["VoteType"] | null
-          voter?: string | null
+          is_emergency?: boolean | null
+          level?: number | null
+          name?: string | null
+          quorum?: number | null
+          voting_threshold?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "VOTE_proposal_fkey"
-            columns: ["proposal"]
+            foreignKeyName: "VOTING_LEVEL_company_id_fkey"
+            columns: ["company_id"]
             isOneToOne: false
-            referencedRelation: "PROPOSAL"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "VOTE_voter_fkey"
-            columns: ["voter"]
-            isOneToOne: false
-            referencedRelation: "MEMBER"
+            referencedRelation: "COMPANY"
             referencedColumns: ["id"]
           },
         ]
       }
-      VOTER_SCOPE: {
+      VOTING_PARTCIPANT: {
         Row: {
           created_at: string
-          id: number
-          proposal: string | null
-          token: string | null
+          id: string
+          participant: string | null
+          voting_level: string | null
         }
         Insert: {
           created_at?: string
-          id?: number
-          proposal?: string | null
-          token?: string | null
+          id?: string
+          participant?: string | null
+          voting_level?: string | null
         }
         Update: {
           created_at?: string
-          id?: number
-          proposal?: string | null
-          token?: string | null
+          id?: string
+          participant?: string | null
+          voting_level?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "VOTER_SCOPE_proposal_fkey"
-            columns: ["proposal"]
+            foreignKeyName: "VOTING_PARTCIPANT_participant_fkey"
+            columns: ["participant"]
             isOneToOne: false
-            referencedRelation: "PROPOSAL"
+            referencedRelation: "TOKEN"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "VOTER_SCOPE_token_fkey"
-            columns: ["token"]
+            foreignKeyName: "VOTING_PARTCIPANT_voting_level_fkey"
+            columns: ["voting_level"]
             isOneToOne: false
-            referencedRelation: "TOKEN"
+            referencedRelation: "VOTING_LEVEL"
             referencedColumns: ["id"]
           },
         ]

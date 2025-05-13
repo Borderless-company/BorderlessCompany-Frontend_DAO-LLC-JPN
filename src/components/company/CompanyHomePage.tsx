@@ -23,6 +23,7 @@ import { CompanyActivation } from "./CompanyActivation";
 import { useSignOut } from "@/hooks/useSignOut";
 import { useTaskStatusByCompany } from "@/hooks/useTaskStatus";
 import { motion } from "framer-motion";
+import { GovAgreementBuilder } from "./GovAgreementBuilder";
 
 export type CompanyHomePageProps = {
   companyId?: string;
@@ -55,6 +56,12 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
     onOpenChange: onOpenChangeCompanyActivation,
   } = useDisclosure();
 
+  const {
+    isOpen: isOpenGovAgreementEdit,
+    onOpen: onOpenGovAgreementEdit,
+    onOpenChange: onOpenChangeGovAgreementEdit,
+  } = useDisclosure();
+
   const { company, isLoading, isError } = useCompany(companyId);
   const {
     data: taskStatus,
@@ -62,6 +69,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
     isError: isErrorTaskStatus,
   } = useTaskStatusByCompany(companyId || "");
 
+  console.log("taskStatus", taskStatus);
   useEffect(() => {
     if (isError) {
       signOut();
@@ -200,6 +208,14 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                         onPress={onOpenExecutiveTokenInfoEdit}
                       />
                     )}
+                    {task.task_id === "create-gov-agreement" && (
+                      <TaskCard
+                        key={task.id}
+                        title={t("Create Gov Agreement")}
+                        status={task.status || "todo"}
+                        onPress={onOpenGovAgreementEdit}
+                      />
+                    )}
                   </>
                 ))}
             </div>
@@ -232,6 +248,13 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
           company={company}
           isOpen={isOpenCompanyActivation}
           onOpenChange={onOpenChangeCompanyActivation}
+        />
+      )}
+      {isOpenGovAgreementEdit && (
+        <GovAgreementBuilder
+          companyId={companyId}
+          isOpen={isOpenGovAgreementEdit}
+          onOpenChange={onOpenChangeGovAgreementEdit}
         />
       )}
     </>

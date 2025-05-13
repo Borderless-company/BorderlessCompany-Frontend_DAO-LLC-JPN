@@ -54,6 +54,7 @@ export default async function handler(
         company_id,
         description,
         token_metadata,
+        is_recommender,
       }: Tables<"TOKEN"> = req.body;
 
       const { data, error } = await supabase
@@ -72,6 +73,7 @@ export default async function handler(
           company_id,
           description,
           token_metadata,
+          is_recommender,
         })
         .select();
 

@@ -158,6 +158,10 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
           company_id: company.id,
           task_id: "enter-executive-token-info",
         }),
+        deleteTaskStatusByIds({
+          company_id: company.id,
+          task_id: "create-gov-agreement",
+        }),
       ]);
 
       //新しいタスクを追加;
