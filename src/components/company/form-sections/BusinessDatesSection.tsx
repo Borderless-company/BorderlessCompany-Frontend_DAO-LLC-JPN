@@ -39,6 +39,7 @@ export const BusinessDatesSection: FC<BusinessDatesSectionProps> = ({
         onChange={(value) => handleDateChange("businessStartDate", value)}
         label={t("Business Start Date")}
         labelPlacement="outside"
+        description="今期の事業開始日を記入"
       />
       <DateInput
         name="businessEndDate"
@@ -47,6 +48,7 @@ export const BusinessDatesSection: FC<BusinessDatesSectionProps> = ({
         onChange={(value) => handleDateChange("businessEndDate", value)}
         label={t("Business End Date")}
         labelPlacement="outside"
+        description="今期の事業終了日を記入"
       />
       <Input
         name="capital"
