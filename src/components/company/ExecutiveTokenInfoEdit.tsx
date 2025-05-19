@@ -47,7 +47,6 @@ export const ExecutiveTokenInfoEdit: FC<ExecutiveTokenInfoEditProps> = ({
     console.log("tokens >>>: ", tokens);
     if (tokens && tokens.length > 0) {
       const token = tokens[0]; // 最初のトークンを使用
-      console.log("token >>>: ", token);
       setFormData({
         name: token.name || "",
         symbol: token.symbol || "",
@@ -152,9 +151,12 @@ export const ExecutiveTokenInfoEdit: FC<ExecutiveTokenInfoEditProps> = ({
               </p>
             </ModalHeader>
             <form onSubmit={handleSubmit} id="token-edit-form">
-              <ModalBody>
+              <ModalBody className="max-h-[70vh] overflow-y-auto">
                 <Stack className="gap-4">
-                  <ImageUploader label={t("Token Image")} />
+                  <ImageUploader
+                    label={t("Token Image")}
+                    defaultImage={imgUrl}
+                  />
                   <Input
                     name="name"
                     value={formData.name}
