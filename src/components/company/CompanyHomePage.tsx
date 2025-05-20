@@ -1,11 +1,19 @@
 import { FC, useEffect, useMemo } from "react";
 import { useTranslation } from "next-i18next";
-import { Chip, ChipProps, cn, Spinner, useDisclosure } from "@heroui/react";
+import {
+  Button,
+  Chip,
+  ChipProps,
+  cn,
+  Spinner,
+  useDisclosure,
+} from "@heroui/react";
 import Image from "next/image";
 import { Stack } from "@/sphere/Stack";
 import {
   PiCheckCircle,
   PiCheckCircleFill,
+  PiFileDuotone,
   PiKanbanDuotone,
   PiPower,
   PiPowerBold,
@@ -24,6 +32,11 @@ import { useSignOut } from "@/hooks/useSignOut";
 import { useTaskStatusByCompany } from "@/hooks/useTaskStatus";
 import { motion } from "framer-motion";
 import { GovAgreementBuilder } from "./GovAgreementBuilder";
+import { NonExecutiveTokenInfoEdit } from "./NonExecutiveTokenInfoEdit";
+import { AoIModal } from "./AoIModal";
+import { GovAgreementModal } from "./GovAgreementModal";
+import { OperationRegulationModal } from "./OperationRegulationModal";
+import { TokenAgreementModal } from "./TokenAgreementModal";
 
 export type CompanyHomePageProps = {
   companyId?: string;
@@ -32,6 +45,31 @@ export type CompanyHomePageProps = {
 export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
   const { signOut } = useSignOut();
   const { t } = useTranslation("company");
+
+  const {
+    isOpen: isOpenAoIModal,
+    onOpen: onOpenAoIModal,
+    onOpenChange: onOpenChangeAoIModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenGovAgreementModal,
+    onOpen: onOpenGovAgreementModal,
+    onOpenChange: onOpenChangeGovAgreementModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenOperationRegulationModal,
+    onOpen: onOpenOperationRegulationModal,
+    onOpenChange: onOpenChangeOperationRegulationModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenTokenAgreementModal,
+    onOpen: onOpenTokenAgreementModal,
+    onOpenChange: onOpenChangeTokenAgreementModal,
+  } = useDisclosure();
+
   const {
     isOpen: isOpenAoiBuilder,
     onOpen: onOpenAoiBuilder,
@@ -48,6 +86,11 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
     isOpen: isOpenExecutiveTokenInfoEdit,
     onOpen: onOpenExecutiveTokenInfoEdit,
     onOpenChange: onOpenChangeExecutiveTokenInfoEdit,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenNonExecutiveTokenInfoEdit,
+    onOpen: onOpenNonExecutiveTokenInfoEdit,
+    onOpenChange: onOpenChangeNonExecutiveTokenInfoEdit,
   } = useDisclosure();
 
   const {
@@ -156,6 +199,44 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                   </div>
                 </Stack>
               )}
+              <Stack h className="gap-2 mt-2">
+                <Button
+                  variant="faded"
+                  color="primary"
+                  size="md"
+                  startContent={<PiFileDuotone />}
+                  onPress={onOpenAoIModal}
+                >
+                  {"定款"}
+                </Button>
+                <Button
+                  variant="faded"
+                  color="primary"
+                  size="md"
+                  startContent={<PiFileDuotone />}
+                  onPress={onOpenGovAgreementModal}
+                >
+                  {"総会規定"}
+                </Button>
+                <Button
+                  variant="faded"
+                  color="primary"
+                  size="md"
+                  startContent={<PiFileDuotone />}
+                  onPress={onOpenOperationRegulationModal}
+                >
+                  {"運営規定"}
+                </Button>
+                <Button
+                  variant="faded"
+                  color="primary"
+                  size="md"
+                  startContent={<PiFileDuotone />}
+                  onPress={onOpenTokenAgreementModal}
+                >
+                  {"トークン規定"}
+                </Button>
+              </Stack>
             </Stack>
           </div>
           <Stack className="w-full h-fit gap-4 px-10 py-6">
@@ -200,6 +281,14 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                         onPress={onOpenCompanyProfileEdit}
                       />
                     )}
+                    {task.task_id === "enter-non-executive-token-info" && (
+                      <TaskCard
+                        key={task.id}
+                        title={"非業務執行社員トークン情報を入力する"}
+                        status={task.status || "todo"}
+                        onPress={onOpenNonExecutiveTokenInfoEdit}
+                      />
+                    )}
                     {task.task_id === "enter-executive-token-info" && (
                       <TaskCard
                         key={task.id}
@@ -236,6 +325,13 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
           onOpenChange={onOpenChangeCompanyProfileEdit}
         />
       )}
+      {isOpenNonExecutiveTokenInfoEdit && (
+        <NonExecutiveTokenInfoEdit
+          company={company}
+          isOpen={isOpenNonExecutiveTokenInfoEdit}
+          onOpenChange={onOpenChangeNonExecutiveTokenInfoEdit}
+        />
+      )}
       {isOpenExecutiveTokenInfoEdit && (
         <ExecutiveTokenInfoEdit
           company={company}
@@ -255,6 +351,34 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
           companyId={companyId}
           isOpen={isOpenGovAgreementEdit}
           onOpenChange={onOpenChangeGovAgreementEdit}
+        />
+      )}
+      {isOpenAoIModal && (
+        <AoIModal
+          companyId={companyId}
+          isOpen={isOpenAoIModal}
+          onOpenChange={onOpenChangeAoIModal}
+        />
+      )}
+      {isOpenGovAgreementModal && (
+        <GovAgreementModal
+          companyId={companyId}
+          isOpen={isOpenGovAgreementModal}
+          onOpenChange={onOpenChangeGovAgreementModal}
+        />
+      )}
+      {isOpenOperationRegulationModal && (
+        <OperationRegulationModal
+          companyId={companyId}
+          isOpen={isOpenOperationRegulationModal}
+          onOpenChange={onOpenChangeOperationRegulationModal}
+        />
+      )}
+      {isOpenTokenAgreementModal && (
+        <TokenAgreementModal
+          companyId={companyId}
+          isOpen={isOpenTokenAgreementModal}
+          onOpenChange={onOpenChangeTokenAgreementModal}
         />
       )}
     </>

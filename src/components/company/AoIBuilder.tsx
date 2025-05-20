@@ -36,31 +36,12 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ companyId, ...props }) => {
   const { t } = useTranslation(["aoi", "common"]);
 
   const [formData, setFormData] = useState<AoIFormData>(
-    getInitialFormData(company, aoi)
+    getInitialFormData(company, aoi, members)
   );
 
   useEffect(() => {
-    if (company && members) {
-      const executiveMembers = members
-        .filter((member) => member.is_executive && member.user_id)
-        .map((member) => ({
-          userId: member.user_id!,
-          name: member.USER?.name || "",
-          address: member.USER?.address || "",
-          walletAddress: member.user_id!,
-          isRepresentative: member.is_representative || false,
-          investment: member.invested_amount?.toString() || "",
-        }));
-
-      setFormData((prev) => ({
-        ...getInitialFormData(company, aoi),
-        executiveMembers:
-          executiveMembers.length > 0
-            ? executiveMembers
-            : prev.executiveMembers,
-      }));
-    } else if (company) {
-      setFormData(getInitialFormData(company, aoi));
+    if (company) {
+      setFormData(getInitialFormData(company, aoi, members));
     }
   }, [company, members, aoi]);
 

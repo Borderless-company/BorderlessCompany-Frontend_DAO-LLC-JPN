@@ -42,7 +42,10 @@ export const CreateCompanyPage: FC = () => {
     setPage(2);
     try {
       const companyName = await createCompanyName({});
+
+      // 定款の箱だけ作成
       const aoi = await createAOI({});
+
       const company = await createCompany({
         founder_id: smartAccount?.address,
         jurisdiction: "jp",
@@ -50,6 +53,8 @@ export const CreateCompanyPage: FC = () => {
         company_name: companyName.id,
         aoi: aoi.id,
       });
+
+      // 総会規定の箱だけ作成
       const govAgreement = await createGovAgreement({
         company_id: company.id,
       });
@@ -80,6 +85,11 @@ export const CreateCompanyPage: FC = () => {
         await createTaskStatus({
           company_id: company.id,
           task_id: "enter-executive-token-info",
+          status: "todo",
+        });
+        await createTaskStatus({
+          company_id: company.id,
+          task_id: "enter-non-executive-token-info",
           status: "todo",
         });
         await createTaskStatus({

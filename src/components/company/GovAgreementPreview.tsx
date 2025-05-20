@@ -1,16 +1,21 @@
-import { FC } from "react";
+import { FC, forwardRef, ForwardedRef } from "react";
 import { useTranslation } from "next-i18next";
 import { GovAgreementFormData } from "@/types/govAgreement";
 import { useCompany } from "@/hooks/useCompany";
+import { cn } from "@heroui/react";
 type GovAgreementPreviewProps = {
   data: GovAgreementFormData & {
     companyName?: string;
     initialMembers?: string[];
   };
+  className?: string;
+  onlyPreview?: boolean;
 };
 
-export const GovAgreementPreview: FC<GovAgreementPreviewProps> = ({ data }) => {
-  const { company } = useCompany();
+export const GovAgreementPreview = forwardRef<
+  HTMLDivElement,
+  GovAgreementPreviewProps
+>(({ data, className, onlyPreview = false }, ref) => {
   const { t } = useTranslation("govAgreement");
 
   const parseParticipants = (participants: string[]) => {
@@ -27,10 +32,18 @@ export const GovAgreementPreview: FC<GovAgreementPreviewProps> = ({ data }) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 flex-1 h-full border-l-1 border-l-divider p-4 overflow-scroll">
-      <p className="font-label-lg text-neutral">
-        {t("Preview of Governance Agreement")}
-      </p>
+    <div
+      className={cn(
+        "flex flex-col gap-4 flex-1 h-full  border-l-divider pt-4  overflow-scroll",
+        !onlyPreview && "border-l-1 p-4"
+      )}
+      ref={ref}
+    >
+      {!onlyPreview && (
+        <p className="font-label-lg text-neutral">
+          {t("Preview of Governance Agreement")}
+        </p>
+      )}
       <div className="prose-preview">
         <h1>DAO 総会規定</h1>
         <hr />
@@ -317,6 +330,8 @@ export const GovAgreementPreview: FC<GovAgreementPreviewProps> = ({ data }) => {
       </div>
     </div>
   );
-};
+});
+
+GovAgreementPreview.displayName = "GovAgreementPreview";
 
 export default GovAgreementPreview;

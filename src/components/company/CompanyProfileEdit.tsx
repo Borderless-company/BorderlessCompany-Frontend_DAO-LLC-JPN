@@ -101,6 +101,7 @@ export const CompanyProfileEdit: FC<CompanyProfileEditProps> = ({
         display_name: company.display_name || "",
         email: company.email || "",
       });
+      setImgUrl(company.icon || "");
     }
   }, [company]);
 
@@ -130,7 +131,10 @@ export const CompanyProfileEdit: FC<CompanyProfileEditProps> = ({
             <form onSubmit={handleSubmit} id="company-edit-form">
               <ModalBody>
                 <Stack className="gap-4">
-                  <ImageUploader label={t("Company Icon")} />
+                  <ImageUploader
+                    label={t("Company Icon")}
+                    defaultImage={imgUrl}
+                  />
                   <Input
                     name="display_name"
                     value={formData.display_name || ""}
