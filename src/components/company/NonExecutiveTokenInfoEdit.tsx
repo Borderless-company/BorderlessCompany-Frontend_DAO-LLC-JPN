@@ -22,11 +22,11 @@ import { useToken, useTokenByCompanyId } from "@/hooks/useToken";
 import { createNFTMetadata, uploadTokenMetadata } from "@/utils/token";
 import { useTranslation } from "next-i18next";
 
-type ExecutiveTokenInfoEditProps = {
+type NonExecutiveTokenInfoEditProps = {
   company?: Tables<"COMPANY">;
 } & Omit<ModalProps, "children">;
 
-export const ExecutiveTokenInfoEdit: FC<ExecutiveTokenInfoEditProps> = ({
+export const NonExecutiveTokenInfoEdit: FC<NonExecutiveTokenInfoEditProps> = ({
   company,
   ...props
 }) => {
@@ -45,7 +45,7 @@ export const ExecutiveTokenInfoEdit: FC<ExecutiveTokenInfoEditProps> = ({
 
   useEffect(() => {
     if (tokens && tokens.length > 0) {
-      const token = tokens.filter((token) => token.is_executable)[0]; // 最初のトークンを使用
+      const token = tokens.filter((token) => !token.is_executable)[0]; // 最初のトークンを使用
       setFormData({
         name: token.name || "",
         symbol: token.symbol || "",
@@ -83,13 +83,13 @@ export const ExecutiveTokenInfoEdit: FC<ExecutiveTokenInfoEditProps> = ({
 
       // トークンを作成
       const token = await createToken({
-        id: tokens?.filter((token) => token.is_executable)[0]?.id || undefined,
+        id: tokens?.filter((token) => !token.is_executable)[0]?.id || undefined,
         name: formData.name,
         symbol: formData.symbol,
         image: imageUrl,
         description: formData.description,
         company_id: company.id,
-        is_executable: true,
+        is_executable: false,
       });
 
       await refetchTokens();
@@ -108,7 +108,7 @@ export const ExecutiveTokenInfoEdit: FC<ExecutiveTokenInfoEditProps> = ({
 
       await updateTaskStatusByIds({
         company_id: company.id,
-        task_id: "enter-executive-token-info",
+        task_id: "enter-non-executive-token-info",
         status: status,
       });
 
@@ -143,10 +143,10 @@ export const ExecutiveTokenInfoEdit: FC<ExecutiveTokenInfoEditProps> = ({
           <>
             <ModalHeader className="flex flex-col gap-1">
               <h2 className="font-headline-sm text-primary">
-                {t("Executive Member Token Info")}
+                {"非業務執行社員トークン情報"}
               </h2>
               <p className="font-body-md text-neutral">
-                {t("Enter the token information for executive members.")}
+                {"非業務執行社員トークン情報を入力してください。"}
               </p>
             </ModalHeader>
             <form onSubmit={handleSubmit} id="token-edit-form">
@@ -163,7 +163,7 @@ export const ExecutiveTokenInfoEdit: FC<ExecutiveTokenInfoEditProps> = ({
                     label={t("Token Name")}
                     labelPlacement="outside"
                     placeholder={t("Enter token name")}
-                    description={t("This will be the name")}
+                    description={"非業務執行社員トークンの名前を入力"}
                   />
                   <Input
                     name="symbol"
