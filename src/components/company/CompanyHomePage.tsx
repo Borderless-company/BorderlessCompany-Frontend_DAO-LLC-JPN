@@ -34,6 +34,7 @@ import { motion } from "framer-motion";
 import { GovAgreementBuilder } from "./GovAgreementBuilder";
 import { NonExecutiveTokenInfoEdit } from "./NonExecutiveTokenInfoEdit";
 import { AoIModal } from "./AoIModal";
+import { GovAgreementModal } from "./GovAgreementModal";
 
 export type CompanyHomePageProps = {
   companyId?: string;
@@ -47,6 +48,12 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
     isOpen: isOpenAoIModal,
     onOpen: onOpenAoIModal,
     onOpenChange: onOpenChangeAoIModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenGovAgreementModal,
+    onOpen: onOpenGovAgreementModal,
+    onOpenChange: onOpenChangeGovAgreementModal,
   } = useDisclosure();
 
   const {
@@ -193,7 +200,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                   color="primary"
                   size="md"
                   startContent={<PiFileDuotone />}
-                  onPress={onOpenAoIModal}
+                  onPress={onOpenGovAgreementModal}
                 >
                   {"総会規定"}
                 </Button>
@@ -337,6 +344,13 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
           companyId={companyId}
           isOpen={isOpenAoIModal}
           onOpenChange={onOpenChangeAoIModal}
+        />
+      )}
+      {isOpenGovAgreementModal && (
+        <GovAgreementModal
+          companyId={companyId}
+          isOpen={isOpenGovAgreementModal}
+          onOpenChange={onOpenChangeGovAgreementModal}
         />
       )}
     </>
