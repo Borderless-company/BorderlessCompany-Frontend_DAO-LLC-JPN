@@ -35,6 +35,8 @@ import { GovAgreementBuilder } from "./GovAgreementBuilder";
 import { NonExecutiveTokenInfoEdit } from "./NonExecutiveTokenInfoEdit";
 import { AoIModal } from "./AoIModal";
 import { GovAgreementModal } from "./GovAgreementModal";
+import { OperationRegulationModal } from "./OperationRegulationModal";
+import { TokenAgreementModal } from "./TokenAgreementModal";
 
 export type CompanyHomePageProps = {
   companyId?: string;
@@ -54,6 +56,18 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
     isOpen: isOpenGovAgreementModal,
     onOpen: onOpenGovAgreementModal,
     onOpenChange: onOpenChangeGovAgreementModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenOperationRegulationModal,
+    onOpen: onOpenOperationRegulationModal,
+    onOpenChange: onOpenChangeOperationRegulationModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenTokenAgreementModal,
+    onOpen: onOpenTokenAgreementModal,
+    onOpenChange: onOpenChangeTokenAgreementModal,
   } = useDisclosure();
 
   const {
@@ -209,18 +223,18 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                   color="primary"
                   size="md"
                   startContent={<PiFileDuotone />}
-                  onPress={onOpenAoIModal}
+                  onPress={onOpenOperationRegulationModal}
                 >
-                  {"トークン規定"}
+                  {"運営規定"}
                 </Button>
                 <Button
                   variant="faded"
                   color="primary"
                   size="md"
                   startContent={<PiFileDuotone />}
-                  onPress={onOpenAoIModal}
+                  onPress={onOpenTokenAgreementModal}
                 >
-                  {"内部規定"}
+                  {"トークン規定"}
                 </Button>
               </Stack>
             </Stack>
@@ -351,6 +365,20 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
           companyId={companyId}
           isOpen={isOpenGovAgreementModal}
           onOpenChange={onOpenChangeGovAgreementModal}
+        />
+      )}
+      {isOpenOperationRegulationModal && (
+        <OperationRegulationModal
+          companyId={companyId}
+          isOpen={isOpenOperationRegulationModal}
+          onOpenChange={onOpenChangeOperationRegulationModal}
+        />
+      )}
+      {isOpenTokenAgreementModal && (
+        <TokenAgreementModal
+          companyId={companyId}
+          isOpen={isOpenTokenAgreementModal}
+          onOpenChange={onOpenChangeTokenAgreementModal}
         />
       )}
     </>
