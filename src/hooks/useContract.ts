@@ -9,9 +9,9 @@ import {
 import { defineChain } from "thirdweb/chains";
 import { useSendTransaction } from "thirdweb/react";
 import { SCR_CONTRACT_ADDRESS, SERVICE_FACTORY_ADDRESS } from "@/constants";
-import SCR_ABI from "@/utils/abi/SCR.json";
+import SCR_ABI from "@/utils/abi/SCR_V2.json";
 import VOTE_ABI from "@/utils/abi/Vote.json";
-import EXE_TOKEN_ABI from "@/utils/abi/LETS_JP_LLC_EXE.json";
+import EXE_TOKEN_ABI from "@/utils/abi/LETS_JP_LLC_EXE_V2.json";
 import SERVICE_FACTORY_ABI from "@/utils/abi/ServiceFactory.json";
 
 // contract
