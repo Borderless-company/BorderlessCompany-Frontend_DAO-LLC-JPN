@@ -8,22 +8,45 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabase = createClient<Database>(supabaseUrl!, serviveRoleKey!);
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { id } = req.query as { id?: string };
+  const { id, company_id, dao_id } = req.query as {
+    id?: string;
+    company_id?: string;
+    dao_id?: string;
+  };
 
   switch (req.method) {
     case "GET": {
-      if (!id) {
-        return res.status(400).json({ error: "id is required" });
-      }
+      // 単体取得の場合
+      if (id) {
+        if (Array.isArray(id)) {
+          return res.status(400).json({ error: "id is not an array" });
+        }
 
-      if (Array.isArray(id)) {
-        return res.status(400).json({ error: "id is not an array" });
-      }
-
-      const { data: estuary, error } = await supabase
-        .from("ESTUARY")
-        .select(
+        const { data: estuary, error } = await supabase
+          .from("ESTUARY")
+          .select(
+            `
+            *,
+            tokens:TOKEN(*),
+            company:COMPANY(
+              *,
+              COMPANY_NAME(*)
+            )
           `
+          )
+          .eq("id", id)
+          .single();
+
+        if (error) {
+          return res.status(400).json({ error: error.message });
+        }
+
+        return res.status(200).json({ data: estuary });
+      }
+
+      // 一覧取得の場合（company_idまたはdao_idでフィルタリング）
+      let query = supabase.from("ESTUARY").select(
+        `
           *,
           tokens:TOKEN(*),
           company:COMPANY(
@@ -31,15 +54,25 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             COMPANY_NAME(*)
           )
         `
-        )
-        .eq("id", id)
-        .single();
+      );
+
+      if (company_id && typeof company_id === "string") {
+        query = query.eq("company_id", company_id);
+      }
+
+      if (dao_id && typeof dao_id === "string") {
+        query = query.eq("dao_id", dao_id);
+      }
+
+      const { data: estuaries, error } = await query.order("created_at", {
+        ascending: false,
+      });
 
       if (error) {
         return res.status(400).json({ error: error.message });
       }
 
-      return res.status(200).json({ data: estuary });
+      return res.status(200).json({ data: estuaries });
     }
 
     case "POST": {

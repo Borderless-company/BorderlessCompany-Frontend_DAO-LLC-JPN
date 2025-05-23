@@ -5,6 +5,8 @@ import Image from "next/image";
 import { FC } from "react";
 import { PiPencil } from "react-icons/pi";
 import MemberList from "../members/MemberList";
+import { useToken } from "@/hooks/useToken";
+import { TokenSales } from "./TokenSales";
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("ja-JP", {
@@ -13,29 +15,23 @@ const formatPrice = (price: number) => {
   }).format(price);
 };
 
-export type TokensPageProps = {
+export type TokenDetailPageProps = {
   companyId: string;
+  tokenId: string;
 };
 
-const dummyToken: Partial<Tables<"TOKEN">> = {
-  symbol: "EXT",
-  name: "Exective Token",
-  image: "/globe.png",
-  min_price: 100000,
-  max_price: 500000,
-  description:
-    "業務執行社員トークンです。業務執行社員トークンです。業務執行社員トークンです。業務執行社員トークンです。業務執行社員トークンです。",
-  contract_address: "0xaaa",
-};
-
-export const TokensPage: FC<TokensPageProps> = ({ companyId }) => {
+export const TokenDetailPage: FC<TokenDetailPageProps> = ({
+  companyId,
+  tokenId,
+}) => {
+  const { token, isLoadingToken, isErrorToken } = useToken(tokenId);
   const getPriceDisplay = () => {
-    if (dummyToken.fixed_price) {
-      return formatPrice(dummyToken.fixed_price);
+    if (token?.fixed_price) {
+      return formatPrice(token.fixed_price);
     }
-    if (dummyToken.min_price && dummyToken.max_price) {
-      return `${formatPrice(dummyToken.min_price)} - ${formatPrice(
-        dummyToken.max_price
+    if (token?.min_price && token?.max_price) {
+      return `${formatPrice(token.min_price)} - ${formatPrice(
+        token.max_price
       )}`;
     }
     return "価格未設定";
@@ -46,15 +42,15 @@ export const TokensPage: FC<TokensPageProps> = ({ companyId }) => {
       {/* left column */}
       <div className="w-60 h-fit flex-shrink-0 flex flex-col gap-4">
         <Image
-          src="/globe.png"
+          src={token?.image || "/globe.png"}
           width={240}
           height={240}
           alt="logo"
           className="rounded-lg object-cover"
         />
         <Stack className="gap-0">
-          <p className="font-label-lg text-neutral ">{dummyToken.symbol}</p>
-          <h2 className="font-title-lg text-foreground ">{dummyToken.name}</h2>
+          <p className="font-label-lg text-neutral ">{token?.symbol}</p>
+          <h2 className="font-title-lg text-foreground ">{token?.name}</h2>
         </Stack>
         <Button
           color="primary"
@@ -66,9 +62,7 @@ export const TokensPage: FC<TokensPageProps> = ({ companyId }) => {
         </Button>
         <Stack className="gap-1">
           <p className="font-label-md text-neutral">説明文</p>
-          <p className="font-body-md text-foreground">
-            {dummyToken.description}
-          </p>
+          <p className="font-body-md text-foreground">{token?.description}</p>
         </Stack>
         <Stack className="gap-1">
           <p className="font-label-md text-neutral">販売価格</p>
@@ -77,7 +71,7 @@ export const TokensPage: FC<TokensPageProps> = ({ companyId }) => {
         <Stack className="gap-1">
           <p className="font-label-md text-neutral">コントラクトアドレス</p>
           <p className="font-body-md text-foreground">
-            {dummyToken.contract_address}
+            {token?.contract_address}
           </p>
         </Stack>
       </div>
@@ -94,7 +88,7 @@ export const TokensPage: FC<TokensPageProps> = ({ companyId }) => {
             <MemberList companyId={companyId} />
           </Tab>
           <Tab key="token-sales" title="トークン販売">
-            <div className="h-full overflow-auto">token-sales</div>
+            <TokenSales companyId={companyId} tokenId={tokenId} />
           </Tab>
         </Tabs>
       </div>

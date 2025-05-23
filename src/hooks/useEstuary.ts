@@ -122,3 +122,36 @@ export const useEstuary = (id?: string) => {
     refetch,
   };
 };
+
+export const useEstuaryByCompanyId = (companyId?: string) => {
+  const {
+    data: estuaries,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery<EstuaryWithRelations[] | undefined, Error>({
+    queryKey: ["estuaries", "company", companyId],
+    queryFn: async () => {
+      if (!companyId) return [];
+
+      const response = await fetch(`/api/estuary?company_id=${companyId}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const json = await response.json();
+      if (!response.ok) {
+        throw new Error(json.error);
+      }
+
+      return json.data;
+    },
+  });
+
+  return {
+    estuaries,
+    isLoading,
+    isError,
+    refetch,
+  };
+};
