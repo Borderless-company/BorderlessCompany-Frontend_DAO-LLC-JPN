@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Checkbox, CheckboxProps, cn } from "@heroui/react";
+import { Checkbox, CheckboxProps, cn, Link } from "@heroui/react";
 import { PiArrowSquareOutBold } from "react-icons/pi";
 import { useTranslation } from "next-i18next";
 
@@ -26,26 +26,22 @@ export const TermCheckbox: FC<TermCheckboxProps> = ({
           isBorder ? "border-b border-stone-200" : ""
           // "hover:bg-stone-200"
         ),
-        label: cn("flex-1 text-base md:text-lg"),
-        wrapper: cn("hover:scale-125"),
+        label: cn("flex-1 text-base md:text-lg select-all"),
       }}
       {...props}
     >
-      <>
-        <p>
-          {i18n.language === "en" && t("Agree")}
-          <a
-            className=" text-primary inline-flex items-center gap-1 hover:scale-[1.04] transition-all"
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {t(termName)}
-            <PiArrowSquareOutBold size={16} />
-          </a>{" "}
-          {i18n.language === "ja" && t("Agree")}
-        </p>
-      </>
+      <p className="select-all">
+        {i18n.language === "en" && t("Agree")}
+        <Link
+          className=" z-50 select-all text-primary inline-flex items-center gap-1 hover:scale-[1.04] transition-all"
+          href={href}
+          isExternal
+        >
+          {t(termName)}
+          <PiArrowSquareOutBold size={16} />
+        </Link>{" "}
+        {i18n.language === "ja" && t("Agree")}
+      </p>
     </Checkbox>
   );
 };
