@@ -24,7 +24,7 @@ export const CreateCompanyPage: FC = () => {
   const smartAccount = useActiveAccount();
   const router = useRouter();
   const { createTaskStatus } = useTaskStatus();
-  const { createAOI } = useAOI();
+  const { createAOI, updateAOI } = useAOI();
   const { createGovAgreement } = useGovAgreement();
   const { createCompanyName } = useCompanyName();
   const { createToken } = useToken();
@@ -52,6 +52,12 @@ export const CreateCompanyPage: FC = () => {
         company_type: "llc",
         company_name: companyName.id,
         aoi: aoi.id,
+      });
+
+      // 定款の箱に定款を設定
+      await updateAOI({
+        id: aoi.id,
+        company_id: company.id,
       });
 
       // 総会規定の箱だけ作成
