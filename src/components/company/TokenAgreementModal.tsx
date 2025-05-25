@@ -6,6 +6,7 @@ import {
   ModalFooter,
   Button,
   ModalProps,
+  Spinner,
 } from "@heroui/react";
 import { useTranslation } from "next-i18next";
 import { TokenAgreementPreview } from "./TokenAgreementPreview";
