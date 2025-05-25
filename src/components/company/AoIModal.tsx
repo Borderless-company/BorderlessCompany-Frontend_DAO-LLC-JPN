@@ -26,6 +26,7 @@ type AoIModalProps = {
 export const AoIModal: FC<AoIModalProps> = ({ companyId, ...props }) => {
   const { t } = useTranslation(["aoi", "common"]);
   const [formData, setFormData] = useState<AoIFormData | null>(null);
+  const [isPdfLoading, setIsPdfLoading] = useState(false);
   const aoiPreviewRef = useRef<HTMLDivElement>(null);
 
   // 会社情報の取得
@@ -78,6 +79,18 @@ export const AoIModal: FC<AoIModalProps> = ({ companyId, ...props }) => {
   // エラー状態
   const isError = isErrorCompany || isErrorAOI || !!membersError;
 
+  // PDF出力ハンドラー
+  const handlePdfExport = async () => {
+    setIsPdfLoading(true);
+    try {
+      await toPDF();
+    } catch (error) {
+      console.error("PDF export failed:", error);
+    } finally {
+      setIsPdfLoading(false);
+    }
+  };
+
   return (
     <Modal
       {...props}
@@ -120,11 +133,12 @@ export const AoIModal: FC<AoIModalProps> = ({ companyId, ...props }) => {
               <Button
                 color="primary"
                 variant="flat"
-                startContent={<LuDownload />}
-                onPress={() => toPDF()}
-                isDisabled={isLoading || isError || !formData}
+                startContent={isPdfLoading ? <Spinner size="sm" /> : <LuDownload />}
+                onPress={handlePdfExport}
+                isDisabled={isLoading || isError || !formData || isPdfLoading}
+                isLoading={isPdfLoading}
               >
-                {"PDFで出力"}
+                {isPdfLoading ? "出力中..." : "PDFで出力"}
               </Button>
               <Button color="primary" onPress={onClose}>
                 {t("Close", { ns: "common" })}
