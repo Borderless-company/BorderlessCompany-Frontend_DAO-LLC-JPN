@@ -24,6 +24,7 @@ export const OperationRegulationModal: FC<OperationRegulationModalProps> = ({
   ...props
 }) => {
   const { t } = useTranslation(["company", "common"]);
+  const [isPdfLoading, setIsPdfLoading] = useState(false);
   const {
     company,
     isLoading: isLoadingCompany,
@@ -54,6 +55,18 @@ export const OperationRegulationModal: FC<OperationRegulationModalProps> = ({
     },
   });
 
+  // PDF出力ハンドラー
+  const handlePdfExport = async () => {
+    setIsPdfLoading(true);
+    try {
+      await toPDF();
+    } catch (error) {
+      console.error("PDF export failed:", error);
+    } finally {
+      setIsPdfLoading(false);
+    }
+  };
+
   return (
     <Modal
       {...props}
@@ -76,10 +89,12 @@ export const OperationRegulationModal: FC<OperationRegulationModalProps> = ({
               <Button
                 color="primary"
                 variant="flat"
-                startContent={<LuDownload />}
-                onPress={() => toPDF()}
+                startContent={isPdfLoading ? <Spinner size="sm" /> : <LuDownload />}
+                onPress={handlePdfExport}
+                isDisabled={isPdfLoading}
+                isLoading={isPdfLoading}
               >
-                {"PDFで出力"}
+                {isPdfLoading ? "出力中..." : "PDFで出力"}
               </Button>
               <Button color="primary" onPress={onClose}>
                 {t("Close", { ns: "common" })}
