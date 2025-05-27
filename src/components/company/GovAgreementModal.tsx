@@ -30,6 +30,7 @@ export const GovAgreementModal: FC<GovAgreementModalProps> = ({
   const { t } = useTranslation(["govAgreement", "common"]);
   const [formData, setFormData] =
     useState<Partial<GovAgreementFormData> | null>(null);
+  const [isPdfLoading, setIsPdfLoading] = useState(false);
 
   // 会社情報の取得
   const {
@@ -216,6 +217,18 @@ export const GovAgreementModal: FC<GovAgreementModalProps> = ({
       }
     : null;
 
+  // PDF出力ハンドラー
+  const handlePdfExport = async () => {
+    setIsPdfLoading(true);
+    try {
+      await toPDF();
+    } catch (error) {
+      console.error("PDF export failed:", error);
+    } finally {
+      setIsPdfLoading(false);
+    }
+  };
+
   return (
     <Modal
       {...props}
@@ -247,11 +260,12 @@ export const GovAgreementModal: FC<GovAgreementModalProps> = ({
               <Button
                 color="primary"
                 variant="flat"
-                startContent={<LuDownload />}
-                onPress={() => toPDF()}
-                isDisabled={isLoading || isError || !previewData}
+                startContent={!isPdfLoading ? <LuDownload /> : undefined}
+                onPress={handlePdfExport}
+                isDisabled={isLoading || isError || !previewData || isPdfLoading}
+                isLoading={isPdfLoading}
               >
-                {"PDFで出力"}
+                {isPdfLoading ? "出力中..." : "PDFで出力"}
               </Button>
               <Button color="primary" onPress={onClose}>
                 {t("Close", { ns: "common" })}
