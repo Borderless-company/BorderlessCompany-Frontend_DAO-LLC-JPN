@@ -133,7 +133,7 @@ export const AoIModal: FC<AoIModalProps> = ({ companyId, ...props }) => {
               <Button
                 color="primary"
                 variant="flat"
-                startContent={isPdfLoading ? <Spinner size="sm" /> : <LuDownload />}
+                startContent={<LuDownload />}
                 onPress={handlePdfExport}
                 isDisabled={isLoading || isError || !formData || isPdfLoading}
                 isLoading={isPdfLoading}

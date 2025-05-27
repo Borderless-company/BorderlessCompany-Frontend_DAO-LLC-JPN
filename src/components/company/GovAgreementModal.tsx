@@ -260,7 +260,7 @@ export const GovAgreementModal: FC<GovAgreementModalProps> = ({
               <Button
                 color="primary"
                 variant="flat"
-                startContent={isPdfLoading ? <Spinner size="sm" /> : <LuDownload />}
+                startContent={<LuDownload />}
                 onPress={handlePdfExport}
                 isDisabled={isLoading || isError || !previewData || isPdfLoading}
                 isLoading={isPdfLoading}
