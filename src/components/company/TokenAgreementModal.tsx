@@ -100,7 +100,7 @@ export const TokenAgreementModal: FC<TokenAgreementModalProps> = ({
               <Button
                 color="primary"
                 variant="flat"
-                startContent={<LuDownload />}
+                startContent={!isPdfLoading ? <LuDownload /> : undefined}
                 onPress={handlePdfExport}
                 isDisabled={isPdfLoading}
                 isLoading={isPdfLoading}

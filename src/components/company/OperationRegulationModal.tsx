@@ -89,7 +89,7 @@ export const OperationRegulationModal: FC<OperationRegulationModalProps> = ({
               <Button
                 color="primary"
                 variant="flat"
-                startContent={<LuDownload />}
+                startContent={!isPdfLoading ? <LuDownload /> : undefined}
                 onPress={handlePdfExport}
                 isDisabled={isPdfLoading}
                 isLoading={isPdfLoading}
