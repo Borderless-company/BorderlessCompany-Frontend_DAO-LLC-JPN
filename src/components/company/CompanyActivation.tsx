@@ -16,18 +16,21 @@ import { useCompany } from "@/hooks/useCompany";
 import { Stack } from "@/sphere/Stack";
 import { useTaskStatus } from "@/hooks/useTaskStatus";
 import { motion } from "framer-motion";
-import { useCreateCompany } from "@/hooks/useContract";
+import { useCreateSmartCompany } from "@/hooks/useContract";
 import { ethers } from "ethers";
 type CompanyActivationProps = {
   company?: Tables<"COMPANY">;
 } & Omit<ModalProps, "children">;
 import { useActiveAccount } from "thirdweb/react";
+import { waitForReceipt } from "thirdweb";
 import {
-  GOVERNANCE_JP_LLC_ADDRESS,
-  LETS_JP_LLC_EXECUTIVE_ADDRESS,
-  SC_JP_DAO_LLC_ADDRESS,
-  LETS_JP_LLC_NON_EXECUTIVE_ADDRESS,
+  GOVERNANCE_BEACON_ADDRESS,
+  LETS_JP_LLC_EXE_BEACON_ADDRESS,
+  SCT_BEACON_ADDRESS,
+  LETS_JP_LLC_NON_EXE_BEACON_ADDRESS,
 } from "@/constants";
+import { client } from "@/utils/client";
+import { defineChain } from "thirdweb/chains";
 import { useTokenByCompanyId } from "@/hooks/useToken";
 import { useAOIByCompanyId } from "@/hooks/useAOI";
 import { useMember, useMembersByCompanyId } from "@/hooks/useMember";
@@ -48,7 +51,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
   const { members } = useMembersByCompanyId(company?.id);
   const { aoi } = useAOIByCompanyId(company?.id);
   const { createTaskStatus, deleteTaskStatusByIds } = useTaskStatus();
-  const { sendTx: sendCreateCompanyTx } = useCreateCompany();
+  const { sendTx: sendCreateCompanyTx } = useCreateSmartCompany();
   const [formData, setFormData] = useState<Partial<Tables<"COMPANY">>>({
     company_number: company?.company_number || "",
     is_active: company?.is_active || false,
@@ -69,11 +72,18 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
 
     try {
       // 会社を有効化
-
       setIsDepoying(true);
 
       // Create Company
-
+      const exeToken = tokens?.filter(
+        (token) => token.is_executable === true
+      )?.[0];
+      const nonExeToken = tokens?.filter(
+        (token) => token.is_executable === false
+      )?.[0];
+      if (!exeToken || !nonExeToken) {
+        throw new Error("Token not found");
+      }
       const abiCoder = new ethers.AbiCoder();
 
       console.log(
@@ -88,24 +98,22 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       );
 
       const executiveTokenExtraParams = abiCoder.encode(
-        ["string", "string", "string", "string", "string"],
+        ["string", "string", "string", "string"],
         [
-          tokens?.filter((token) => token.is_executable === true)?.[0]?.name,
-          tokens?.filter((token) => token.is_executable === true)?.[0]?.symbol,
-          "https://example.com/metadata/",
+          exeToken.name,
+          exeToken.symbol,
+          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}${exeToken.id}/`,
           ".json",
-          GOVERNANCE_JP_LLC_ADDRESS,
         ]
       );
       console.log(`executiveTokenExtraParams: ${executiveTokenExtraParams}`);
       const nonExecutiveTokenExtraParams = abiCoder.encode(
-        ["string", "string", "string", "string", "string"],
+        ["string", "string", "string", "string"],
         [
-          tokens?.filter((token) => token.is_executable === true)?.[0]?.name,
-          tokens?.filter((token) => token.is_executable === true)?.[0]?.symbol,
-          "https://example.com/metadata/",
+          nonExeToken.name,
+          nonExeToken.symbol,
+          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}${nonExeToken.id}/`,
           ".json",
-          GOVERNANCE_JP_LLC_ADDRESS,
         ]
       );
       console.log(
@@ -119,7 +127,6 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       console.log(`company?.jurisdiction ${company?.jurisdiction}`);
       console.log(`aoi?.location ${aoi?.location}`);
       console.log(`smartAccount?.address ${smartAccount?.address}`);
-      console.log(`company?.company_number ${company?.company_number}`);
 
       if (
         !formData?.company_number ||
@@ -133,44 +140,72 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
         throw new Error("Company data is missing");
       }
 
-      sendCreateCompanyTx(
-        ethers.encodeBytes32String(formData?.company_number),
-        SC_JP_DAO_LLC_ADDRESS,
-        // company?.company_type,
-        "SC_JP_DAOLLC",
-        company?.company_name,
-        aoi?.establishment_date,
-        company?.jurisdiction,
-        company?.company_type,
-        "",
-        [aoi?.location, aoi?.location, aoi?.location, aoi?.location],
-        [
-          GOVERNANCE_JP_LLC_ADDRESS,
-          LETS_JP_LLC_EXECUTIVE_ADDRESS,
-          LETS_JP_LLC_NON_EXECUTIVE_ADDRESS,
+      // トランザクションを送信してハッシュを取得
+      const transactionHash = await sendCreateCompanyTx({
+        scId: ethers.encodeBytes32String(formData?.company_number),
+        beacon: SCT_BEACON_ADDRESS,
+        legalEntityCode: "SC_JP_DAOLLC",
+        companyName: company?.company_name,
+        establishmentDate: aoi?.establishment_date,
+        jurisdiction: company?.jurisdiction,
+        entityType: company?.company_type,
+        scDeployParam: "0x" as `0x${string}`,
+        companyInfo: [
+          aoi?.location,
+          aoi?.location,
+          aoi?.location,
+          aoi?.location,
         ],
-        ["", executiveTokenExtraParams, nonExecutiveTokenExtraParams]
-      );
+        scsBeaconProxy: [
+          GOVERNANCE_BEACON_ADDRESS,
+          LETS_JP_LLC_EXE_BEACON_ADDRESS,
+          LETS_JP_LLC_NON_EXE_BEACON_ADDRESS,
+        ],
+        scsDeployParams: [
+          "0x",
+          executiveTokenExtraParams,
+          nonExecutiveTokenExtraParams,
+        ] as `0x${string}`[],
+      });
 
+      console.log("Transaction hash:", transactionHash);
+
+      // thirdwebのwaitForReceiptを使用してトランザクションの完了を待機
+      const chain = defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID));
+
+      const transactionReceipt = await waitForReceipt({
+        client,
+        chain,
+        transactionHash,
+      });
+
+      console.log("Transaction confirmed:", transactionReceipt);
+
+      // トランザクションが失敗した場合はエラーを投げる
+      if (transactionReceipt.status === "reverted") {
+        throw new Error("トランザクションが失敗しました");
+      }
+
+      // トランザクションが成功した場合のみ後続処理を実行
       //既存のタスクステータスを削除
-      await Promise.all([
-        deleteTaskStatusByIds({
-          company_id: company.id,
-          task_id: "create-aoi",
-        }),
-        deleteTaskStatusByIds({
-          company_id: company.id,
-          task_id: "enter-company-profile",
-        }),
-        deleteTaskStatusByIds({
-          company_id: company.id,
-          task_id: "enter-executive-token-info",
-        }),
-        deleteTaskStatusByIds({
-          company_id: company.id,
-          task_id: "create-gov-agreement",
-        }),
-      ]);
+      // await Promise.all([
+      //   deleteTaskStatusByIds({
+      //     company_id: company.id,
+      //     task_id: "create-aoi",
+      //   }),
+      //   deleteTaskStatusByIds({
+      //     company_id: company.id,
+      //     task_id: "enter-company-profile",
+      //   }),
+      //   deleteTaskStatusByIds({
+      //     company_id: company.id,
+      //     task_id: "enter-executive-token-info",
+      //   }),
+      //   deleteTaskStatusByIds({
+      //     company_id: company.id,
+      //     task_id: "create-gov-agreement",
+      //   }),
+      // ]);
 
       //新しいタスクを追加;
       await createTaskStatus({
@@ -180,7 +215,6 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       });
 
       // メンバーを追加
-
       if (members?.length) {
         await Promise.all(
           members.map(async (member) => {
@@ -198,24 +232,34 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
         );
       }
 
+      // 成功時の処理
+      setIsDepoying(false);
+      setIsDeployed(true);
+
+      // 2秒後にモーダルを閉じて会社を有効化
       setTimeout(async () => {
-        setIsDepoying(false);
-        setIsDeployed(true);
-        setTimeout(async () => {
-          setIsDeployed(false);
-          await updateCompany({
-            id: company.id,
-            ...formData,
-            is_active: true,
-          });
-          props.onClose?.();
-          props.onOpenChange?.(false);
-        }, 2000);
-      }, 5000);
+        setIsDeployed(false);
+        await updateCompany({
+          id: company.id,
+          ...formData,
+          is_active: true,
+        });
+        props.onClose?.();
+        props.onOpenChange?.(false);
+      }, 2000);
     } catch (error) {
       console.error("Failed to activate company:", error);
       setIsDepoying(false);
       setIsDeployed(false);
+
+      // エラーメッセージを表示（必要に応じてtoastやalertを使用）
+      let errorMessage = "会社の有効化に失敗しました。";
+      if (error instanceof Error) {
+        errorMessage = `会社の有効化に失敗しました: ${error.message}`;
+      }
+
+      // TODO: より適切なエラー表示方法（toast等）に置き換える
+      alert(errorMessage);
     }
   };
 

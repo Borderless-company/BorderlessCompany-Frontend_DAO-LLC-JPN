@@ -6,7 +6,6 @@ import {
   ChipProps,
   cn,
   Spinner,
-  useDisclosure,
 } from "@heroui/react";
 import Image from "next/image";
 import { Stack } from "@/sphere/Stack";
@@ -37,6 +36,7 @@ import { AoIModal } from "./AoIModal";
 import { GovAgreementModal } from "./GovAgreementModal";
 import { OperationRegulationModal } from "./OperationRegulationModal";
 import { TokenAgreementModal } from "./TokenAgreementModal";
+import { useModalStates } from "@/hooks/useModalStates";
 
 export type CompanyHomePageProps = {
   companyId?: string;
@@ -47,63 +47,17 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
   const { t } = useTranslation("company");
 
   const {
-    isOpen: isOpenAoIModal,
-    onOpen: onOpenAoIModal,
-    onOpenChange: onOpenChangeAoIModal,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenGovAgreementModal,
-    onOpen: onOpenGovAgreementModal,
-    onOpenChange: onOpenChangeGovAgreementModal,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenOperationRegulationModal,
-    onOpen: onOpenOperationRegulationModal,
-    onOpenChange: onOpenChangeOperationRegulationModal,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenTokenAgreementModal,
-    onOpen: onOpenTokenAgreementModal,
-    onOpenChange: onOpenChangeTokenAgreementModal,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenAoiBuilder,
-    onOpen: onOpenAoiBuilder,
-    onOpenChange: onOpenChangeAoiBuilder,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenCompanyProfileEdit,
-    onOpen: onOpenCompanyProfileEdit,
-    onOpenChange: onOpenChangeCompanyProfileEdit,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenExecutiveTokenInfoEdit,
-    onOpen: onOpenExecutiveTokenInfoEdit,
-    onOpenChange: onOpenChangeExecutiveTokenInfoEdit,
-  } = useDisclosure();
-  const {
-    isOpen: isOpenNonExecutiveTokenInfoEdit,
-    onOpen: onOpenNonExecutiveTokenInfoEdit,
-    onOpenChange: onOpenChangeNonExecutiveTokenInfoEdit,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenCompanyActivation,
-    onOpen: onOpenCompanyActivation,
-    onOpenChange: onOpenChangeCompanyActivation,
-  } = useDisclosure();
-
-  const {
-    isOpen: isOpenGovAgreementEdit,
-    onOpen: onOpenGovAgreementEdit,
-    onOpenChange: onOpenChangeGovAgreementEdit,
-  } = useDisclosure();
+    aoiModal,
+    govAgreementModal,
+    operationRegulationModal,
+    tokenAgreementModal,
+    aoiBuilder,
+    companyProfileEdit,
+    executiveTokenInfoEdit,
+    nonExecutiveTokenInfoEdit,
+    companyActivation,
+    govAgreementEdit,
+  } = useModalStates();
 
   const { company, isLoading, isError } = useCompany(companyId);
   const {
@@ -205,7 +159,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                   color="primary"
                   size="md"
                   startContent={<PiFileDuotone />}
-                  onPress={onOpenAoIModal}
+                  onPress={aoiModal.onOpen}
                 >
                   {"定款"}
                 </Button>
@@ -214,7 +168,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                   color="primary"
                   size="md"
                   startContent={<PiFileDuotone />}
-                  onPress={onOpenGovAgreementModal}
+                  onPress={govAgreementModal.onOpen}
                 >
                   {"総会規定"}
                 </Button>
@@ -223,7 +177,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                   color="primary"
                   size="md"
                   startContent={<PiFileDuotone />}
-                  onPress={onOpenOperationRegulationModal}
+                  onPress={operationRegulationModal.onOpen}
                 >
                   {"運営規定"}
                 </Button>
@@ -232,7 +186,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                   color="primary"
                   size="md"
                   startContent={<PiFileDuotone />}
-                  onPress={onOpenTokenAgreementModal}
+                  onPress={tokenAgreementModal.onOpen}
                 >
                   {"トークン規定"}
                 </Button>
@@ -259,7 +213,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                     }${t("を起動する")}`}
                     status="completed"
                     variant="activation"
-                    onPress={onOpenCompanyActivation}
+                    onPress={companyActivation.onOpen}
                   />
                 )}
               {!company?.is_active &&
@@ -270,7 +224,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                         key={task.id}
                         title={t("Create AoI")}
                         status={task.status || "todo"}
-                        onPress={onOpenAoiBuilder}
+                        onPress={aoiBuilder.onOpen}
                       />
                     )}
                     {task.task_id === "enter-company-profile" && (
@@ -278,7 +232,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                         key={task.id}
                         title={t("Enter Company Profile")}
                         status={task.status || "todo"}
-                        onPress={onOpenCompanyProfileEdit}
+                        onPress={companyProfileEdit.onOpen}
                       />
                     )}
                     {task.task_id === "enter-non-executive-token-info" && (
@@ -286,7 +240,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                         key={task.id}
                         title={"非業務執行社員トークン情報を入力する"}
                         status={task.status || "todo"}
-                        onPress={onOpenNonExecutiveTokenInfoEdit}
+                        onPress={nonExecutiveTokenInfoEdit.onOpen}
                       />
                     )}
                     {task.task_id === "enter-executive-token-info" && (
@@ -294,7 +248,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                         key={task.id}
                         title={t("Enter Executive Member Token Info")}
                         status={task.status || "todo"}
-                        onPress={onOpenExecutiveTokenInfoEdit}
+                        onPress={executiveTokenInfoEdit.onOpen}
                       />
                     )}
                     {task.task_id === "create-gov-agreement" && (
@@ -302,7 +256,7 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                         key={task.id}
                         title={t("Create Gov Agreement")}
                         status={task.status || "todo"}
-                        onPress={onOpenGovAgreementEdit}
+                        onPress={govAgreementEdit.onOpen}
                       />
                     )}
                   </>
@@ -311,74 +265,74 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
           </Stack>
         </Stack>
       )}
-      {isOpenAoiBuilder && (
+      {aoiBuilder.isOpen && (
         <AoIBuilder
-          isOpen={isOpenAoiBuilder}
-          onOpenChange={onOpenChangeAoiBuilder}
+          isOpen={aoiBuilder.isOpen}
+          onOpenChange={aoiBuilder.onOpenChange}
           companyId={companyId}
         />
       )}
-      {isOpenCompanyProfileEdit && (
+      {companyProfileEdit.isOpen && (
         <CompanyProfileEdit
           company={company}
-          isOpen={isOpenCompanyProfileEdit}
-          onOpenChange={onOpenChangeCompanyProfileEdit}
+          isOpen={companyProfileEdit.isOpen}
+          onOpenChange={companyProfileEdit.onOpenChange}
         />
       )}
-      {isOpenNonExecutiveTokenInfoEdit && (
+      {nonExecutiveTokenInfoEdit.isOpen && (
         <NonExecutiveTokenInfoEdit
           company={company}
-          isOpen={isOpenNonExecutiveTokenInfoEdit}
-          onOpenChange={onOpenChangeNonExecutiveTokenInfoEdit}
+          isOpen={nonExecutiveTokenInfoEdit.isOpen}
+          onOpenChange={nonExecutiveTokenInfoEdit.onOpenChange}
         />
       )}
-      {isOpenExecutiveTokenInfoEdit && (
+      {executiveTokenInfoEdit.isOpen && (
         <ExecutiveTokenInfoEdit
           company={company}
-          isOpen={isOpenExecutiveTokenInfoEdit}
-          onOpenChange={onOpenChangeExecutiveTokenInfoEdit}
+          isOpen={executiveTokenInfoEdit.isOpen}
+          onOpenChange={executiveTokenInfoEdit.onOpenChange}
         />
       )}
-      {isOpenCompanyActivation && (
+      {companyActivation.isOpen && (
         <CompanyActivation
           company={company}
-          isOpen={isOpenCompanyActivation}
-          onOpenChange={onOpenChangeCompanyActivation}
+          isOpen={companyActivation.isOpen}
+          onOpenChange={companyActivation.onOpenChange}
         />
       )}
-      {isOpenGovAgreementEdit && (
+      {govAgreementEdit.isOpen && (
         <GovAgreementBuilder
           companyId={companyId}
-          isOpen={isOpenGovAgreementEdit}
-          onOpenChange={onOpenChangeGovAgreementEdit}
+          isOpen={govAgreementEdit.isOpen}
+          onOpenChange={govAgreementEdit.onOpenChange}
         />
       )}
-      {isOpenAoIModal && (
+      {aoiModal.isOpen && (
         <AoIModal
           companyId={companyId}
-          isOpen={isOpenAoIModal}
-          onOpenChange={onOpenChangeAoIModal}
+          isOpen={aoiModal.isOpen}
+          onOpenChange={aoiModal.onOpenChange}
         />
       )}
-      {isOpenGovAgreementModal && (
+      {govAgreementModal.isOpen && (
         <GovAgreementModal
           companyId={companyId}
-          isOpen={isOpenGovAgreementModal}
-          onOpenChange={onOpenChangeGovAgreementModal}
+          isOpen={govAgreementModal.isOpen}
+          onOpenChange={govAgreementModal.onOpenChange}
         />
       )}
-      {isOpenOperationRegulationModal && (
+      {operationRegulationModal.isOpen && (
         <OperationRegulationModal
           companyId={companyId}
-          isOpen={isOpenOperationRegulationModal}
-          onOpenChange={onOpenChangeOperationRegulationModal}
+          isOpen={operationRegulationModal.isOpen}
+          onOpenChange={operationRegulationModal.onOpenChange}
         />
       )}
-      {isOpenTokenAgreementModal && (
+      {tokenAgreementModal.isOpen && (
         <TokenAgreementModal
           companyId={companyId}
-          isOpen={isOpenTokenAgreementModal}
-          onOpenChange={onOpenChangeTokenAgreementModal}
+          isOpen={tokenAgreementModal.isOpen}
+          onOpenChange={tokenAgreementModal.onOpenChange}
         />
       )}
     </>
