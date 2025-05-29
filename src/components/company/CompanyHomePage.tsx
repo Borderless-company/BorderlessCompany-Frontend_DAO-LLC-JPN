@@ -1,12 +1,6 @@
 import { FC, useEffect, useMemo } from "react";
 import { useTranslation } from "next-i18next";
-import {
-  Button,
-  Chip,
-  ChipProps,
-  cn,
-  Spinner,
-} from "@heroui/react";
+import { Button, Chip, ChipProps, cn, Spinner } from "@heroui/react";
 import Image from "next/image";
 import { Stack } from "@/sphere/Stack";
 import {
@@ -37,6 +31,8 @@ import { GovAgreementModal } from "./GovAgreementModal";
 import { OperationRegulationModal } from "./OperationRegulationModal";
 import { TokenAgreementModal } from "./TokenAgreementModal";
 import { useModalStates } from "@/hooks/useModalStates";
+import { useSmartCompanyId } from "@/hooks/useContract";
+import { useActiveAccount } from "thirdweb/react";
 
 export type CompanyHomePageProps = {
   companyId?: string;
@@ -45,6 +41,7 @@ export type CompanyHomePageProps = {
 export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
   const { signOut } = useSignOut();
   const { t } = useTranslation("company");
+  const account = useActiveAccount();
 
   const {
     aoiModal,
@@ -65,13 +62,18 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
     isLoading: isLoadingTaskStatus,
     isError: isErrorTaskStatus,
   } = useTaskStatusByCompany(companyId || "");
-
+  const { data: smartCompanyId } = useSmartCompanyId(account?.address || "");
   console.log("taskStatus", taskStatus);
   useEffect(() => {
     if (isError) {
       signOut();
     }
   }, [isError]);
+
+  useEffect(() => {
+    console.log("account", account?.address);
+    console.log("smartCompanyId", smartCompanyId);
+  }, [smartCompanyId, account]);
 
   return (
     <>

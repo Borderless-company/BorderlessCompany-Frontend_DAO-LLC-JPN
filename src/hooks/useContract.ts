@@ -247,6 +247,21 @@ export const useCreateProposal = () => {
 };
 
 // read
+export const useSmartCompanyId = (founderAddress: string) => {
+  return useQuery({
+    queryKey: ["smartCompanyId", founderAddress],
+    queryFn: async () => {
+      return await readContract({
+        contract: scrProxyContract(),
+        method: SCR_ABI.abi.find(
+          (item) => item.name === "getSmartCompanyId"
+        ) as any,
+        params: [founderAddress],
+      });
+    },
+  });
+};
+
 export const useExeTokenContract = (founderAddress: string) => {
   return useQuery({
     queryKey: ["exeTokenContract", founderAddress],

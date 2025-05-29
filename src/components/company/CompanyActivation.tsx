@@ -99,22 +99,26 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       );
 
       const executiveTokenExtraParams = abiCoder.encode(
-        ["string", "string", "string", "string"],
+        ["string", "string", "string", "string", "bool", "uint256"],
         [
           exeToken.name,
           exeToken.symbol,
           `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}${exeToken.id}/`,
           ".json",
+          true,
+          10000,
         ]
       );
       console.log(`executiveTokenExtraParams: ${executiveTokenExtraParams}`);
       const nonExecutiveTokenExtraParams = abiCoder.encode(
-        ["string", "string", "string", "string"],
+        ["string", "string", "string", "string", "bool", "uint256"],
         [
           nonExeToken.name,
           nonExeToken.symbol,
           `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}${nonExeToken.id}/`,
           ".json",
+          true,
+          10000,
         ]
       );
       console.log(
