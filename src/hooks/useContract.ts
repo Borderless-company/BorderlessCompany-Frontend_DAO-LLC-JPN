@@ -14,6 +14,7 @@ import VOTE_ABI from "@/utils/abi/Vote.json";
 import EXE_TOKEN_ABI from "@/utils/abi/LETS_JP_LLC_EXE_V2.json";
 import NON_EXE_TOKEN_ABI from "@/utils/abi/LETS_JP_LLC_NON_EXE.json";
 import SALE_ABI from "@/utils/abi/LETS_JP_LLC_SALE.json";
+import { AbiCoder, ethers } from "ethers";
 
 // contract
 
@@ -111,7 +112,6 @@ export const useCreateSmartCompany = () => {
         SCR_ABI.abi.find((item) => item.name === "createSmartCompany")
       )
     );
-    console.log("contract", contract);
     const transaction = prepareContractCall({
       contract: contract,
       method:
@@ -251,13 +251,40 @@ export const useSmartCompanyId = (founderAddress: string) => {
   return useQuery({
     queryKey: ["smartCompanyId", founderAddress],
     queryFn: async () => {
-      return await readContract({
+      const result = await readContract({
         contract: scrProxyContract(),
         method: SCR_ABI.abi.find(
           (item) => item.name === "getSmartCompanyId"
         ) as any,
         params: [founderAddress],
       });
+      return result;
+    },
+  });
+};
+
+export const useCompanyInfo = (founderAddress: string) => {
+  return useQuery({
+    queryKey: ["companyInfo", founderAddress],
+    queryFn: async () => {
+      const scId = await readContract({
+        contract: scrProxyContract(),
+        method: SCR_ABI.abi.find(
+          (item) => item.name === "getSmartCompanyId"
+        ) as any,
+        params: [founderAddress],
+      });
+      console.log("scId", scId);
+      const result = await readContract({
+        contract: scrProxyContract(),
+        method: SCR_ABI.abi.find(
+          (item) => item.name === "getCompanyInfo"
+        ) as any,
+        params: [scId],
+      });
+
+      console.log("result", result);
+      return result;
     },
   });
 };

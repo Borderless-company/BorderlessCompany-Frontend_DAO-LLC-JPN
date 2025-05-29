@@ -19,13 +19,7 @@ import { shortenAddress } from "@/utils/web3";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
 import { Address } from "thirdweb";
-import {
-  useCreateProposal,
-  useMintExeToken,
-  useNftContract,
-  useVote,
-  useVoteContract,
-} from "@/hooks/useContract";
+import { useCreateProposal, useMintExeToken } from "@/hooks/useContract";
 import { useActiveAccount } from "thirdweb/react";
 import { useTokenByCompanyId } from "@/hooks/useToken";
 import { Stack } from "@/sphere/Stack";
@@ -79,20 +73,14 @@ export const RenderCell = ({ item, columnKey }: Props) => {
 
   const smartAccount = useActiveAccount();
   const { sendTx: sendMintExeTokenTx } = useMintExeToken();
-  const { data: nftContract } = useNftContract(smartAccount?.address ?? "");
   const [isMinting, setIsMinting] = useState(false);
 
   const handleMintExeToken = async (memberAddress: string) => {
     setIsMinting(true);
     console.log("smartAccount?.address:", smartAccount?.address);
-    console.log("nftContract:", nftContract);
     console.log("memberAddress:", memberAddress);
-    if (!nftContract) {
-      console.error("NFT contract is undefined");
-      return;
-    }
     console.log("run sendMintExeTokenTx");
-    await sendMintExeTokenTx(nftContract, memberAddress);
+    await sendMintExeTokenTx(item.actions.contractAddress, memberAddress);
     console.log("sendMintExeTokenTx done");
     await updateMember({
       user_id: memberAddress,
@@ -168,9 +156,6 @@ const MemberList = ({ companyId }: { companyId: string }) => {
   const { members } = useMembersByCompanyId(companyId);
   const { t, i18n } = useTranslation("common");
   const smartAccount = useActiveAccount();
-  const { sendTx: sendCreateProposalTx } = useCreateProposal();
-  const { data: voteContract } = useVoteContract(smartAccount?.address ?? "");
-  const { sendTx: sendVoteTx } = useVote();
   const {
     isOpen: isOpenAddMember,
     onOpen: onOpenAddMember,
@@ -210,28 +195,6 @@ const MemberList = ({ companyId }: { companyId: string }) => {
   useEffect(() => {
     console.log("memberData:", memberData);
   }, [memberData]);
-
-  const handleCreateProposal = async () => {
-    console.log("run sendCreateProposalTx");
-    console.log("voteContract:", voteContract);
-    if (!voteContract) {
-      console.error("Vote contract is undefined");
-      return;
-    }
-    await sendCreateProposalTx(voteContract, smartAccount?.address ?? "");
-    console.log("sendCreateProposalTx done");
-  };
-
-  const handleVote = async () => {
-    console.log("run sendVoteTx");
-    console.log("voteContract:", voteContract);
-    if (!voteContract) {
-      console.error("Vote contract is undefined");
-      return;
-    }
-    await sendVoteTx("1", voteContract, 0);
-    console.log("sendVoteTx done");
-  };
 
   return (
     <>

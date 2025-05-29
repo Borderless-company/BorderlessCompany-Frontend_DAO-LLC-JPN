@@ -31,7 +31,7 @@ import { GovAgreementModal } from "./GovAgreementModal";
 import { OperationRegulationModal } from "./OperationRegulationModal";
 import { TokenAgreementModal } from "./TokenAgreementModal";
 import { useModalStates } from "@/hooks/useModalStates";
-import { useSmartCompanyId } from "@/hooks/useContract";
+import { useCompanyInfo, useSmartCompanyId } from "@/hooks/useContract";
 import { useActiveAccount } from "thirdweb/react";
 
 export type CompanyHomePageProps = {
@@ -63,7 +63,8 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
     isError: isErrorTaskStatus,
   } = useTaskStatusByCompany(companyId || "");
   const { data: smartCompanyId } = useSmartCompanyId(account?.address || "");
-  console.log("taskStatus", taskStatus);
+  const { data: companyInfo } = useCompanyInfo(account?.address || "");
+
   useEffect(() => {
     if (isError) {
       signOut();
@@ -73,7 +74,8 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
   useEffect(() => {
     console.log("account", account?.address);
     console.log("smartCompanyId", smartCompanyId);
-  }, [smartCompanyId, account]);
+    console.log("companyInfo", companyInfo);
+  }, [smartCompanyId, account, companyInfo]);
 
   return (
     <>

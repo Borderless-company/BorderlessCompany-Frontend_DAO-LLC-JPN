@@ -168,7 +168,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
 
       // トランザクションを送信してハッシュを取得
       const transactionHash = await sendCreateCompanyTx({
-        scId: ethers.encodeBytes32String(formData?.company_number),
+        scId: formData?.company_number,
         beacon: SCT_BEACON_ADDRESS,
         legalEntityCode: "SC_JP_DAOLLC",
         companyName: actualCompanyName, // 実際の会社名を使用
@@ -211,27 +211,6 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       if (transactionReceipt.status === "reverted") {
         throw new Error("トランザクションが失敗しました");
       }
-
-      // トランザクションが成功した場合のみ後続処理を実行
-      //既存のタスクステータスを削除
-      // await Promise.all([
-      //   deleteTaskStatusByIds({
-      //     company_id: company.id,
-      //     task_id: "create-aoi",
-      //   }),
-      //   deleteTaskStatusByIds({
-      //     company_id: company.id,
-      //     task_id: "enter-company-profile",
-      //   }),
-      //   deleteTaskStatusByIds({
-      //     company_id: company.id,
-      //     task_id: "enter-executive-token-info",
-      //   }),
-      //   deleteTaskStatusByIds({
-      //     company_id: company.id,
-      //     task_id: "create-gov-agreement",
-      //   }),
-      // ]);
 
       //新しいタスクを追加;
       await createTaskStatus({
