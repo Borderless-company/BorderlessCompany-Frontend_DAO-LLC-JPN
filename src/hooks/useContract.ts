@@ -60,10 +60,18 @@ export const nonExeTokenContract = (address: string) => {
   });
 };
 
+export const accountFactoryContract = (address: string) => {
+  return getContract({
+    client,
+    chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
+    address: address,
+  });
+};
+
 // write
 
 export const useSetContractURI = () => {
-  const { mutate: sendTransaction } = useSendTransaction();
+  const { mutateAsync: sendTransaction } = useSendTransaction();
   const sendTx = async (smartAccount: string) => {
     const account = smartAccountContract(smartAccount);
 
@@ -74,7 +82,8 @@ export const useSetContractURI = () => {
       method: "function setContractURI(string _uri)",
       params: [account.address],
     }) as any;
-    sendTransaction(transaction);
+    const result = await sendTransaction(transaction);
+    return result.transactionHash;
   };
 
   return { sendTx };
@@ -96,11 +105,17 @@ export const useCreateSmartCompany = () => {
     scsDeployParams: `0x${string}`[];
   }) => {
     const contract = scrProxyContract();
+    console.log(
+      "ABI",
+      JSON.stringify(
+        SCR_ABI.abi.find((item) => item.name === "createSmartCompany")
+      )
+    );
+    console.log("contract", contract);
     const transaction = prepareContractCall({
       contract: contract,
-      method: SCR_ABI.abi.find(
-        (item) => item.name === "createSmartCompany"
-      ) as any,
+      method:
+        "function createSmartCompany( string calldata scid, address beacon, string calldata legalEntityCode, string calldata companyName, string calldata establishmentDate, string calldata jurisdiction, string calldata entityType, bytes calldata scDeployParam, string[] calldata companyInfo, address[] calldata scsBeaconProxy, bytes[] calldata scsDeployParams)",
       params: [
         props.scId,
         props.beacon as Address,
@@ -115,8 +130,10 @@ export const useCreateSmartCompany = () => {
         props.scsDeployParams,
       ],
     });
+    console.log("transaction", transaction);
     // トランザクションハッシュを返す
     const result = await sendTransaction(transaction);
+    console.log("result", result);
     return result.transactionHash;
   };
 

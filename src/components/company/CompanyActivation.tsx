@@ -12,14 +12,14 @@ import {
   cn,
 } from "@heroui/react";
 import { Tables } from "@/types/schema";
-import { useCompany } from "@/hooks/useCompany";
+import { useCompany, CompanyWithRelations } from "@/hooks/useCompany";
 import { Stack } from "@/sphere/Stack";
 import { useTaskStatus } from "@/hooks/useTaskStatus";
 import { motion } from "framer-motion";
-import { useCreateSmartCompany } from "@/hooks/useContract";
+import { useCreateSmartCompany, useSetContractURI } from "@/hooks/useContract";
 import { ethers } from "ethers";
 type CompanyActivationProps = {
-  company?: Tables<"COMPANY">;
+  company?: CompanyWithRelations;
 } & Omit<ModalProps, "children">;
 import { useActiveAccount } from "thirdweb/react";
 import { waitForReceipt } from "thirdweb";
@@ -52,6 +52,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
   const { aoi } = useAOIByCompanyId(company?.id);
   const { createTaskStatus, deleteTaskStatusByIds } = useTaskStatus();
   const { sendTx: sendCreateCompanyTx } = useCreateSmartCompany();
+  const { sendTx: sendSetContractURI } = useSetContractURI();
   const [formData, setFormData] = useState<Partial<Tables<"COMPANY">>>({
     company_number: company?.company_number || "",
     is_active: company?.is_active || false,
@@ -128,16 +129,37 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       console.log(`aoi?.location ${aoi?.location}`);
       console.log(`smartAccount?.address ${smartAccount?.address}`);
 
+      // const contractURIHash = await sendSetContractURI(
+      //   smartAccount?.address || ""
+      // );
+      // console.log(`contractURIHash: ${contractURIHash}`);
+
+      // const contractURIReceipt = await waitForReceipt({
+      //   client,
+      //   chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
+      //   transactionHash: contractURIHash || "0x",
+      // });
+      // console.log(`contractURIReceipt: ${contractURIReceipt}`);
+
+      // 実際の会社名を取得
+      const actualCompanyName =
+        company?.COMPANY_NAME?.["ja-jp"] ||
+        company?.COMPANY_NAME?.["en-us"] ||
+        company?.COMPANY_NAME?.id; // フォールバックとしてIDを使用
+      console.log(`actualCompanyName: ${actualCompanyName}`);
+      console.log(`company?.COMPANY_NAME:`, company?.COMPANY_NAME);
+
       if (
         !formData?.company_number ||
         !company?.company_type ||
-        !company?.company_name ||
+        !actualCompanyName ||
+        actualCompanyName.trim() === "" ||
         !aoi?.establishment_date ||
         !company?.jurisdiction ||
         !aoi?.location ||
         !smartAccount?.address
       ) {
-        throw new Error("Company data is missing");
+        throw new Error("Company data is missing or invalid");
       }
 
       // トランザクションを送信してハッシュを取得
@@ -145,7 +167,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
         scId: ethers.encodeBytes32String(formData?.company_number),
         beacon: SCT_BEACON_ADDRESS,
         legalEntityCode: "SC_JP_DAOLLC",
-        companyName: company?.company_name,
+        companyName: actualCompanyName, // 実際の会社名を使用
         establishmentDate: aoi?.establishment_date,
         jurisdiction: company?.jurisdiction,
         entityType: company?.company_type,
