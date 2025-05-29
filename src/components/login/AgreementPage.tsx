@@ -93,13 +93,13 @@ export const AgreementPage: FC<AgreementPageProps> = ({
           key={"privacyPolicy"}
           value={"privacyPolicy"}
           termName={t("Privacy Policy")}
-          href={"/privacy-policy"}
+          href={"https://docs.borderless.company/help/privacy-policy"}
         />
         <TermCheckbox
           key={"termsOfUse"}
           value={"termsOfUse"}
           termName={t("Terms of Use")}
-          href={"/terms-of-use"}
+          href={"https://docs.borderless.company/help/terms-of-use"}
           isBorder={false}
         />
       </CheckboxGroup>
