@@ -33,7 +33,7 @@ const ReceivedPage: FC = () => {
         await fetch("/api/mail/paymentSucceeded", {
           method: "POST",
           body: JSON.stringify({
-            orgName: estuary?.org_name,
+            orgName: estuary?.sale_name,
             tokenName: token?.name,
             symbol: token?.symbol,
             tokenType: token?.is_executable ? "業務執行社員" : "非業務執行社員",
@@ -77,8 +77,8 @@ const ReceivedPage: FC = () => {
           </div>
           <p className="text-slate-500 text-base text-center font-medium">
             {i18n.language === "ja"
-              ? `今日から${estuary?.org_name}の一員です`
-              : `Now, you are a member of ${estuary?.org_name}`}
+              ? `今日から${estuary?.sale_name}の一員です`
+              : `Now, you are a member of ${estuary?.sale_name}`}
           </p>
         </div>
         {/* <div className="flex gap-2">

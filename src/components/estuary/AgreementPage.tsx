@@ -1,4 +1,4 @@
-import { Button, CheckboxGroup } from "@heroui/react";
+import { Button, CheckboxGroup, useDisclosure } from "@heroui/react";
 import { FC, useState, useMemo, useEffect } from "react";
 import {
   PiArrowLeft,
@@ -11,16 +11,45 @@ import { TermCheckbox } from "./TermCheckbox";
 import { useEstuaryContext } from "./EstuaryContext";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
+import { useEstuary } from "@/hooks/useEstuary";
+import { TokenAgreementModal } from "../company/TokenAgreementModal";
+import { OperationRegulationModal } from "../company/OperationRegulationModal";
+import { GovAgreementModal } from "../company/GovAgreementModal";
+import { AoIModal } from "../company/AoIModal";
 
 const AgreementPage: FC = () => {
   const { t } = useTranslation("estuary");
   const router = useRouter();
   const { estId } = router.query;
+  const { estuary } = useEstuary(estId as string);
   const [termChecked, setTermChecked] = useState<string[]>([]);
   const [paymentStatus, setPaymentStatus] = useState<
     "initial" | "pending" | "success" | "failed"
   >("initial");
-  const { token, price, setPage } = useEstuaryContext();
+  const { setPage } = useEstuaryContext();
+  const {
+    isOpen: isOpenAoIModal,
+    onOpen: onOpenAoIModal,
+    onOpenChange: onOpenChangeAoIModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenGovAgreementModal,
+    onOpen: onOpenGovAgreementModal,
+    onOpenChange: onOpenChangeGovAgreementModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenOperationRegulationModal,
+    onOpen: onOpenOperationRegulationModal,
+    onOpenChange: onOpenChangeOperationRegulationModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenTokenAgreementModal,
+    onOpen: onOpenTokenAgreementModal,
+    onOpenChange: onOpenChangeTokenAgreementModal,
+  } = useDisclosure();
 
   const onClickPay = () => {
     setPage((page) => page + 1);
@@ -31,7 +60,7 @@ const AgreementPage: FC = () => {
   };
 
   const isAllChecked = useMemo(() => {
-    return termChecked.length === estuarySample.termSheet.length;
+    return termChecked.length === 4;
   }, [termChecked]);
 
   return (
@@ -48,8 +77,8 @@ const AgreementPage: FC = () => {
       <div className="flex flex-col gap-4 flex-1 p-6 justify-start items-center overflow-y-scroll">
         <div className="flex flex-col gap-0 w-full">
           <div className="flex justify-between items-center w-full h-14 px-3 text-base font-semibold border-b-1 border-slate-200">
-            <p>{token?.name}</p>
-            <p>¥{price?.toLocaleString()}</p>
+            <p>{estuary?.token.name}</p>
+            <p>¥{estuary?.fixed_price?.toLocaleString()}</p>
           </div>
           <div className="flex justify-between items-center w-full h-14 px-3 text-base font-semibold border-b-0 border-slate-200">
             <p>{t("Identity")}</p>
@@ -66,15 +95,35 @@ const AgreementPage: FC = () => {
           isDisabled={paymentStatus === "pending"}
         >
           {/* TODO: TermsheetsのDB作成繋ぎ込み */}
-          {estuarySample.termSheet.map((term, index) => (
-            <TermCheckbox
-              key={term.id}
-              value={term.id}
-              termName={term.name}
-              href={term.url}
-              isBorder={index !== estuarySample.termSheet.length - 1}
-            />
-          ))}
+
+          <TermCheckbox
+            value={"aoi"}
+            termName={"定款"}
+            isBorder
+            isExternal={false}
+            onPressLink={onOpenAoIModal}
+          />
+          <TermCheckbox
+            value={"gov-agreement"}
+            termName={"総会規定"}
+            isBorder
+            isExternal={false}
+            onPressLink={onOpenGovAgreementModal}
+          />
+          <TermCheckbox
+            value={"token-agreement"}
+            termName={"トークン規定"}
+            isBorder
+            isExternal={false}
+            onPressLink={onOpenTokenAgreementModal}
+          />
+          <TermCheckbox
+            value={"op-regulation"}
+            termName={"運用規定"}
+            isBorder={false}
+            isExternal={false}
+            onPressLink={onOpenOperationRegulationModal}
+          />
         </CheckboxGroup>
       </div>
 
@@ -125,6 +174,26 @@ const AgreementPage: FC = () => {
           />
         </div>
       </div>
+      <AoIModal
+        companyId={estuary?.company_id || ""}
+        isOpen={isOpenAoIModal}
+        onOpenChange={onOpenChangeAoIModal}
+      />
+      <GovAgreementModal
+        companyId={estuary?.company_id || ""}
+        isOpen={isOpenGovAgreementModal}
+        onOpenChange={onOpenChangeGovAgreementModal}
+      />
+      <OperationRegulationModal
+        companyId={estuary?.company_id || ""}
+        isOpen={isOpenOperationRegulationModal}
+        onOpenChange={onOpenChangeOperationRegulationModal}
+      />
+      <TokenAgreementModal
+        companyId={estuary?.company_id || ""}
+        isOpen={isOpenTokenAgreementModal}
+        onOpenChange={onOpenChangeTokenAgreementModal}
+      />
     </>
   );
 };

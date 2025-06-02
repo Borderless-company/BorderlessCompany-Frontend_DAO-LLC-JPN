@@ -41,7 +41,7 @@ const columns = [
   { name: "Invested Amount", uid: "investedAmount" },
   { name: "Type", uid: "isExecutive" },
   { name: "Status", uid: "status" },
-  { name: "Actions", uid: "actions" },
+  // { name: "Actions", uid: "actions" },
   // { name: "Receipt", uid: "receipt" },
   // { name: "Email", uid: "email" },
 ];
@@ -211,28 +211,6 @@ const MemberList = ({ companyId }: { companyId: string }) => {
     console.log("memberData:", memberData);
   }, [memberData]);
 
-  const handleCreateProposal = async () => {
-    console.log("run sendCreateProposalTx");
-    console.log("voteContract:", voteContract);
-    if (!voteContract) {
-      console.error("Vote contract is undefined");
-      return;
-    }
-    await sendCreateProposalTx(voteContract, smartAccount?.address ?? "");
-    console.log("sendCreateProposalTx done");
-  };
-
-  const handleVote = async () => {
-    console.log("run sendVoteTx");
-    console.log("voteContract:", voteContract);
-    if (!voteContract) {
-      console.error("Vote contract is undefined");
-      return;
-    }
-    await sendVoteTx("1", voteContract, 0);
-    console.log("sendVoteTx done");
-  };
-
   return (
     <>
       {memberData?.length === 0 ? (
@@ -245,7 +223,7 @@ const MemberList = ({ companyId }: { companyId: string }) => {
             <>
               <Stack h className="justify-between w-full">
                 <Button
-                  onClick={() => {
+                  onPress={() => {
                     const dataWithoutActions = memberData?.map(
                       ({ actions, ...rest }) => rest
                     );
@@ -253,15 +231,6 @@ const MemberList = ({ companyId }: { companyId: string }) => {
                   }}
                 >
                   {t("Download as CSV")}
-                </Button>
-                <Button
-                  color="primary"
-                  startContent={<PiPlus />}
-                  onPress={() => {
-                    onOpenAddMember();
-                  }}
-                >
-                  Add Executive
                 </Button>
               </Stack>
               <Table aria-label="MembershipTokenHolders">

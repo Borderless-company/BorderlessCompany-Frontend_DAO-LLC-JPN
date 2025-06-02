@@ -6,6 +6,7 @@ import { Tables } from "@/types/schema";
 import { Button as RACButton } from "react-aria-components";
 import type { ButtonProps } from "react-aria-components";
 import { Stack } from "@/sphere/Stack";
+import { TokenTypeChip } from "./TokenTypeChip";
 
 type TokenCardProps = {
   token: Tables<"TOKEN">;
@@ -32,13 +33,11 @@ export const TokenCard: FC<TokenCardProps> = ({ token, ...props }) => {
           <h3 className="font-bold text-lg text-foreground">{token.name}</h3>
           <p className="font-label-md text-neutral">{token.symbol}</p>
         </Stack>
-        <Chip
+        <TokenTypeChip
+          isExecutable={token.is_executable ?? false}
           size="sm"
-          color={token.is_executable ? "primary" : "secondary"}
-          className=" rounded-md z-20"
-        >
-          {token.is_executable ? "業務執行社員" : "非業務執行社員"}
-        </Chip>
+          className="rounded-md z-20"
+        />
 
         {/* <div className="flex flex-col gap-1 mb-4">
           <div className="flex justify-between">

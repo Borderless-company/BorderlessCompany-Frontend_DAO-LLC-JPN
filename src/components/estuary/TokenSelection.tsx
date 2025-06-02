@@ -16,7 +16,7 @@ import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 export const TokenSelection: FC = () => {
   const { t, i18n } = useTranslation("estuary");
   const account = useActiveAccount();
-  const { setPage, setPrice, setToken } = useEstuaryContext();
+  const { setPage } = useEstuaryContext();
   const [selectedTokenId, setSelectedTokenId] = useState<string>();
   const { token, updateToken } = useToken(selectedTokenId);
   const router = useRouter();
@@ -31,17 +31,28 @@ export const TokenSelection: FC = () => {
     },
   });
 
+  // 販売期間の状態を判定する関数
+  const getSaleStatus = (startDate: string | null, endDate: string | null) => {
+    if (!startDate || !endDate)
+      return { status: "unknown", message: "販売期間が設定されていません" };
+
+    const now = new Date();
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (now < start) return { status: "upcoming", message: "販売開始前です" };
+    if (now > end)
+      return { status: "ended", message: "販売期間が終了しました" };
+    return { status: "active", message: "販売中" };
+  };
+
+  const saleStatus = getSaleStatus(
+    estuary?.start_date || null,
+    estuary?.end_date || null
+  );
+  const isSaleActive = saleStatus.status === "active";
+
   const onClickNext = async () => {
-    const product = await createProduct(
-      token?.name!,
-      token?.image || undefined
-    );
-    const updatedToken = await updateToken({
-      id: token?.id,
-      product_id: product.id,
-    });
-    setPrice(updatedToken?.fixed_price || 0);
-    setToken(updatedToken);
     setPage(1);
   };
 
@@ -49,7 +60,7 @@ export const TokenSelection: FC = () => {
     if (isLoading) {
       return;
     }
-    setSelectedTokenId(estuary?.tokens[0].id);
+    setSelectedTokenId(estuary?.token.id);
   }, [estuary, isLoading]);
 
   useEffect(() => {
@@ -73,7 +84,9 @@ export const TokenSelection: FC = () => {
       {/* Header */}
       <div className="flex flex-col gap-1 md:gap-2 p-6 pb-0">
         <Image
-          src={(estuary?.company?.icon as string) || "/estuary_logo_sample.png"}
+          src={
+            (estuary?.company?.icon as string) || "/company_icon_fallback.png"
+          }
           alt="DAO LLC Logo"
           width={48}
           height={48}
@@ -95,10 +108,11 @@ export const TokenSelection: FC = () => {
       {/* Content */}
       <div className="flex flex-col gap-2 md:gap-4 flex-1 py-2 md:py-1">
         <p className="text-slate-800 text-base md:text-lg font-semibold pl-6">
-          {estuary?.tokens[0].is_executable
+          {estuary?.token.is_executable
             ? "業務執行社員権トークンを購入する"
             : "非業務執行社員権トークンを購入する"}
         </p>
+
         <RadioGroup
           value={selectedTokenId}
           onValueChange={setSelectedTokenId}
@@ -109,19 +123,15 @@ export const TokenSelection: FC = () => {
             ),
           }}
         >
-          {estuary?.tokens.map((token) => {
-            return (
-              <TokenCard
-                key={token.id}
-                name={token.name || ""}
-                value={token.id}
-                imageSrc={token.image || "/estuary_logo_sample.png"}
-                minPrice={token.min_price || 0}
-                maxPrice={token.max_price || undefined}
-                fixedPrice={token.fixed_price || undefined}
-              />
-            );
-          })}
+          <TokenCard
+            key={estuary?.token.id}
+            name={estuary?.token.name || ""}
+            value={estuary?.token.id || ""}
+            imageSrc={estuary?.token.image || "/token_image_fallback.png"}
+            minPrice={estuary?.min_price || 0}
+            maxPrice={estuary?.max_price || undefined}
+            fixedPrice={estuary?.fixed_price || undefined}
+          />
         </RadioGroup>
       </div>
 
@@ -133,31 +143,37 @@ export const TokenSelection: FC = () => {
               {t("Price")}
             </p>
             <p className="text-slate-700 font-semibold text-2xl md:text-3xl">
-              ¥
-              {estuary?.tokens
-                .find((token) => token.id === selectedTokenId)
-                ?.fixed_price?.toLocaleString()}
+              ¥{estuary?.fixed_price?.toLocaleString()}
             </p>
           </div>
           {account?.address ? (
             <Button
               className="w-full bg-yellow-700 text-white text-base font-semibold"
-              endContent={<PiArrowRight color="white" />}
+              endContent={
+                isSaleActive ? <PiArrowRight color="white" /> : undefined
+              }
               onPress={onClickNext}
-              isDisabled={!token || !selectedTokenId}
+              isDisabled={!token || !selectedTokenId || !isSaleActive}
               size="lg"
             >
-              {t("Next")}
+              {!isSaleActive ? "販売期間外です" : t("Next")}
             </Button>
           ) : (
             <Button
               startContent={<PiSignIn color="white" />}
-              className="w-full bg-purple-700 text-white text-base font-semibold"
+              className={`w-full text-white text-base font-semibold ${
+                isSaleActive ? "bg-purple-700" : "bg-gray-400"
+              }`}
               onPress={handleConnect}
               isLoading={isConnecting}
+              isDisabled={!isSaleActive}
               size="lg"
             >
-              {isConnecting ? t("Connecting...") : t("Sign In")}
+              {!isSaleActive
+                ? saleStatus.message
+                : isConnecting
+                ? t("Connecting...")
+                : t("Sign In")}
             </Button>
           )}
         </div>

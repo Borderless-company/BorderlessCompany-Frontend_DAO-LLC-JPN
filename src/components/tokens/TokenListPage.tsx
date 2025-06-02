@@ -12,17 +12,6 @@ export type TokensPageProps = {
   companyId: string;
 };
 
-const dummyToken: Partial<Tables<"TOKEN">> = {
-  symbol: "EXT",
-  name: "Exective Token",
-  image: "/globe.png",
-  min_price: 100000,
-  max_price: 500000,
-  description:
-    "業務執行社員トークンです。業務執行社員トークンです。業務執行社員トークンです。業務執行社員トークンです。業務執行社員トークンです。",
-  contract_address: "0xaaa",
-};
-
 export const TokenListPage: FC<TokensPageProps> = ({ companyId }) => {
   const router = useRouter();
   const { tokens, isLoadingTokens, isErrorTokens } =
