@@ -35,7 +35,7 @@ const columns = [
   { name: "Invested Amount", uid: "investedAmount" },
   { name: "Type", uid: "isExecutive" },
   { name: "Status", uid: "status" },
-  { name: "Actions", uid: "actions" },
+  // { name: "Actions", uid: "actions" },
   // { name: "Receipt", uid: "receipt" },
   // { name: "Email", uid: "email" },
 ];
@@ -208,7 +208,7 @@ const MemberList = ({ companyId }: { companyId: string }) => {
             <>
               <Stack h className="justify-between w-full">
                 <Button
-                  onClick={() => {
+                  onPress={() => {
                     const dataWithoutActions = memberData?.map(
                       ({ actions, ...rest }) => rest
                     );
@@ -216,15 +216,6 @@ const MemberList = ({ companyId }: { companyId: string }) => {
                   }}
                 >
                   {t("Download as CSV")}
-                </Button>
-                <Button
-                  color="primary"
-                  startContent={<PiPlus />}
-                  onPress={() => {
-                    onOpenAddMember();
-                  }}
-                >
-                  Add Executive
                 </Button>
               </Stack>
               <Table aria-label="MembershipTokenHolders">

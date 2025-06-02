@@ -45,14 +45,14 @@ export const Sidebar: FC<SidebarProps> = ({ companyId }) => {
         <SidebarItem
           title={t("Members")}
           icon={<PiUsersThree size={24} />}
-          isActive={pathname === `/company/${companyId}/members`}
+          isActive={pathname.includes(`/company/${companyId}/members`)}
           href={`/company/${companyId}/members`}
           isLocked={!company?.is_active}
         />
         <SidebarItem
           title={t("Tokens")}
           icon={<PiCoins size={24} />}
-          isActive={pathname === `/company/${companyId}/tokens`}
+          isActive={pathname.includes(`/company/${companyId}/tokens`)}
           href={`/company/${companyId}/tokens`}
           isLocked={!company?.is_active}
         />
