@@ -8,6 +8,10 @@
 
 # testing
 /coverage
+/tests/coverage/
+*.lcov
+/tests/reports/
+/tests/temp/
 
 # next.js
 /.next/
@@ -27,6 +31,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env.test
 
 # vercel
 .vercel
@@ -44,3 +49,10 @@ next-env.d.ts
 
 # ref
 /ref/
+
+# テスト関連
+/tests/__snapshots__/
+/tests/.jest-cache/
+/tests/screenshots/
+/tests/videos/
+/tests/downloads/

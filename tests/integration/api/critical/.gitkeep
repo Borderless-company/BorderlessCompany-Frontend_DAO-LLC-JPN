@@ -1,0 +1,5 @@
+# 統合テスト - CRITICAL APIエンドポイント
+# 最重要度の脆弱性があるAPIエンドポイントのテストファイルを配置
+# - user.test.ts (認証なしアクセス問題)
+# - uploadfile.test.ts (認証なしファイルアップロード)
+# - kyc.test.ts (認証なしKYCトークン生成)
