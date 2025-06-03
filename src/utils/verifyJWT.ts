@@ -28,7 +28,7 @@ export function authMiddleware(handler: NextApiHandler) {
         console.log("decoded: ", decoded);
         req.user = { address: decoded.address };
       } catch (e) {
-        req.user = { address: "" };
+        throw e;
       }
 
       return handler(req, res);
