@@ -35,6 +35,7 @@ import { useTokenByCompanyId } from "@/hooks/useToken";
 import { useAOIByCompanyId } from "@/hooks/useAOI";
 import { useMember, useMembersByCompanyId } from "@/hooks/useMember";
 import { useTranslation } from "next-i18next";
+import { uploadJSON } from "@/utils/supabase";
 
 export const CompanyActivation: FC<CompanyActivationProps> = ({
   company,
@@ -85,6 +86,45 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       if (!exeToken || !nonExeToken) {
         throw new Error("Token not found");
       }
+
+      // トークンメタデータを生成してアップロード
+      console.log("Uploading token metadata...");
+
+      // Executive Token メタデータ
+      const exeTokenMetadata = {
+        name: exeToken.name || "Executive Token",
+        description: exeToken.description || "",
+        image: exeToken.image || "",
+      };
+
+      // Non-Executive Token メタデータ
+      const nonExeTokenMetadata = {
+        name: nonExeToken.name || "Non-Executive Token",
+        description: nonExeToken.description || "",
+        image: nonExeToken.image || "",
+      };
+
+      // メタデータをアップロード
+      const [exeMetadataResult, nonExeMetadataResult] = await Promise.all([
+        uploadJSON("token-metadata", `${exeToken.id}.json`, exeTokenMetadata),
+        uploadJSON(
+          "token-metadata",
+          `${nonExeToken.id}.json`,
+          nonExeTokenMetadata
+        ),
+      ]);
+
+      if (exeMetadataResult.error || nonExeMetadataResult.error) {
+        throw new Error("Failed to upload token metadata");
+      }
+
+      console.log("Token metadata uploaded successfully");
+      console.log("Executive token metadata URL:", exeMetadataResult.publicUrl);
+      console.log(
+        "Non-executive token metadata URL:",
+        nonExeMetadataResult.publicUrl
+      );
+
       const abiCoder = new ethers.AbiCoder();
 
       console.log(
@@ -103,10 +143,10 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
         [
           exeToken.name,
           exeToken.symbol,
-          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}${exeToken.id}/`,
+          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${exeToken.id}`,
           ".json",
           true,
-          10000,
+          0,
         ]
       );
       console.log(`executiveTokenExtraParams: ${executiveTokenExtraParams}`);
@@ -115,10 +155,10 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
         [
           nonExeToken.name,
           nonExeToken.symbol,
-          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}${nonExeToken.id}/`,
+          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${nonExeToken.id}`,
           ".json",
           true,
-          10000,
+          0,
         ]
       );
       console.log(
@@ -132,18 +172,6 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       console.log(`company?.jurisdiction ${company?.jurisdiction}`);
       console.log(`aoi?.location ${aoi?.location}`);
       console.log(`smartAccount?.address ${smartAccount?.address}`);
-
-      // const contractURIHash = await sendSetContractURI(
-      //   smartAccount?.address || ""
-      // );
-      // console.log(`contractURIHash: ${contractURIHash}`);
-
-      // const contractURIReceipt = await waitForReceipt({
-      //   client,
-      //   chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
-      //   transactionHash: contractURIHash || "0x",
-      // });
-      // console.log(`contractURIReceipt: ${contractURIReceipt}`);
 
       // 実際の会社名を取得
       const actualCompanyName =

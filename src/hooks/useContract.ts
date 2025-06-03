@@ -10,6 +10,7 @@ import { defineChain } from "thirdweb/chains";
 import { useSendTransaction } from "thirdweb/react";
 import { SCR_PROXY_ADDRESS } from "@/constants";
 import SCR_ABI from "@/utils/abi/SCR_V2.json";
+import SERVICE_FACTORY_ABI from "@/utils/abi/ServiceFactory.json";
 import VOTE_ABI from "@/utils/abi/Vote.json";
 import EXE_TOKEN_ABI from "@/utils/abi/LETS_JP_LLC_EXE_V2.json";
 import NON_EXE_TOKEN_ABI from "@/utils/abi/LETS_JP_LLC_NON_EXE.json";
@@ -248,7 +249,7 @@ export const useCreateProposal = () => {
 
 // read
 export const useSmartCompanyId = (founderAddress: string) => {
-  return useQuery({
+  return useQuery<string, Error>({
     queryKey: ["smartCompanyId", founderAddress],
     queryFn: async () => {
       const result = await readContract({
@@ -290,31 +291,31 @@ export const useCompanyInfo = (founderAddress: string) => {
 };
 
 export const useExeTokenContract = (founderAddress: string) => {
-  return useQuery({
+  return useQuery<string, Error>({
     queryKey: ["exeTokenContract", founderAddress],
     queryFn: async () => {
-      return await readContract({
+      return (await readContract({
         contract: scrProxyContract(),
-        method: SCR_ABI.abi.find(
+        method: SERVICE_FACTORY_ABI.abi.find(
           (item) => item.name === "getFounderService"
         ) as any,
         params: [founderAddress, 3],
-      });
+      })) as string;
     },
   });
 };
 
 export const useNonExeTokenContract = (founderAddress: string) => {
-  return useQuery({
+  return useQuery<string, Error>({
     queryKey: ["nonExeTokenContract", founderAddress],
     queryFn: async () => {
-      return await readContract({
+      return (await readContract({
         contract: scrProxyContract(),
-        method: SCR_ABI.abi.find(
+        method: SERVICE_FACTORY_ABI.abi.find(
           (item) => item.name === "getFounderService"
         ) as any,
         params: [founderAddress, 4],
-      });
+      })) as string;
     },
   });
 };
