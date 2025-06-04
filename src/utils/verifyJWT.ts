@@ -19,18 +19,13 @@ export function authMiddleware(handler: NextApiHandler) {
         return res.status(401).json({ error: "No token provided" });
       }
 
-      try {
-        const decoded = jwt.verify(token, JWT_SECRET) as {
-          address: string;
-          iat: number;
-          exp: number;
-        };
-        console.log("decoded: ", decoded);
-        req.user = { address: decoded.address };
-      } catch (e) {
-        req.user = { address: "" };
-      }
-
+      const decoded = jwt.verify(token, JWT_SECRET) as {
+        address: string;
+        iat: number;
+        exp: number;
+      };
+      console.log("decoded: ", decoded);
+      req.user = { address: decoded.address };
       return handler(req, res);
     } catch (error) {
       console.error("JWT verification failed:", error);
