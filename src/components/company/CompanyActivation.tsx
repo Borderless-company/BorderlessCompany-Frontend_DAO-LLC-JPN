@@ -336,6 +336,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
         ...formData,
         contract_address: companyInfo.companyAddress,
         is_active: true,
+        deployment_date: new Date().toISOString(),
       });
 
       setActivationStatus("activated");

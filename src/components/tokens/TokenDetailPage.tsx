@@ -1,6 +1,6 @@
 import { Stack } from "@/sphere/Stack";
 import { Tables } from "@/types/schema";
-import { Button, Chip, Tab, Tabs } from "@heroui/react";
+import { Button, Chip, Link, Tab, Tabs, Spinner } from "@heroui/react";
 import Image from "next/image";
 import { FC } from "react";
 import { PiPencil } from "react-icons/pi";
@@ -26,17 +26,14 @@ export const TokenDetailPage: FC<TokenDetailPageProps> = ({
   tokenId,
 }) => {
   const { token, isLoadingToken, isErrorToken } = useToken(tokenId);
-  const getPriceDisplay = () => {
-    if (token?.fixed_price) {
-      return formatPrice(token.fixed_price);
-    }
-    if (token?.min_price && token?.max_price) {
-      return `${formatPrice(token.min_price)} - ${formatPrice(
-        token.max_price
-      )}`;
-    }
-    return "価格未設定";
-  };
+
+  if (isLoadingToken) {
+    return (
+      <div className="w-full h-full flex items-start justify-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <main className="w-full h-full overflow-scroll px-6 pt-4 flex gap-4">
@@ -71,9 +68,17 @@ export const TokenDetailPage: FC<TokenDetailPageProps> = ({
         </Stack>
         <Stack className="gap-1">
           <p className="font-label-md text-neutral">コントラクトアドレス</p>
-          <p className="font-body-md text-foreground">
-            {token?.contract_address || "未設定"}
-          </p>
+          <Link
+            color="primary"
+            isExternal
+            showAnchorIcon
+            href={`${process.env.NEXT_PUBLIC_EXPLORER_URL}/address/${token?.contract_address}`}
+            className="font-body-md w-full"
+          >
+            <span className="w-full text-ellipsis overflow-hidden ">
+              {token?.contract_address || "未設定"}
+            </span>
+          </Link>
         </Stack>
       </div>
       {/* right column */}
@@ -86,7 +91,10 @@ export const TokenDetailPage: FC<TokenDetailPageProps> = ({
           size="lg"
         >
           <Tab key="holders" title="保有者一覧" className="overflow-auto">
-            <MemberList companyId={companyId} />
+            <MemberList
+              companyId={companyId}
+              filter={token?.is_executable ? "executive" : "non-executive"}
+            />
           </Tab>
           <Tab key="token-sales" title="トークン販売" className="overflow-auto">
             <TokenSales companyId={companyId} tokenId={tokenId} />

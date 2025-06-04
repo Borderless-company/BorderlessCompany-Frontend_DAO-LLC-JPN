@@ -152,8 +152,14 @@ export const RenderCell = ({ item, columnKey }: Props) => {
   }
 };
 
-const MemberList = ({ companyId }: { companyId: string }) => {
-  const { members } = useMembersByCompanyId(companyId);
+const MemberList = ({
+  companyId,
+  filter = "all",
+}: {
+  companyId: string;
+  filter?: "all" | "executive" | "non-executive";
+}) => {
+  const { members, isLoadingMembers } = useMembersByCompanyId(companyId);
   const { t, i18n } = useTranslation("common");
   const smartAccount = useActiveAccount();
   const {
@@ -168,7 +174,7 @@ const MemberList = ({ companyId }: { companyId: string }) => {
   } = useCompanybyFounderId(smartAccount?.address || "");
 
   const memberData = useMemo(() => {
-    return members?.map((member) => {
+    const data = members?.map((member) => {
       return {
         key: member.id,
         name: member.USER?.name ?? "",
@@ -190,7 +196,16 @@ const MemberList = ({ companyId }: { companyId: string }) => {
         // email: member.USER?.email,
       };
     });
-  }, [members]);
+
+    // Apply filter
+    if (filter === "executive") {
+      return data?.filter((member) => member.isExecutive === "true");
+    } else if (filter === "non-executive") {
+      return data?.filter((member) => member.isExecutive === "false");
+    }
+
+    return data;
+  }, [members, filter, t]);
 
   useEffect(() => {
     console.log("memberData:", memberData);
@@ -198,7 +213,7 @@ const MemberList = ({ companyId }: { companyId: string }) => {
 
   return (
     <>
-      {memberData?.length === 0 ? (
+      {isLoadingMembers ? (
         <div className="w-full flex items-center justify-center min-h-[50px]">
           <Spinner />
         </div>
@@ -230,7 +245,10 @@ const MemberList = ({ companyId }: { companyId: string }) => {
                     </TableColumn>
                   )}
                 </TableHeader>
-                <TableBody items={memberData ?? []}>
+                <TableBody
+                  items={memberData ?? []}
+                  emptyContent={<div>メンバーがいません</div>}
+                >
                   {(item) => (
                     <TableRow>
                       {(columnKey) => (
