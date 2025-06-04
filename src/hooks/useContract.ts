@@ -27,7 +27,7 @@ export const smartAccountContract = (smartAccount: string) => {
   });
 };
 
-const scrProxyContract = () => {
+export const scrProxyContract = () => {
   return getContract({
     client,
     chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
@@ -107,16 +107,11 @@ export const useCreateSmartCompany = () => {
     scsDeployParams: `0x${string}`[];
   }) => {
     const contract = scrProxyContract();
-    console.log(
-      "ABI",
-      JSON.stringify(
-        SCR_ABI.abi.find((item) => item.name === "createSmartCompany")
-      )
-    );
     const transaction = prepareContractCall({
       contract: contract,
-      method:
-        "function createSmartCompany( string calldata scid, address beacon, string calldata legalEntityCode, string calldata companyName, string calldata establishmentDate, string calldata jurisdiction, string calldata entityType, bytes calldata scDeployParam, string[] calldata companyInfo, address[] calldata scsBeaconProxy, bytes[] calldata scsDeployParams)",
+      method: SCR_ABI.abi.find(
+        (item) => item.name === "createSmartCompany"
+      ) as any,
       params: [
         props.scId,
         props.beacon as Address,
@@ -190,15 +185,17 @@ export const useSetSaleInfo = () => {
 };
 
 export const useMintExeToken = () => {
-  const { mutate: sendTransaction } = useSendTransaction();
+  const { mutateAsync: sendTransaction } = useSendTransaction();
   const sendTx = async (exeTokenAddress: string, to: string) => {
     const contract = exeTokenContract(exeTokenAddress);
     const transaction = prepareContractCall({
       contract: contract,
-      method: "function mint(address to)",
+      method: EXE_TOKEN_ABI.abi.find((item) => item.name === "mint") as any,
       params: [to],
     });
-    sendTransaction(transaction);
+    console.log("address", to);
+    const result = await sendTransaction(transaction);
+    return result.transactionHash;
   };
 
   return { sendTx };
@@ -217,7 +214,6 @@ export const useVote = () => {
       method: "function vote(string calldata proposalId, uint8 voteType)",
       params: [proposalId, voteType],
     });
-    sendTransaction(transaction);
   };
 
   return { sendTx };

@@ -57,27 +57,29 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
     isLoading: isLoadingTaskStatus,
     isError: isErrorTaskStatus,
   } = useTaskStatusByCompany(companyId || "");
-  const { data: smartCompanyId } = useSmartCompanyId(company?.founder_id || "");
-  const { data: companyInfo } = useCompanyInfo(company?.founder_id || "");
-  const { data: exeTokenContract } = useExeTokenContract(
-    company?.founder_id || ""
-  );
-  const { data: nonExeTokenContract } = useNonExeTokenContract(
-    company?.founder_id || ""
-  );
 
-  useEffect(() => {
-    console.log("smartCompanyId", smartCompanyId);
-    console.log("companyInfo", companyInfo);
-    console.log("exeTokenContract", exeTokenContract);
-    console.log("nonExeTokenContract", nonExeTokenContract);
-  }, [
-    smartCompanyId,
-    companyInfo,
-    exeTokenContract,
-    nonExeTokenContract,
-    company?.founder_id,
-  ]);
+  // const { data: smartCompanyId } = useSmartCompanyId(company?.founder_id || "");
+  // const { data: companyInfo } = useCompanyInfo(company?.founder_id || "");
+  // const { data: exeTokenContract } = useExeTokenContract(
+  //   company?.founder_id || ""
+  // );
+  // const { data: nonExeTokenContract } = useNonExeTokenContract(
+  //   company?.founder_id || ""
+  // );
+
+  // useEffect(() => {
+  //   console.log("founder_id", company?.founder_id);
+  //   console.log("smartCompanyId", smartCompanyId);
+  //   console.log("companyInfo", companyInfo);
+  //   console.log("exeTokenContract", exeTokenContract);
+  //   console.log("nonExeTokenContract", nonExeTokenContract);
+  // }, [
+  //   smartCompanyId,
+  //   companyInfo,
+  //   exeTokenContract,
+  //   nonExeTokenContract,
+  //   company?.founder_id,
+  // ]);
 
   const {
     isOpen: isOpenAoIModal,

@@ -109,7 +109,6 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ companyId, ...props }) => {
 
       // 2. USERとMEMBERの更新
       const memberPromises = formData.executiveMembers.map(async (member) => {
-        console.log("member", member);
         if (!member.walletAddress) return;
 
         // ユーザー作成/更新
@@ -121,8 +120,6 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ companyId, ...props }) => {
 
         // メンバー作成/更新
         if (user) {
-          console.log("walletAddress", member.walletAddress);
-          console.log("companyId", companyId);
           await createMember({
             user_id: member.walletAddress,
             company_id: companyId,

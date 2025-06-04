@@ -11,7 +11,6 @@ type AoIPreviewProps = {
 
 export const AoIPreview = forwardRef<HTMLDivElement, AoIPreviewProps>(
   ({ formData, onlyPreview, className }, ref) => {
-    console.log("formData", formData);
     const { t } = useTranslation("aoi");
 
     // 支店があるかどうかをチェック

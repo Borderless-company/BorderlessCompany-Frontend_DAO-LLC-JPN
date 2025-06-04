@@ -44,9 +44,6 @@ export const uploadJSON = async (
   jsonData: Record<string, any>,
   contentType: string = "application/json"
 ) => {
-  console.log("filePath: ", filePath);
-  console.log("JSON Data: ", jsonData);
-
   const base64 = jsonToBase64(jsonData);
 
   const response = await fetch("/api/uploadfile", {
@@ -58,11 +55,6 @@ export const uploadJSON = async (
   });
 
   const { data, publicUrl, error } = await response.json();
-
-  console.log("data:", data);
-  console.log("publicUrl:", publicUrl);
-  console.log("upload error:", error);
-
   return { data, publicUrl, error };
 };
 
