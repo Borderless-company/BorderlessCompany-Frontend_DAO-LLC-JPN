@@ -53,3 +53,11 @@ export default async function handler(
       .json({ error: err.message || "Internal Server Error" });
   }
 }
+
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "10mb",
+    },
+  },
+};

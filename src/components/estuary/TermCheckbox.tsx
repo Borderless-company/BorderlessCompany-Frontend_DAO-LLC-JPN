@@ -5,14 +5,18 @@ import { useTranslation } from "next-i18next";
 
 export type TermCheckboxProps = CheckboxProps & {
   termName: string;
-  href: string;
+  href?: string;
+  isExternal?: boolean;
   isBorder?: boolean;
+  onPressLink?: () => void;
 };
 
 export const TermCheckbox: FC<TermCheckboxProps> = ({
   termName,
   href,
   isBorder = true,
+  isExternal = true,
+  onPressLink,
   ...props
 }) => {
   const { t, i18n } = useTranslation("estuary");
@@ -35,10 +39,11 @@ export const TermCheckbox: FC<TermCheckboxProps> = ({
         <Link
           className=" z-50 select-all text-primary inline-flex items-center gap-1 hover:scale-[1.04] transition-all"
           href={href}
-          isExternal
+          isExternal={isExternal}
+          onPress={() => onPressLink?.()}
         >
           {t(termName)}
-          <PiArrowSquareOutBold size={16} />
+          {isExternal && <PiArrowSquareOutBold size={16} />}
         </Link>{" "}
         {i18n.language === "ja" && t("Agree")}
       </p>

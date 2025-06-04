@@ -55,21 +55,6 @@ const KYCSucceededPage: FC = () => {
       {/* Footer */}
       <div className="flex flex-col gap-4 p-6 pt-0 pb-4">
         <div className="flex flex-col gap-4">
-          {/* <CheckboxGroup
-            className="flex flex-col gap-2 w-full h-fit bg-stone-100 rounded-2xl px-4 py-1"
-            value={termChecked}
-            onValueChange={setTermChecked}
-          >
-            {PRODUCT_TERMS.map((term, index) => (
-              <TermCheckbox
-                key={term.id}
-                value={term.id}
-                termName={term.name}
-                href={term.url}
-                isBorder={index !== PRODUCT_TERMS.length - 1}
-              />
-            ))}
-          </CheckboxGroup> */}
           <Button
             className="w-full bg-yellow-700 text-white text-base font-semibold"
             endContent={<PiArrowRight color="white" />}

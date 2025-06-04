@@ -44,8 +44,14 @@
   .font-label-md {
     @apply text-[14px] font-semibold leading-[15px] tracking-[0px];
   }
+  .font-body-lg {
+    @apply text-[18px] font-medium leading-[28px] tracking-[0px];
+  }
   .font-body-md {
     @apply text-[16px] font-medium leading-[24px] tracking-[0px];
+  }
+  .font-body-sm {
+    @apply text-[14px] font-medium leading-[20px] tracking-[0px];
   }
 }
 

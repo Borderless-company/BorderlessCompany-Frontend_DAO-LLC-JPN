@@ -19,13 +19,7 @@ import { shortenAddress } from "@/utils/web3";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
 import { Address } from "thirdweb";
-import {
-  useCreateProposal,
-  useMintExeToken,
-  useNftContract,
-  useVote,
-  useVoteContract,
-} from "@/hooks/useContract";
+import { useCreateProposal, useMintExeToken } from "@/hooks/useContract";
 import { useActiveAccount } from "thirdweb/react";
 import { useTokenByCompanyId } from "@/hooks/useToken";
 import { Stack } from "@/sphere/Stack";
@@ -41,7 +35,7 @@ const columns = [
   { name: "Invested Amount", uid: "investedAmount" },
   { name: "Type", uid: "isExecutive" },
   { name: "Status", uid: "status" },
-  { name: "Actions", uid: "actions" },
+  // { name: "Actions", uid: "actions" },
   // { name: "Receipt", uid: "receipt" },
   // { name: "Email", uid: "email" },
 ];
@@ -79,20 +73,14 @@ export const RenderCell = ({ item, columnKey }: Props) => {
 
   const smartAccount = useActiveAccount();
   const { sendTx: sendMintExeTokenTx } = useMintExeToken();
-  const { data: nftContract } = useNftContract(smartAccount?.address ?? "");
   const [isMinting, setIsMinting] = useState(false);
 
   const handleMintExeToken = async (memberAddress: string) => {
     setIsMinting(true);
     console.log("smartAccount?.address:", smartAccount?.address);
-    console.log("nftContract:", nftContract);
     console.log("memberAddress:", memberAddress);
-    if (!nftContract) {
-      console.error("NFT contract is undefined");
-      return;
-    }
     console.log("run sendMintExeTokenTx");
-    await sendMintExeTokenTx(nftContract, memberAddress);
+    await sendMintExeTokenTx(item.actions.contractAddress, memberAddress);
     console.log("sendMintExeTokenTx done");
     await updateMember({
       user_id: memberAddress,
@@ -164,13 +152,16 @@ export const RenderCell = ({ item, columnKey }: Props) => {
   }
 };
 
-const MemberList = ({ companyId }: { companyId: string }) => {
-  const { members } = useMembersByCompanyId(companyId);
+const MemberList = ({
+  companyId,
+  filter = "all",
+}: {
+  companyId: string;
+  filter?: "all" | "executive" | "non-executive";
+}) => {
+  const { members, isLoadingMembers } = useMembersByCompanyId(companyId);
   const { t, i18n } = useTranslation("common");
   const smartAccount = useActiveAccount();
-  const { sendTx: sendCreateProposalTx } = useCreateProposal();
-  const { data: voteContract } = useVoteContract(smartAccount?.address ?? "");
-  const { sendTx: sendVoteTx } = useVote();
   const {
     isOpen: isOpenAddMember,
     onOpen: onOpenAddMember,
@@ -183,7 +174,7 @@ const MemberList = ({ companyId }: { companyId: string }) => {
   } = useCompanybyFounderId(smartAccount?.address || "");
 
   const memberData = useMemo(() => {
-    return members?.map((member) => {
+    const data = members?.map((member) => {
       return {
         key: member.id,
         name: member.USER?.name ?? "",
@@ -205,37 +196,24 @@ const MemberList = ({ companyId }: { companyId: string }) => {
         // email: member.USER?.email,
       };
     });
-  }, [members]);
+
+    // Apply filter
+    if (filter === "executive") {
+      return data?.filter((member) => member.isExecutive === "true");
+    } else if (filter === "non-executive") {
+      return data?.filter((member) => member.isExecutive === "false");
+    }
+
+    return data;
+  }, [members, filter, t]);
 
   useEffect(() => {
     console.log("memberData:", memberData);
   }, [memberData]);
 
-  const handleCreateProposal = async () => {
-    console.log("run sendCreateProposalTx");
-    console.log("voteContract:", voteContract);
-    if (!voteContract) {
-      console.error("Vote contract is undefined");
-      return;
-    }
-    await sendCreateProposalTx(voteContract, smartAccount?.address ?? "");
-    console.log("sendCreateProposalTx done");
-  };
-
-  const handleVote = async () => {
-    console.log("run sendVoteTx");
-    console.log("voteContract:", voteContract);
-    if (!voteContract) {
-      console.error("Vote contract is undefined");
-      return;
-    }
-    await sendVoteTx("1", voteContract, 0);
-    console.log("sendVoteTx done");
-  };
-
   return (
     <>
-      {memberData?.length === 0 ? (
+      {isLoadingMembers ? (
         <div className="w-full flex items-center justify-center min-h-[50px]">
           <Spinner />
         </div>
@@ -245,7 +223,7 @@ const MemberList = ({ companyId }: { companyId: string }) => {
             <>
               <Stack h className="justify-between w-full">
                 <Button
-                  onClick={() => {
+                  onPress={() => {
                     const dataWithoutActions = memberData?.map(
                       ({ actions, ...rest }) => rest
                     );
@@ -253,15 +231,6 @@ const MemberList = ({ companyId }: { companyId: string }) => {
                   }}
                 >
                   {t("Download as CSV")}
-                </Button>
-                <Button
-                  color="primary"
-                  startContent={<PiPlus />}
-                  onPress={() => {
-                    onOpenAddMember();
-                  }}
-                >
-                  Add Executive
                 </Button>
               </Stack>
               <Table aria-label="MembershipTokenHolders">
@@ -276,7 +245,10 @@ const MemberList = ({ companyId }: { companyId: string }) => {
                     </TableColumn>
                   )}
                 </TableHeader>
-                <TableBody items={memberData ?? []}>
+                <TableBody
+                  items={memberData ?? []}
+                  emptyContent={<div>メンバーがいません</div>}
+                >
                   {(item) => (
                     <TableRow>
                       {(columnKey) => (

@@ -1,4 +1,4 @@
-import { FC, useRef } from "react";
+import { FC, useRef, useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -6,6 +6,7 @@ import {
   ModalFooter,
   Button,
   ModalProps,
+  Spinner,
 } from "@heroui/react";
 import { useTranslation } from "next-i18next";
 import { TokenAgreementPreview } from "./TokenAgreementPreview";
@@ -23,6 +24,7 @@ export const TokenAgreementModal: FC<TokenAgreementModalProps> = ({
   ...props
 }) => {
   const { t } = useTranslation(["company", "common"]);
+  const [isPdfLoading, setIsPdfLoading] = useState(false);
 
   const {
     company,
@@ -56,6 +58,18 @@ export const TokenAgreementModal: FC<TokenAgreementModalProps> = ({
     },
   });
 
+  // PDF出力ハンドラー
+  const handlePdfExport = async () => {
+    setIsPdfLoading(true);
+    try {
+      await toPDF();
+    } catch (error) {
+      console.error("PDF export failed:", error);
+    } finally {
+      setIsPdfLoading(false);
+    }
+  };
+
   return (
     <Modal
       {...props}
@@ -86,10 +100,14 @@ export const TokenAgreementModal: FC<TokenAgreementModalProps> = ({
               <Button
                 color="primary"
                 variant="flat"
-                startContent={<LuDownload />}
-                onPress={() => toPDF()}
+                startContent={
+                  isPdfLoading ? <Spinner size="sm" /> : <LuDownload />
+                }
+                onPress={handlePdfExport}
+                isDisabled={isPdfLoading}
+                isLoading={isPdfLoading}
               >
-                {"PDFで出力"}
+                {isPdfLoading ? "出力中..." : "PDFで出力"}
               </Button>
               <Button color="primary" onPress={onClose}>
                 {t("Close", { ns: "common" })}

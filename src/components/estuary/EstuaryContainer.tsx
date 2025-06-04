@@ -68,7 +68,7 @@ export const EstuaryContainer: FC = () => {
         ) : page === 7 ? (
           <AlreadyMember
             orgLogo={estuary?.org_logo as string}
-            orgName={estuary?.org_name as string}
+            orgName={estuary?.sale_name as string}
           />
         ) : null}
       </div>

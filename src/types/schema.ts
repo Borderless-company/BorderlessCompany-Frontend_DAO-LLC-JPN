@@ -124,6 +124,7 @@ export type Database = {
           company_name: string | null
           company_number: string | null
           company_type: Database["public"]["Enums"]["CompanyType"] | null
+          contract_address: string | null
           created_at: string
           deployment_date: string | null
           display_name: string | null
@@ -141,6 +142,7 @@ export type Database = {
           company_name?: string | null
           company_number?: string | null
           company_type?: Database["public"]["Enums"]["CompanyType"] | null
+          contract_address?: string | null
           created_at?: string
           deployment_date?: string | null
           display_name?: string | null
@@ -158,6 +160,7 @@ export type Database = {
           company_name?: string | null
           company_number?: string | null
           company_type?: Database["public"]["Enums"]["CompanyType"] | null
+          contract_address?: string | null
           created_at?: string
           deployment_date?: string | null
           display_name?: string | null
@@ -262,12 +265,16 @@ export type Database = {
           dao_id: string | null
           end_date: string | null
           estuary_link: string | null
+          fixed_price: number | null
           id: string
           is_public: boolean | null
+          max_price: number | null
+          min_price: number | null
           org_logo: string | null
-          org_name: string | null
           payment_methods: string[] | null
+          sale_name: string | null
           start_date: string | null
+          token_id: string | null
         }
         Insert: {
           company_id?: string | null
@@ -275,12 +282,16 @@ export type Database = {
           dao_id?: string | null
           end_date?: string | null
           estuary_link?: string | null
+          fixed_price?: number | null
           id?: string
           is_public?: boolean | null
+          max_price?: number | null
+          min_price?: number | null
           org_logo?: string | null
-          org_name?: string | null
           payment_methods?: string[] | null
+          sale_name?: string | null
           start_date?: string | null
+          token_id?: string | null
         }
         Update: {
           company_id?: string | null
@@ -288,12 +299,16 @@ export type Database = {
           dao_id?: string | null
           end_date?: string | null
           estuary_link?: string | null
+          fixed_price?: number | null
           id?: string
           is_public?: boolean | null
+          max_price?: number | null
+          min_price?: number | null
           org_logo?: string | null
-          org_name?: string | null
           payment_methods?: string[] | null
+          sale_name?: string | null
           start_date?: string | null
+          token_id?: string | null
         }
         Relationships: [
           {
@@ -309,6 +324,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "DAO"
             referencedColumns: ["address"]
+          },
+          {
+            foreignKeyName: "ESTUARY_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "TOKEN"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -682,7 +704,6 @@ export type Database = {
           created_at: string
           dao_id: string | null
           description: string | null
-          estuary_id: string | null
           fixed_price: number | null
           id: string
           image: string | null
@@ -701,7 +722,6 @@ export type Database = {
           created_at?: string
           dao_id?: string | null
           description?: string | null
-          estuary_id?: string | null
           fixed_price?: number | null
           id?: string
           image?: string | null
@@ -720,7 +740,6 @@ export type Database = {
           created_at?: string
           dao_id?: string | null
           description?: string | null
-          estuary_id?: string | null
           fixed_price?: number | null
           id?: string
           image?: string | null
@@ -747,13 +766,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "DAO"
             referencedColumns: ["address"]
-          },
-          {
-            foreignKeyName: "TOKEN_estuary_id_fkey"
-            columns: ["estuary_id"]
-            isOneToOne: false
-            referencedRelation: "ESTUARY"
-            referencedColumns: ["id"]
           },
         ]
       }

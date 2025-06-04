@@ -74,7 +74,11 @@ export const useToken = (id?: string) => {
     },
   });
 
-  const { data: token } = useQuery<Tables<"TOKEN"> | undefined, Error>({
+  const {
+    data: token,
+    isLoading,
+    isError,
+  } = useQuery<Tables<"TOKEN"> | undefined, Error>({
     queryKey: ["token", id],
     queryFn: async () => {
       if (!id) return undefined;
@@ -90,7 +94,13 @@ export const useToken = (id?: string) => {
     },
   });
 
-  return { createToken, updateToken, token };
+  return {
+    createToken,
+    updateToken,
+    token,
+    isLoadingToken: isLoading,
+    isErrorToken: isError,
+  };
 };
 
 export const useTokenByCompanyId = (companyId?: string) => {

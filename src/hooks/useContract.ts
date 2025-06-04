@@ -8,11 +8,14 @@ import {
 } from "thirdweb";
 import { defineChain } from "thirdweb/chains";
 import { useSendTransaction } from "thirdweb/react";
-import { SCR_CONTRACT_ADDRESS, SERVICE_FACTORY_ADDRESS } from "@/constants";
-import SCR_ABI from "@/utils/abi/SCR.json";
-import VOTE_ABI from "@/utils/abi/Vote.json";
-import EXE_TOKEN_ABI from "@/utils/abi/LETS_JP_LLC_EXE.json";
+import { SCR_PROXY_ADDRESS } from "@/constants";
+import SCR_ABI from "@/utils/abi/SCR_V2.json";
 import SERVICE_FACTORY_ABI from "@/utils/abi/ServiceFactory.json";
+import VOTE_ABI from "@/utils/abi/Vote.json";
+import EXE_TOKEN_ABI from "@/utils/abi/LETS_JP_LLC_EXE_V2.json";
+import NON_EXE_TOKEN_ABI from "@/utils/abi/LETS_JP_LLC_NON_EXE.json";
+import SALE_ABI from "@/utils/abi/LETS_JP_LLC_SALE.json";
+import { AbiCoder, ethers } from "ethers";
 
 // contract
 
@@ -24,21 +27,11 @@ export const smartAccountContract = (smartAccount: string) => {
   });
 };
 
-const serviceFactoryContract = () => {
+export const scrProxyContract = () => {
   return getContract({
     client,
     chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
-    address: SERVICE_FACTORY_ADDRESS,
-    abi: JSON.parse(JSON.stringify(SERVICE_FACTORY_ABI.abi)),
-  });
-};
-
-const scrContract = () => {
-  return getContract({
-    client,
-    chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
-    address: SCR_CONTRACT_ADDRESS,
-    abi: JSON.parse(JSON.stringify(SCR_ABI.abi)),
+    address: SCR_PROXY_ADDRESS,
   });
 };
 
@@ -60,10 +53,27 @@ export const exeTokenContract = (address: string) => {
   });
 };
 
+export const nonExeTokenContract = (address: string) => {
+  return getContract({
+    client,
+    chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
+    address: address,
+    abi: JSON.parse(JSON.stringify(NON_EXE_TOKEN_ABI.abi)),
+  });
+};
+
+export const accountFactoryContract = (address: string) => {
+  return getContract({
+    client,
+    chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
+    address: address,
+  });
+};
+
 // write
 
 export const useSetContractURI = () => {
-  const { mutate: sendTransaction } = useSendTransaction();
+  const { mutateAsync: sendTransaction } = useSendTransaction();
   const sendTx = async (smartAccount: string) => {
     const account = smartAccountContract(smartAccount);
 
@@ -74,69 +84,98 @@ export const useSetContractURI = () => {
       method: "function setContractURI(string _uri)",
       params: [account.address],
     }) as any;
-    sendTransaction(transaction);
+    const result = await sendTransaction(transaction);
+    return result.transactionHash;
   };
 
   return { sendTx };
 };
 
-export const useExecuteTransaction = () => {
-  const { mutate: sendTransaction } = useSendTransaction();
-  const sendTx = async (
-    smartAccount: string,
-    target: Address,
-    value: number,
-    calldata: `0x${string}`
-  ) => {
-    const account = smartAccountContract(smartAccount);
-
-    if (!account) return;
-
-    const transaction = prepareContractCall({
-      contract: account,
-      method:
-        "function execute(address _target, uint256 _value, bytes _calldata)",
-      params: [target, BigInt(value), calldata],
-    });
-    console.log(JSON.stringify(transaction));
-    sendTransaction(transaction);
-  };
-
-  return { sendTx };
-};
-
-export const useCreateCompany = () => {
-  const { mutate: sendTransaction } = useSendTransaction();
-  const sendTx = async (
-    scId: string,
-    scImplementation: string,
-    legalEntityCode: string,
-    companyName: string,
-    establishmentDate: string,
-    jurisdiction: string,
-    entityType: string,
-    scExtraParams: string,
-    otherInfo: string[],
-    scsAddresses: string[],
-    scsExtraParams: string[]
-  ) => {
-    const contract = scrContract();
+export const useCreateSmartCompany = () => {
+  const { mutateAsync: sendTransaction } = useSendTransaction();
+  const sendTx = async (props: {
+    scId: string;
+    beacon: string;
+    legalEntityCode: string;
+    companyName: string;
+    establishmentDate: string;
+    jurisdiction: string;
+    entityType: string;
+    scDeployParam: `0x${string}`;
+    companyInfo: string[];
+    scsBeaconProxy: string[];
+    scsDeployParams: `0x${string}`[];
+  }) => {
+    const contract = scrProxyContract();
     const transaction = prepareContractCall({
       contract: contract,
-      method:
-        "function createSmartCompany(bytes calldata _scid, address _scImplementation, string calldata _legalEntityCode, string calldata _companyName, string calldata _establishmentDate, string calldata _jurisdiction,string calldata _entityType, bytes calldata _scExtraParams, string[] calldata _otherInfo, address[] calldata _scsAddresses, bytes[] calldata _scsExtraParams)",
+      method: SCR_ABI.abi.find(
+        (item) => item.name === "createSmartCompany"
+      ) as any,
       params: [
-        scId as `0x${string}`,
-        scImplementation,
-        legalEntityCode,
-        companyName,
-        establishmentDate,
-        jurisdiction,
-        entityType,
-        scExtraParams as `0x${string}`,
-        otherInfo,
-        scsAddresses as readonly `0x${string}`[],
-        scsExtraParams as readonly `0x${string}`[],
+        props.scId,
+        props.beacon as Address,
+        props.legalEntityCode,
+        props.companyName,
+        props.establishmentDate,
+        props.jurisdiction,
+        props.entityType,
+        props.scDeployParam,
+        props.companyInfo,
+        props.scsBeaconProxy as readonly Address[],
+        props.scsDeployParams,
+      ],
+    });
+    console.log("transaction", transaction);
+    // トランザクションハッシュを返す
+    const result = await sendTransaction(transaction);
+    console.log("result", result);
+    return result.transactionHash;
+  };
+
+  return { sendTx };
+};
+
+// TODO: 型直す
+export const useSetSaleInfo = () => {
+  const { mutate: sendTransaction } = useSendTransaction();
+
+  const sendTx = async ({
+    type,
+    founderAddress,
+    saleInfo,
+  }: {
+    type: "exe" | "nonExe";
+    founderAddress: string;
+    saleInfo: {
+      saleStart: number;
+      saleEnd: number;
+      fixedPrice: number;
+      minPrice: number;
+      maxPrice: number;
+    };
+  }) => {
+    const tokenAddress = await readContract({
+      contract: scrProxyContract(),
+      method: SCR_ABI.abi.find(
+        (item) => item.name === "getFounderService"
+      ) as any,
+      params: [founderAddress, type === "exe" ? 3 : 4],
+    });
+    if (!tokenAddress) throw new Error("Token address not found");
+    const contract =
+      type === "exe"
+        ? exeTokenContract(tokenAddress as string)
+        : nonExeTokenContract(tokenAddress as string);
+    const transaction = prepareContractCall({
+      contract: contract,
+      method: SALE_ABI.abi.find((item) => item.name === "setSaleInfo") as any,
+      params: [
+        saleInfo.saleStart,
+        saleInfo.saleEnd,
+        saleInfo.fixedPrice,
+        saleInfo.minPrice,
+        saleInfo.maxPrice,
       ],
     });
     sendTransaction(transaction);
@@ -146,15 +185,35 @@ export const useCreateCompany = () => {
 };
 
 export const useMintExeToken = () => {
-  const { mutate: sendTransaction } = useSendTransaction();
+  const { mutateAsync: sendTransaction } = useSendTransaction();
   const sendTx = async (exeTokenAddress: string, to: string) => {
     const contract = exeTokenContract(exeTokenAddress);
     const transaction = prepareContractCall({
       contract: contract,
-      method: "function mint(address to)",
+      method: EXE_TOKEN_ABI.abi.find((item) => item.name === "mint") as any,
       params: [to],
     });
-    sendTransaction(transaction);
+    console.log("address", to);
+    const result = await sendTransaction(transaction);
+    return result.transactionHash;
+  };
+
+  return { sendTx };
+};
+
+export const useInitialMintExeToken = () => {
+  const { mutateAsync: sendTransaction } = useSendTransaction();
+  const sendTx = async (exeTokenAddress: string, tos: string[]) => {
+    const contract = exeTokenContract(exeTokenAddress);
+    const transaction = prepareContractCall({
+      contract: contract,
+      method: EXE_TOKEN_ABI.abi.find(
+        (item) => item.name === "initialMint"
+      ) as any,
+      params: [tos],
+    });
+    const result = await sendTransaction(transaction);
+    return result.transactionHash;
   };
 
   return { sendTx };
@@ -173,7 +232,6 @@ export const useVote = () => {
       method: "function vote(string calldata proposalId, uint8 voteType)",
       params: [proposalId, voteType],
     });
-    sendTransaction(transaction);
   };
 
   return { sendTx };
@@ -204,30 +262,74 @@ export const useCreateProposal = () => {
 };
 
 // read
-
-export const useNftContract = (founderAddress: string) => {
-  return useQuery({
-    queryKey: ["nftContract", founderAddress],
+export const useSmartCompanyId = (founderAddress: string) => {
+  return useQuery<string, Error>({
+    queryKey: ["smartCompanyId", founderAddress],
     queryFn: async () => {
-      return await readContract({
-        contract: serviceFactoryContract(),
-        method:
-          "function getFounderServices(address founder_, uint8 serviceType_) returns (address)",
-        params: [founderAddress, 2],
+      const result = await readContract({
+        contract: scrProxyContract(),
+        method: SCR_ABI.abi.find(
+          (item) => item.name === "getSmartCompanyId"
+        ) as any,
+        params: [founderAddress],
       });
+      return result;
     },
   });
 };
 
-export const useVoteContract = (founderAddress: string) => {
+export const useCompanyInfo = (founderAddress: string) => {
   return useQuery({
-    queryKey: ["voteContract", founderAddress],
+    queryKey: ["companyInfo", founderAddress],
     queryFn: async () => {
-      return await readContract({
-        contract: scrContract(),
-        method: "function getVoteContract(address founder_) returns (address)",
+      const scId = await readContract({
+        contract: scrProxyContract(),
+        method: SCR_ABI.abi.find(
+          (item) => item.name === "getSmartCompanyId"
+        ) as any,
         params: [founderAddress],
       });
+      console.log("scId", scId);
+      const result = await readContract({
+        contract: scrProxyContract(),
+        method: SCR_ABI.abi.find(
+          (item) => item.name === "getCompanyInfo"
+        ) as any,
+        params: [scId],
+      });
+
+      console.log("result", result);
+      return result;
+    },
+  });
+};
+
+export const useExeTokenContract = (founderAddress: string) => {
+  return useQuery<string, Error>({
+    queryKey: ["exeTokenContract", founderAddress],
+    queryFn: async () => {
+      return (await readContract({
+        contract: scrProxyContract(),
+        method: SERVICE_FACTORY_ABI.abi.find(
+          (item) => item.name === "getFounderService"
+        ) as any,
+        params: [founderAddress, 3],
+      })) as string;
+    },
+  });
+};
+
+export const useNonExeTokenContract = (founderAddress: string) => {
+  return useQuery<string, Error>({
+    queryKey: ["nonExeTokenContract", founderAddress],
+    queryFn: async () => {
+      return (await readContract({
+        contract: scrProxyContract(),
+        method: SERVICE_FACTORY_ABI.abi.find(
+          (item) => item.name === "getFounderService"
+        ) as any,
+        params: [founderAddress, 4],
+      })) as string;
     },
   });
 };

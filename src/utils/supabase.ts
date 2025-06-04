@@ -37,6 +37,41 @@ export const uploadFile = async (
   return { data, publicUrl, error };
 };
 
+// JSONオブジェクトをアップロードする関数
+export const uploadJSON = async (
+  bucket: string,
+  filePath: string,
+  jsonData: Record<string, any>,
+  contentType: string = "application/json"
+) => {
+  const base64 = jsonToBase64(jsonData);
+
+  const response = await fetch("/api/uploadfile", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ bucket, filePath, base64, contentType }),
+  });
+
+  const { data, publicUrl, error } = await response.json();
+  return { data, publicUrl, error };
+};
+
+// 汎用的なアップロード関数（FileまたはJSONオブジェクトを受け取る）
+export const upload = async (
+  bucket: string,
+  filePath: string,
+  data: File | Record<string, any>,
+  contentType?: string
+) => {
+  if (data instanceof File) {
+    return uploadFile(bucket, filePath, data);
+  } else {
+    return uploadJSON(bucket, filePath, data, contentType);
+  }
+};
+
 // FileをBase64文字列に変換するヘルパー関数
 async function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -54,4 +89,14 @@ async function fileToBase64(file: File): Promise<string> {
     reader.onerror = (error) => reject(error);
     reader.readAsDataURL(file);
   });
+}
+
+// JSONオブジェクトをBase64文字列に変換するヘルパー関数
+function jsonToBase64(jsonData: Record<string, any>): string {
+  try {
+    const jsonString = JSON.stringify(jsonData, null, 2);
+    return btoa(unescape(encodeURIComponent(jsonString)));
+  } catch (error) {
+    throw new Error("Failed to convert JSON to base64");
+  }
 }

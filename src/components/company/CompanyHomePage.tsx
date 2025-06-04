@@ -7,12 +7,14 @@ import {
   cn,
   Spinner,
   useDisclosure,
+  Link,
 } from "@heroui/react";
 import Image from "next/image";
 import { Stack } from "@/sphere/Stack";
 import {
   PiCheckCircle,
   PiCheckCircleFill,
+  PiCopy,
   PiFileDuotone,
   PiKanbanDuotone,
   PiPower,
@@ -37,6 +39,12 @@ import { AoIModal } from "./AoIModal";
 import { GovAgreementModal } from "./GovAgreementModal";
 import { OperationRegulationModal } from "./OperationRegulationModal";
 import { TokenAgreementModal } from "./TokenAgreementModal";
+import {
+  useCompanyInfo,
+  useExeTokenContract,
+  useNonExeTokenContract,
+  useSmartCompanyId,
+} from "@/hooks/useContract";
 
 export type CompanyHomePageProps = {
   companyId?: string;
@@ -45,6 +53,35 @@ export type CompanyHomePageProps = {
 export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
   const { signOut } = useSignOut();
   const { t } = useTranslation("company");
+  const { company, isLoading, isError } = useCompany(companyId);
+  const {
+    data: taskStatus,
+    isLoading: isLoadingTaskStatus,
+    isError: isErrorTaskStatus,
+  } = useTaskStatusByCompany(companyId || "");
+
+  // const { data: smartCompanyId } = useSmartCompanyId(company?.founder_id || "");
+  // const { data: companyInfo } = useCompanyInfo(company?.founder_id || "");
+  // const { data: exeTokenContract } = useExeTokenContract(
+  //   company?.founder_id || ""
+  // );
+  // const { data: nonExeTokenContract } = useNonExeTokenContract(
+  //   company?.founder_id || ""
+  // );
+
+  // useEffect(() => {
+  //   console.log("founder_id", company?.founder_id);
+  //   console.log("smartCompanyId", smartCompanyId);
+  //   console.log("companyInfo", companyInfo);
+  //   console.log("exeTokenContract", exeTokenContract);
+  //   console.log("nonExeTokenContract", nonExeTokenContract);
+  // }, [
+  //   smartCompanyId,
+  //   companyInfo,
+  //   exeTokenContract,
+  //   nonExeTokenContract,
+  //   company?.founder_id,
+  // ]);
 
   const {
     isOpen: isOpenAoIModal,
@@ -105,13 +142,6 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
     onOpenChange: onOpenChangeGovAgreementEdit,
   } = useDisclosure();
 
-  const { company, isLoading, isError } = useCompany(companyId);
-  const {
-    data: taskStatus,
-    isLoading: isLoadingTaskStatus,
-    isError: isErrorTaskStatus,
-  } = useTaskStatusByCompany(companyId || "");
-
   console.log("taskStatus", taskStatus);
   useEffect(() => {
     if (isError) {
@@ -160,42 +190,75 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                 {company?.is_active ? t("Active") : t("Inactive")}
               </Chip>
             </Stack>
-            <Stack className="w-full h-fit gap-0 pb-6 border-b-1 border-b-divider">
+            <Stack className="w-full max-w-xl h-fit gap-0 pb-6 border-b-1 border-b-divider">
               <Stack
                 h
-                className="w-full max-w-lg h-full gap-2 items-center justify-between py-3"
+                className="w-full h-full gap-2 items-center justify-between py-3"
               >
-                <div className="font-label-md">{t("Founder")}</div>
-                <div className=" font-label-md text-ellipsis overflow-hidden text-nowrap">
-                  {company?.founder_id || "None"}
+                <div className="font-label-md">会社名(日本語名/英語名)</div>
+
+                <div className="font-label-md">
+                  {company?.COMPANY_NAME?.["ja-jp"] || "未設定"} /{" "}
+                  {company?.COMPANY_NAME?.["en-us"] || "未設定"}
                 </div>
               </Stack>
               <Stack
                 h
-                className="w-full max-w-lg h-full gap-2 items-center justify-between py-3"
+                className="w-full h-full gap-2 items-center justify-between py-3"
+              >
+                <div className="font-label-md">{t("Founder")}</div>
+
+                <div className="font-label-md">
+                  {company?.founder_id || "未設定"}
+                </div>
+              </Stack>
+              {company?.contract_address && (
+                <Stack
+                  h
+                  className="w-full h-full gap-2 items-center justify-between py-3"
+                >
+                  <div className="font-label-md flex-shrink-0">
+                    コントラクトアドレス
+                  </div>
+                  <Link
+                    color="primary"
+                    isExternal
+                    showAnchorIcon
+                    href={`${process.env.NEXT_PUBLIC_EXPLORER_URL}/address/${company?.contract_address}`}
+                    className="w-full"
+                  >
+                    <span className="font-label-md w-full text-ellipsis overflow-hidden text-right">
+                      {company?.contract_address || "未設定"}
+                    </span>
+                  </Link>
+                </Stack>
+              )}
+              <Stack
+                h
+                className="w-full h-full gap-2 items-center justify-between py-3"
               >
                 <div className="font-label-md">{t("Jurisdiction")}</div>
                 <div className=" font-label-md">
-                  {company?.jurisdiction?.toUpperCase() || "None"}
+                  {company?.jurisdiction?.toUpperCase() || "未設定"}
                 </div>
               </Stack>
               <Stack
                 h
-                className="w-full max-w-lg h-full gap-2 items-center justify-between py-3"
+                className="w-full h-full gap-2 items-center justify-between py-3"
               >
                 <div className="font-label-md">{t("Company Type")}</div>
                 <div className=" font-label-md">
-                  {company?.company_type?.toUpperCase() || "None"}
+                  {company?.company_type?.toUpperCase() || "未設定"}
                 </div>
               </Stack>
               {company?.email && (
                 <Stack
                   h
-                  className="w-full max-w-lg h-full gap-2 items-center justify-between py-3"
+                  className="w-full h-full gap-2 items-center justify-between py-3"
                 >
                   <div className="font-label-md">{t("Company Email")}</div>
                   <div className=" font-label-md">
-                    {company?.email || "None"}
+                    {company?.email || "未設定"}
                   </div>
                 </Stack>
               )}
