@@ -13,6 +13,7 @@ import { ACCOUNT_FACTORY_ADDRESS } from "@/constants";
 import { useSetContractURI } from "@/hooks/useContract";
 import { useMe } from "@/hooks/useMe";
 import { hasAccount } from "@/utils/api/user";
+import { waitForReceipt } from "thirdweb";
 
 export type UseGoogleAuthProps = {
   /**
@@ -114,8 +115,23 @@ export const useGoogleAuth = (props?: UseGoogleAuthProps) => {
 
     console.log("signIn: smartAccount?.address: ", smartAccount?.address);
 
-    // アカウント作成
-    sendTx(smartAccount?.address);
+    // アカウントが既に存在するかチェック
+    const accountExists = await hasAccount(smartAccount?.address);
+
+    // 初回ログイン時のみアカウント作成処理を実行
+    if (!accountExists) {
+      console.log("初回ログイン: スマートアカウント作成処理を実行");
+      const txHash = await sendTx(smartAccount?.address);
+      console.log("txHash: ", txHash);
+
+      if (!txHash) throw new Error("txHash is undefined");
+
+      await waitForReceipt({
+        transactionHash: txHash,
+        client,
+        chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
+      });
+    }
 
     try {
       const nonceRes = await fetch(
