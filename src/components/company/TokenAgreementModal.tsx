@@ -6,6 +6,7 @@ import {
   ModalFooter,
   Button,
   ModalProps,
+  Spinner,
 } from "@heroui/react";
 import { useTranslation } from "next-i18next";
 import { TokenAgreementPreview } from "./TokenAgreementPreview";
@@ -99,7 +100,9 @@ export const TokenAgreementModal: FC<TokenAgreementModalProps> = ({
               <Button
                 color="primary"
                 variant="flat"
-                startContent={isPdfLoading ? <Spinner size="sm" /> : <LuDownload />}
+                startContent={
+                  isPdfLoading ? <Spinner size="sm" /> : <LuDownload />
+                }
                 onPress={handlePdfExport}
                 isDisabled={isPdfLoading}
                 isLoading={isPdfLoading}
