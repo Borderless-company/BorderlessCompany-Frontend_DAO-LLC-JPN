@@ -19,6 +19,7 @@ import { motion } from "framer-motion";
 import {
   scrProxyContract,
   useCreateSmartCompany,
+  useInitialMintExeToken,
   useMintExeToken,
   useSetContractURI,
 } from "@/hooks/useContract";
@@ -75,7 +76,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
     is_active: company?.is_active || false,
   });
 
-  const { sendTx: sendMintExeTokenTx } = useMintExeToken();
+  const { sendTx: sendMintExeTokenTx } = useInitialMintExeToken();
 
   const subText = useMemo(() => {
     switch (activationStatus) {
@@ -122,137 +123,141 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
         throw new Error("Token not found");
       }
 
-      // // Executive Token メタデータ
-      // const exeTokenMetadata = {
-      //   name: exeToken.name || "Executive Token",
-      //   description: exeToken.description || "",
-      //   image: exeToken.image || "",
-      // };
+      // Executive Token メタデータ
+      const exeTokenMetadata = {
+        name: exeToken.name || "Executive Token",
+        description: exeToken.description || "",
+        image: exeToken.image || "",
+      };
 
-      // // Non-Executive Token メタデータ
-      // const nonExeTokenMetadata = {
-      //   name: nonExeToken.name || "Non-Executive Token",
-      //   description: nonExeToken.description || "",
-      //   image: nonExeToken.image || "",
-      // };
+      // Non-Executive Token メタデータ
+      const nonExeTokenMetadata = {
+        name: nonExeToken.name || "Non-Executive Token",
+        description: nonExeToken.description || "",
+        image: nonExeToken.image || "",
+      };
 
-      // // メタデータをアップロード
-      // const [exeMetadataResult, nonExeMetadataResult] = await Promise.all([
-      //   uploadJSON("token-metadata", `${exeToken.id}.json`, exeTokenMetadata),
-      //   uploadJSON(
-      //     "token-metadata",
-      //     `${nonExeToken.id}.json`,
-      //     nonExeTokenMetadata
-      //   ),
-      // ]);
+      // メタデータをアップロード
+      const [exeMetadataResult, nonExeMetadataResult] = await Promise.all([
+        uploadJSON("token-metadata", `${exeToken.id}.json`, exeTokenMetadata),
+        uploadJSON(
+          "token-metadata",
+          `${nonExeToken.id}.json`,
+          nonExeTokenMetadata
+        ),
+      ]);
 
-      // if (exeMetadataResult.error || nonExeMetadataResult.error) {
-      //   throw new Error("Failed to upload token metadata");
-      // }
+      if (exeMetadataResult.error || nonExeMetadataResult.error) {
+        throw new Error("Failed to upload token metadata");
+      }
 
-      // console.log("Token metadata uploaded successfully");
-      // console.log("Executive token metadata URL:", exeMetadataResult.publicUrl);
-      // console.log(
-      //   "Non-executive token metadata URL:",
-      //   nonExeMetadataResult.publicUrl
-      // );
+      console.log("Token metadata uploaded successfully");
+      console.log("Executive token metadata URL:", exeMetadataResult.publicUrl);
+      console.log(
+        "Non-executive token metadata URL:",
+        nonExeMetadataResult.publicUrl
+      );
 
-      // // Smart Companyデプロイ開始
-      // setActivationStatus("deploying");
-      // const abiCoder = new ethers.AbiCoder();
+      // Smart Companyデプロイ開始
+      setActivationStatus("deploying");
+      const abiCoder = new ethers.AbiCoder();
 
-      // const executiveTokenExtraParams = abiCoder.encode(
-      //   ["string", "string", "string", "string", "bool", "uint256"],
-      //   [
-      //     exeToken.name,
-      //     exeToken.symbol,
-      //     `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${exeToken.id}`,
-      //     ".json",
-      //     true,
-      //     0,
-      //   ]
-      // );
-      // const nonExecutiveTokenExtraParams = abiCoder.encode(
-      //   ["string", "string", "string", "string", "bool", "uint256"],
-      //   [
-      //     nonExeToken.name,
-      //     nonExeToken.symbol,
-      //     `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${nonExeToken.id}`,
-      //     ".json",
-      //     true,
-      //     0,
-      //   ]
-      // );
+      const executiveTokenExtraParams = abiCoder.encode(
+        ["string", "string", "string", "string", "bool", "uint256"],
+        [
+          exeToken.name,
+          exeToken.symbol,
+          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${exeToken.id}`,
+          ".json",
+          true,
+          0,
+        ]
+      );
+      const nonExecutiveTokenExtraParams = abiCoder.encode(
+        ["string", "string", "string", "string", "bool", "uint256"],
+        [
+          nonExeToken.name,
+          nonExeToken.symbol,
+          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${nonExeToken.id}`,
+          ".json",
+          true,
+          0,
+        ]
+      );
 
-      // // 実際の会社名を取得
-      // const actualCompanyName =
-      //   company?.COMPANY_NAME?.["ja-jp"] ||
-      //   company?.COMPANY_NAME?.["en-us"] ||
-      //   company?.COMPANY_NAME?.id; // フォールバックとしてIDを使用
-      // console.log(`actualCompanyName: ${actualCompanyName}`);
-      // console.log(`company?.COMPANY_NAME:`, company?.COMPANY_NAME);
+      // 実際の会社名を取得
+      const actualCompanyName =
+        company?.COMPANY_NAME?.["ja-jp"] ||
+        company?.COMPANY_NAME?.["en-us"] ||
+        company?.COMPANY_NAME?.id; // フォールバックとしてIDを使用
+      console.log(`actualCompanyName: ${actualCompanyName}`);
+      console.log(`company?.COMPANY_NAME:`, company?.COMPANY_NAME);
 
-      // if (
-      //   !formData?.company_number ||
-      //   !company?.company_type ||
-      //   !actualCompanyName ||
-      //   actualCompanyName.trim() === "" ||
-      //   !aoi?.establishment_date ||
-      //   !company?.jurisdiction ||
-      //   !aoi?.location ||
-      //   !smartAccount?.address
-      // ) {
-      //   throw new Error("Company data is missing or invalid");
-      // }
+      if (
+        !formData?.company_number ||
+        !company?.company_type ||
+        !actualCompanyName ||
+        actualCompanyName.trim() === "" ||
+        !aoi?.establishment_date ||
+        !company?.jurisdiction ||
+        !aoi?.location ||
+        !smartAccount?.address
+      ) {
+        throw new Error("Company data is missing or invalid");
+      }
 
-      // // トランザクションを送信してハッシュを取得
-      // const transactionHash = await sendCreateCompanyTx({
-      //   scId: formData?.company_number,
-      //   beacon: SCT_BEACON_ADDRESS,
-      //   legalEntityCode: "SC_JP_DAOLLC",
-      //   companyName: actualCompanyName, // 実際の会社名を使用
-      //   establishmentDate: aoi?.establishment_date,
-      //   jurisdiction: company?.jurisdiction,
-      //   entityType: company?.company_type,
-      //   scDeployParam: "0x" as `0x${string}`,
-      //   companyInfo: [
-      //     aoi?.location,
-      //     aoi?.location,
-      //     aoi?.location,
-      //     aoi?.location,
-      //   ],
-      //   scsBeaconProxy: [
-      //     GOVERNANCE_BEACON_ADDRESS,
-      //     LETS_JP_LLC_EXE_BEACON_ADDRESS,
-      //     LETS_JP_LLC_NON_EXE_BEACON_ADDRESS,
-      //   ],
-      //   scsDeployParams: [
-      //     "0x",
-      //     executiveTokenExtraParams,
-      //     nonExecutiveTokenExtraParams,
-      //   ] as `0x${string}`[],
-      // });
+      // トランザクションを送信してハッシュを取得
+      const transactionHash = await sendCreateCompanyTx({
+        scId: formData?.company_number,
+        beacon: SCT_BEACON_ADDRESS,
+        legalEntityCode: "SC_JP_DAOLLC",
+        companyName: actualCompanyName, // 実際の会社名を使用
+        establishmentDate: aoi?.establishment_date,
+        jurisdiction: company?.jurisdiction,
+        entityType: company?.company_type,
+        scDeployParam: "0x" as `0x${string}`,
+        companyInfo: [
+          aoi?.location,
+          aoi?.location,
+          aoi?.location,
+          aoi?.location,
+          aoi?.location,
+          aoi?.location,
+          aoi?.location,
+          aoi?.location,
+        ],
+        scsBeaconProxy: [
+          GOVERNANCE_BEACON_ADDRESS,
+          LETS_JP_LLC_EXE_BEACON_ADDRESS,
+          LETS_JP_LLC_NON_EXE_BEACON_ADDRESS,
+        ],
+        scsDeployParams: [
+          "0x",
+          executiveTokenExtraParams,
+          nonExecutiveTokenExtraParams,
+        ] as `0x${string}`[],
+      });
 
-      // console.log("Transaction hash:", transactionHash);
+      console.log("Transaction hash:", transactionHash);
 
-      // // thirdwebのwaitForReceiptを使用してトランザクションの完了を待機
-      // const chain = defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID));
+      // thirdwebのwaitForReceiptを使用してトランザクションの完了を待機
+      const chain = defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID));
 
-      // const transactionReceipt = await waitForReceipt({
-      //   client,
-      //   chain,
-      //   transactionHash,
-      // });
+      const transactionReceipt = await waitForReceipt({
+        client,
+        chain,
+        transactionHash,
+      });
 
-      // console.log("Transaction confirmed:", transactionReceipt);
+      console.log("Transaction confirmed:", transactionReceipt);
 
-      // // トランザクションが失敗した場合はエラーを投げる
-      // if (transactionReceipt.status === "reverted") {
-      //   throw new Error("トランザクションが失敗しました");
-      // }
+      // トランザクションが失敗した場合はエラーを投げる
+      if (transactionReceipt.status === "reverted") {
+        throw new Error("トランザクションが失敗しました");
+      }
 
-      // // トークンのアドレスを取得
-      // setActivationStatus("gettingTokenAddress");
+      // トークンのアドレスを取得
+      setActivationStatus("gettingTokenAddress");
       const exeTokenAddress = (await readContract({
         contract: scrProxyContract(),
         method: SERVICE_FACTORY_ABI.abi.find(
@@ -269,14 +274,14 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
         params: [smartAccount?.address, 4],
       })) as string;
 
-      // await updateToken({
-      //   id: exeToken.id,
-      //   contract_address: exeTokenAddress,
-      // });
-      // await updateToken({
-      //   id: nonExeToken.id,
-      //   contract_address: nonExeTokenAddress,
-      // });
+      await updateToken({
+        id: exeToken.id,
+        contract_address: exeTokenAddress,
+      });
+      await updateToken({
+        id: nonExeToken.id,
+        contract_address: nonExeTokenAddress,
+      });
 
       console.log("exeTokenAddress", exeTokenAddress);
       console.log("nonExeTokenAddress", nonExeTokenAddress);
@@ -285,16 +290,17 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       setActivationStatus("mintingExeToken");
 
       if (members?.length) {
-        await Promise.all(
-          members.map(async (member) => {
-            if (!member.user_id) return;
-            const tx = await sendMintExeTokenTx(
-              exeTokenAddress,
-              member.user_id
-            );
-            console.log("mint tx", tx);
-          })
-        );
+        const memberAddresses = members
+          .map((member) => member.user_id)
+          .filter((address) => address !== null);
+        const tx = await sendMintExeTokenTx(exeTokenAddress, memberAddresses);
+        console.log("tx", tx);
+        const receipt = await waitForReceipt({
+          client,
+          chain,
+          transactionHash: tx,
+        });
+        console.log("receipt", receipt);
       }
 
       // メンバーを追加

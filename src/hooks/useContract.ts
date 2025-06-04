@@ -201,6 +201,24 @@ export const useMintExeToken = () => {
   return { sendTx };
 };
 
+export const useInitialMintExeToken = () => {
+  const { mutateAsync: sendTransaction } = useSendTransaction();
+  const sendTx = async (exeTokenAddress: string, tos: string[]) => {
+    const contract = exeTokenContract(exeTokenAddress);
+    const transaction = prepareContractCall({
+      contract: contract,
+      method: EXE_TOKEN_ABI.abi.find(
+        (item) => item.name === "initialMint"
+      ) as any,
+      params: [tos],
+    });
+    const result = await sendTransaction(transaction);
+    return result.transactionHash;
+  };
+
+  return { sendTx };
+};
+
 export const useVote = () => {
   const { mutate: sendTransaction } = useSendTransaction();
   const sendTx = async (
