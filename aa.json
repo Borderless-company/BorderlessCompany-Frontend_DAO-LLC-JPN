@@ -1,0 +1,1662 @@
+Minamoto🍅
+tomato08722
+オンライン
+
+cardene — 2025/05/26 11:27
+@Minamoto🍅 
+会社フィールドの設定
+https://github.com/Borderless-company/Borderless-Contract/blob/feature/corporate_charter_contract/contract/test/utils/DeployFixture.ts#L191-L200
+cardene — 2025/05/26 11:39
+tokenUri関数で取得できるメタデータが固定の場合とそうでない場合を想定し、デプロイ時の引数にtokenIdを固定するかどうかのフラグを渡してコントラクトで管理しておく。,
+Minamoto🍅 — 2025/05/27 0:13
+@cardene 
+そういえば、createCompanyできるアドレスのwhitelist登録ってどうやったらできますか？！
+cardene — 2025/05/27 7:15
+SCRで運営アドレスからFOUNDER_ROLEを付与することでできます！ 
+cardene — 2025/05/27 9:22
+@Minamoto🍅 
+LETSトークンコントラクトの引数に、「metadataが固定かtokenIdごとに異なるか」と「発行上限」の値を渡せる様に変更しました！
+以下のtrue/falseが「metadataが固定かtokenIdごとに異なるか」で、2000という値が「発行上限」です。
+
+https://github.com/Borderless-company/Borderless-Contract/blob/main/contract/test/utils/CreateCompany.ts#L44-L45
+
+Soneium Minatoテストネットにコントラクトデプロイしました🙏🏻
+
+https://github.com/Borderless-company/Borderless-Contract/tree/main/contract#contract
+
+@TO @Minamoto🍅 
+
+Deepwikiでコントラクト側のドキュメントを生成させました🙏🏻
+内容はまだしっかり確認はできていないです。
+
+https://deepwiki.com/Borderless-company/Borderless-Contract/1-overview 
+DeepWiki
+Borderless-company/Borderless-Contract | DeepWiki
+The Borderless Contract system is a comprehensive smart contract platform for creating and managing decentralized Japanese Limited Liability Companies (LLCs) with token-based governance. The system en
+GitHub
+Borderless-Contract/contract/test/utils/CreateCompany.ts at main ·...
+Contribute to Borderless-company/Borderless-Contract development by creating an account on GitHub.
+Contribute to Borderless-company/Borderless-Contract development by creating an account on GitHub.
+GitHub
+Borderless-Contract/contract at main · Borderless-company/Borderle...
+Contribute to Borderless-company/Borderless-Contract development by creating an account on GitHub.
+Contribute to Borderless-company/Borderless-Contract development by creating an account on GitHub.
+Minamoto🍅 — 2025/05/27 10:55
+これはかるっちに頼まなきゃいけないですかね
+Minamoto🍅 — 2025/05/27 10:57
+素晴らしい！ありがとうございます！
+このトークンの実装は soneuimのみですか？baseには反映されてませんか？
+cardene — 2025/05/27 10:57
+どちらにも反映済みです！
+cardene — 2025/05/27 10:57
+現状だとそうです！
+exploreでverifyすればそちらから叩けます！
+Minamoto🍅 — 2025/05/27 10:58
+verifyしてもらえると嬉しいですが、取り急ぎ後ほど追加してほしいアドレス送ります！
+早くのこの運営アドレスの取り扱い決めないとですね〜
+Minamoto🍅 — 2025/05/27 11:11
+@cardene 
+0xe56fd0e04c6C745FDd6DAA031A3C10f41C9C04D1
+0x07aFF7e26329C362395271E7B6BA6688ac300A2F
+
+この二つにfounder_role付与お願いしたいです！
+cardene — 2025/05/27 11:32
+今夜対応でも問題ないでしょうか？
+今夜合わせてverify対応しようかなと思ってます！
+cardene — 2025/05/27 11:32
+ですね…
+ちょっとまだ決められてなかったのそこも今夜やります…
+Minamoto🍅 — 2025/05/27 11:44
+オッケーです⭕️
+cardene — 2025/05/27 17:09
+確認です！
+ロール付与はSoneiumとbaseどちらで行った方が良いでしょうか？
+Minamoto🍅 — 2025/05/27 17:35
+あ、baseで！
+cardene — 2025/05/28 8:42
+@Minamoto🍅 
+遅くなりました！
+コントラクト更新して、FOUNDER_ROLEをいただいた2つのアドレスに付与しました！
+アドレスは以下です。
+https://github.com/Borderless-company/Borderless-Contract/tree/main/contract#contract
+
+以下のExplorerから読み込み・書き込みができます！
+https://base-sepolia.blockscout.com/address/0x0eFAB975d9A08bB38eDEBadbA3E82F2d6F57C82f?tab=read_custom_methods
+
+hasRoleという関数から、ロールが付与されているかを確認できます（添付画像1枚目）。
+roleという引数にはFOUNDER_ROLEという読み取り関数を実行した値を入れてください（添付画像2枚目）。
+画像
+画像
+Base Sepolia address details for 0x0eFAB975d9A08bB38eDEBadbA3E82F2d...
+GitHub
+Borderless-Contract/contract at main · Borderless-company/Borderle...
+Contribute to Borderless-company/Borderless-Contract development by creating an account on GitHub.
+Borderless-Contract/contract at main · Borderless-company/Borderle...
+@Minamoto🍅 
+SCのデプロイができたらそちらもVerify手動でする必要があるので、アドレス教えていただければこちらで行います！
+Minamoto🍅 — 昨日 0:35
+@cardene 起きてる？
+コントラクトにアクセス権がないって言われるんだけど、Proxyのアドレス間違ってるのかなあ
+あ、間違ってたかも
+Minamoto🍅 — 昨日 1:10
+コントラクトアドレスはちゃんとしたものに変えたけど、transaction通らねえ〜
+pay_transaction_modal_chain_token_not_supported っていうエラーレスポンスが帰ってきてるけどなんの話だこれ
+Minamoto🍅 — 昨日 1:23
+baseのrpcへのestimate_gasの関数実行で詰まってるな、、、謎い
+さてはbase seopoliaのgus sponsoredが効いてないのか、、、？
+thirdwebのダッシュボードへのセッションが切れて進めないので今日はここまで。
+cardene — 昨日 9:05
+いくつか確認させてください！
+
+・estimate_gasの関数実行というのは、thirdweb側ですか？Borderless側ですか？
+
+・Factoryコントラクトは新しいものに変更済みでしょうか？
+
+・環境変数のNEXT_PUBLIC_THIRDWEB_CLIENT_IDも更新済みでしょうか？
+Minamoto🍅 — 昨日 11:57
+・estimate_gasの関数実行というのは、thirdweb側ですか？Borderless側ですか？
+恐らくthirdweb側です！
+・Factoryコントラクトは新しいものに変更済みでしょうか？
+0x0eFAB975d9A08bB38eDEBadbA3E82F2d6F57C82f
+こちら使ってます。Base sepolia の　Proxyのアドレスです
+・環境変数のNEXT_PUBLIC_THIRDWEB_CLIENT_IDも更新済みでしょうか？
+こちらも最新です！
+thirdweb側にこんな感じのリクエストが飛んでいて、
+最後のeth_estimateGasでrevertされているみたいです
+画像
+cardene — 昨日 12:20
+ごめんなさい！
+AAの方のfactoryコントラクトのことです！
+cardene — 昨日 12:21
+estimate gasでの失敗の場合、関数実行じの引数や権限が足りないなどの原因が考えられますね…
+実行しているコードもらうことできますか？
+もしくはgithubのPRで共有いただければと思います！
+Minamoto🍅 — 昨日 12:27
+なるほど。。。
+
+ここがuseContract内のcreateSmartCompany hookで
+https://github.com/Borderless-company/BorderlessCompany-Frontend_DAO-LLC-JPN/blob/feature/contract/src/hooks/useContract.ts#L92C1-L132C8
+ここが使用されているところですね
+https://github.com/Borderless-company/BorderlessCompany-Frontend_DAO-LLC-JPN/blob/feature/contract/src/components/company/CompanyActivation.tsx#L144-L209
+cardene — 昨日 12:35
+⁠smartcontract-feedback⁠
+
+呼び出す側でここのアップデート対応できていますでしょうか？ 
+Minamoto🍅 — 昨日 12:41
+あーーーそれかもです！
+seneiumのみのアップデートと思い込んでました。letsの引数再度確認します！
+cardene — 昨日 12:45
+お願いします！
+Minamoto🍅 — 昨日 12:45
+maxSupplyの引数ですが、発行上限を設定しない場合どうすればいいですか？・
+cardene — 昨日 12:46
+あ〜その設定忘れてました…
+対応しておきます！
+0渡したら発行上限なしという判断にしようかなと思います！
+Minamoto🍅 — 昨日 12:46
+あざす！
+お
+transaction通りました！
+神！
+@cardene 
+デプロイされたSCのコントラクトアドレスってどっから取得できますか
+Minamoto🍅 — 昨日 12:54
+https://base-sepolia.blockscout.com/tx/0x902c4a9e90a1d8e018f0a108a2fdd37f9a0ea0bbf36e8ab6220d8be9f71abf70?tab=index
+
+trasactionはこれ
+Base Sepolia transaction 0x902c4a9e90a1d8e018f0a108a2fdd37f9a0ea0bb...
+cardene — 昨日 12:55
+トランザクション通ってよかったです！
+
+scの取得は以前お伝えしたgetCompanyInfoで取得できます！
+founderのアドレスから法人番号取得して、法人番号で検索かけるとお伝えした部分です！
+
+https://github.com/Borderless-company/Borderless-Contract/blob/main/contract/test/utils/CreateCompany.ts#L87
+GitHub
+Borderless-Contract/contract/test/utils/CreateCompany.ts at main ·...
+Contribute to Borderless-company/Borderless-Contract development by creating an account on GitHub.
+Contribute to Borderless-company/Borderless-Contract development by creating an account on GitHub.
+Minamoto🍅 — 昨日 23:29
+@cardene 
+ちょっと質問があり、話せますか？！
+cardene — 昨日 23:40
+はい！
+Minamoto🍅 — 昨日 23:47
+https://meet.google.com/thu-xwto-xpc
+Meet
+Real-time meetings by Google. Using your browser, share your video, desktop, and presentations with teammates and customers.
+画像
+こちらからおなしゃす！
+画像
+cardene — 0:18
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "SCRProxy",
+  "sourceName": "contracts/core/Proxy/mock/SCRProxy.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "founder",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "scid",
+          "type": "string"
+        }
+      ],
+      "name": "AlreadyEstablish",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "scid",
+          "type": "string"
+        }
+      ],
+      "name": "AlreadyRegisteredScid",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "scid",
+          "type": "string"
+        }
+      ],
+      "name": "FailedDeploySmartCompany",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "selector",
+          "type": "bytes4"
+        }
+      ],
+      "name": "ImplementationNotFound",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "selectors",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "implementations",
+          "type": "uint256"
+        }
+      ],
+      "name": "InvalidBulkLength",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "expected",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "length",
+          "type": "uint256"
+        }
+      ],
+      "name": "InvalidCompanyInfoLength",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "founder",
+          "type": "address"
+        }
+      ],
+      "name": "InvalidFounder",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+... （残り 1,169 行）
+折りたたみ
+message.txt
+43 KB
+@Minamoto🍅
+[
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "founder",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "scid",
+          "type": "string"
+        }
+      ],
+      "name": "AlreadyEstablish",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "scid",
+          "type": "string"
+        }
+      ],
+      "name": "AlreadyRegisteredScid",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "scid",
+          "type": "string"
+        }
+      ],
+      "name": "FailedDeploySmartCompany",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "selector",
+          "type": "bytes4"
+        }
+      ],
+      "name": "ImplementationNotFound",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "selectors",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "implementations",
+          "type": "uint256"
+        }
+      ],
+      "name": "InvalidBulkLength",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "expected",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "length",
+          "type": "uint256"
+        }
+      ],
+      "name": "InvalidCompanyInfoLength",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "founder",
+          "type": "address"
+        }
+      ],
+      "name": "InvalidFounder",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "implementation",
+          "type": "address"
+        }
+... （残り 1,159 行）
+折りたたみ
+message.txt
+28 KB
+﻿
+[
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "founder",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "scid",
+          "type": "string"
+        }
+      ],
+      "name": "AlreadyEstablish",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "scid",
+          "type": "string"
+        }
+      ],
+      "name": "AlreadyRegisteredScid",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "scid",
+          "type": "string"
+        }
+      ],
+      "name": "FailedDeploySmartCompany",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "selector",
+          "type": "bytes4"
+        }
+      ],
+      "name": "ImplementationNotFound",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "selectors",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "implementations",
+          "type": "uint256"
+        }
+      ],
+      "name": "InvalidBulkLength",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "expected",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "length",
+          "type": "uint256"
+        }
+      ],
+      "name": "InvalidCompanyInfoLength",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "founder",
+          "type": "address"
+        }
+      ],
+      "name": "InvalidFounder",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "implementation",
+          "type": "address"
+        }
+      ],
+      "name": "InvalidImplementation",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "company",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "service",
+          "type": "address"
+        }
+      ],
+      "name": "NotActivateService",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "implementation",
+          "type": "address"
+        }
+      ],
+      "name": "NotOwnerOrInitialized",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "beacon",
+          "type": "address"
+        }
+      ],
+      "name": "SmartCompanyNotOnline",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "founder",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "company",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "scid",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "services",
+          "type": "address[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum ServiceType[]",
+          "name": "serviceTypes",
+          "type": "uint8[]"
+        }
+      ],
+      "name": "DeploySmartCompany",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes4",
+          "name": "selector",
+          "type": "bytes4"
+        }
+      ],
+      "name": "ImplementationDeleted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes4",
+          "name": "selector",
+          "type": "bytes4"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newImplementation",
+          "type": "address"
+        }
+      ],
+      "name": "ImplementationUpgraded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes4",
+          "name": "newSelector",
+          "type": "bytes4"
+        }
+      ],
+      "name": "NewFunctionSelectorAdded",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "DEFAULT_ADMIN_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "FOUNDER_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "legalEntityCode",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "field",
+          "type": "string"
+        }
+      ],
+      "name": "addCompanyInfoFields",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4[]",
+          "name": "selectors",
+          "type": "bytes4[]"
+        },
+        {
+          "internalType": "address",
+          "name": "implementation_",
+          "type": "address"
+        }
+      ],
+      "name": "bulkSetImplementation",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4[]",
+          "name": "selectors",
+          "type": "bytes4[]"
+        },
+        {
+          "internalType": "address[]",
+          "name": "implementations",
+          "type": "address[]"
+        }
+      ],
+      "name": "bulkSetImplementation",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "beacon",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "isOnline",
+          "type": "bool"
+        }
+      ],
+      "name": "changeSCRBeaconOnline",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "beacon",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "isOnline",
+          "type": "bool"
+        }
+      ],
+      "name": "changeServiceFactoryBeaconOnline",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "scid",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "scBeaconProxy",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "legalEntityCode",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "companyName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "establishmentDate",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "jurisdiction",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "entityType",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes",
+          "name": "scDeployParams",
+          "type": "bytes"
+        },
+        {
+          "internalType": "string[]",
+          "name": "companyInfo",
+          "type": "string[]"
+        },
+        {
+          "internalType": "address[]",
+          "name": "scsBeaconProxy",
+          "type": "address[]"
+        },
+        {
+          "internalType": "bytes[]",
+          "name": "scsDeployParams",
+          "type": "bytes[]"
+        }
+      ],
+      "name": "createSmartCompany",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "company",
+          "type": "address"
+        },
+        {
+          "internalType": "address[]",
+          "name": "services",
+          "type": "address[]"
+        },
+        {
+          "internalType": "enum ServiceType[]",
+          "name": "serviceTypes",
+          "type": "uint8[]"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "legalEntityCode",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "fieldIndex",
+          "type": "uint256"
+        }
+      ],
+      "name": "deleteCompanyInfoFields",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "scid",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "companyInfoField",
+          "type": "string"
+        }
+      ],
+      "name": "getCompanyField",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "scid",
+          "type": "string"
+        }
+      ],
+      "name": "getCompanyInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "companyName",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "companyAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "founder",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "establishmentDate",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "jurisdiction",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "entityType",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "createAt",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "updateAt",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct ICompanyInfoStructs.CompanyInfo",
+          "name": "companyInfo",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "legalEntityCode",
+          "type": "string"
+        }
+      ],
+      "name": "getCompanyInfoFields",
+      "outputs": [
+        {
+          "internalType": "string[]",
+          "name": "fields",
+          "type": "string[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getFacade",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "founder",
+          "type": "address"
+        },
+        {
+          "internalType": "enum ServiceType",
+          "name": "serviceType",
+          "type": "uint8"
+        }
+      ],
+      "name": "getFounderService",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "selector",
+          "type": "bytes4"
+        }
+      ],
+      "name": "getImplementation",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getRoleAdmin",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "beacon",
+          "type": "address"
+        }
+      ],
+      "name": "getSCRBeacon",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "implementation",
+              "type": "address"
+            },
+            {
+              "internalType": "bool",
+              "name": "isOnline",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "proxyCount",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IBeaconUpgradeableBaseStructs.Beacon",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "proxy",
+          "type": "address"
+        }
+      ],
+      "name": "getSCRProxy",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "beacon",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct IBeaconUpgradeableBaseStructs.Proxy",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "beacon",
+          "type": "address"
+        }
+      ],
+      "name": "getServiceFactoryBeacon",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "implementation",
+              "type": "address"
+            },
+            {
+              "internalType": "bool",
+              "name": "isOnline",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "proxyCount",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IBeaconUpgradeableBaseStructs.Beacon",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "proxy",
+          "type": "address"
+        }
+      ],
+      "name": "getServiceFactoryProxy",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "beacon",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct IBeaconUpgradeableBaseStructs.Proxy",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "beacon",
+          "type": "address"
+        }
+      ],
+      "name": "getServiceType",
+      "outputs": [
+        {
+          "internalType": "enum ServiceType",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "founder",
+          "type": "address"
+        }
+      ],
+      "name": "getSmartCompanyId",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "scid",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "grantRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "hasRole",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "implementation",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "callerConfirmation",
+          "type": "address"
+        }
+      ],
+      "name": "renounceRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "revokeRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "adminRole",
+          "type": "bytes32"
+        }
+      ],
+      "name": "setAdminRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "scid",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "field",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "value",
+          "type": "string"
+        }
+      ],
+      "name": "setCompanyInfo",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "selector",
+          "type": "bytes4"
+        },
+        {
+          "internalType": "address",
+          "name": "implementation_",
+          "type": "address"
+        }
+      ],
+      "name": "setImplementation",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "letsBeacon",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "letsSaleBeacon",
+          "type": "address"
+        }
+      ],
+      "name": "setLetsSaleBeacon",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "implementation_",
+          "type": "address"
+        }
+      ],
+      "name": "setOnceInitialized",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "scImplementation",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "scName",
+          "type": "string"
+        }
+      ],
+      "name": "setSCContract",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "beacon",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "implementation",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "enum ServiceType",
+          "name": "serviceType",
+          "type": "uint8"
+        }
+      ],
+      "name": "setService",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "beacon",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "supportsInterfaces",
+      "outputs": [
+        {
+          "internalType": "bytes4[]",
+          "name": "",
+          "type": "bytes4[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "legalEntityCode",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "fieldIndex",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "field",
+          "type": "string"
+        }
+      ],
+      "name": "updateCompanyInfoFields",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "scBeacon",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "newSCImplementation",
+          "type": "address"
+        }
+      ],
+      "name": "updateSCContract",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "beacon",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        }
+      ],
+      "name": "updateSCRBeaconName",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "implementation",
+              "type": "address"
+            },
+            {
+              "internalType": "bool",
+              "name": "isOnline",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "proxyCount",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IBeaconUpgradeableBaseStructs.Beacon",
+          "name": "beacon_",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "beacon",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        }
+      ],
+      "name": "updateServiceFactoryBeaconName",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "implementation",
+              "type": "address"
+            },
+            {
+              "internalType": "bool",
+              "name": "isOnline",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "proxyCount",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IBeaconUpgradeableBaseStructs.Beacon",
+          "name": "beacon_",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newFacade",
+          "type": "address"
+        }
+      ],
+      "name": "upgradeFacade",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+message.txt
+28 KB
