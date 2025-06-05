@@ -47,8 +47,11 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
         status,
       } = req.body;
 
+      console.log("req.user?.address: ", req.user?.address);
+      console.log("evm_address: ", evm_address);
+      console.log("req.body: ", req.body);
       // 認証されたユーザーのアドレスと作成するユーザーのアドレスが一致することを確認
-      if (req.user?.address !== evm_address) {
+      if (req.user?.address?.toLowerCase() !== evm_address?.toLowerCase()) {
         return res
           .status(403)
           .json({ error: "You can only create your own user record" });
@@ -93,7 +96,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       }
 
       // 認証されたユーザーのアドレスと更新するユーザーのアドレスが一致することを確認
-      if (req.user?.address !== evm_address) {
+      if (req.user?.address?.toLowerCase() !== evm_address?.toLowerCase()) {
         return res
           .status(403)
           .json({ error: "You can only update your own user record" });
@@ -129,7 +132,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
       }
 
       // 認証されたユーザーのアドレスと削除するユーザーのアドレスが一致することを確認
-      if (req.user?.address !== evm_address) {
+      if (req.user?.address?.toLowerCase() !== evm_address?.toLowerCase()) {
         return res
           .status(403)
           .json({ error: "You can only delete your own user record" });

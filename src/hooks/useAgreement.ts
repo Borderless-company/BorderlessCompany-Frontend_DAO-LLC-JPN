@@ -19,6 +19,7 @@ export const useAgreement = () => {
       const response = await fetch("/api/agreement", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ ...props }),
       });
       const json = await response.json();

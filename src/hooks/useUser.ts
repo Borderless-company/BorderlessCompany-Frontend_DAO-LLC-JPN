@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/utils/supabase";
-import { Enums, Tables } from "@/types/schema";
+import { Tables } from "@/types/schema";
 
 export type UpdateUserProps = Partial<Tables<"USER">>;
 
@@ -20,6 +19,7 @@ export const useUser = (evmAddress?: string) => {
       const response = await fetch("/api/user", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ ...props, evm_address: evmAddress }),
       });
       const json = await response.json();
@@ -48,6 +48,7 @@ export const useUser = (evmAddress?: string) => {
       const response = await fetch("/api/user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(props),
       });
       const json = await response.json();
@@ -69,15 +70,23 @@ export const useUser = (evmAddress?: string) => {
     queryKey: ["user", evmAddress],
     queryFn: async () => {
       if (!evmAddress) return undefined;
-      const { data, error } = await supabase
-        .from("USER")
-        .select()
-        .eq("evm_address", evmAddress)
-        .single();
-      if (error) {
-        throw new Error(error.message);
+      
+      const response = await fetch("/api/user", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          return undefined; // ユーザーが見つからない場合はundefinedを返す
+        }
+        const json = await response.json();
+        throw new Error(json.error);
       }
-      return data;
+      
+      const json = await response.json();
+      return json.data;
     },
     enabled: !!evmAddress,
   });
@@ -88,6 +97,7 @@ export const useUser = (evmAddress?: string) => {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({
         evm_address: evmAddress,
       }),

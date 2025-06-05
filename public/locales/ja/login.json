@@ -7,5 +7,21 @@
   "Please review and accept our Terms of Use and Privacy Policy to continue": "利用規約とプライバシーポリシーを確認し、同意してください。",
   "Accept": "同意する",
   "Privacy Policy": "プライバシーポリシー",
-  "Terms of Use": "利用規約"
+  "Terms of Use": "利用規約",
+  "Identity Verification": "本人確認",
+  "Setting up identity verification...": "本人確認の準備中...",
+  "Please complete identity verification to continue": "続行するには本人確認を完了してください",
+  "Enter Your Information": "お客様情報のご入力",
+  "Please provide your personal information to complete registration": "登録を完了するために個人情報をご入力ください",
+  "Name": "お名前",
+  "Furigana": "フリガナ",
+  "Address": "ご住所",
+  "Please enter your name": "お名前を入力してください",
+  "Please enter your furigana": "フリガナを入力してください",
+  "Please enter your address": "ご住所を入力してください",
+  "Complete Registration": "登録を完了",
+  "Registration Complete!": "登録完了！",
+  "Your account has been successfully created. You can now create your company and start building your DAO.": "アカウントが正常に作成されました。会社を作成してDAOの構築を始めることができます。",
+  "Create Your Company": "会社を作成する",
+  "Welcome to Borderless DAO!": "Borderless DAOへようこそ！"
 }
