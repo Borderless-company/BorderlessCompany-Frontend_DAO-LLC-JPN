@@ -12,18 +12,27 @@ const supabase = createClient<Database>(supabaseUrl!, serviveRoleKey!);
 async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   switch (req.method) {
     case "GET": {
-      // 認証されたユーザーの情報を取得
-      console.log("🍅req.user: ", req.user);
-      const userAddress = req.user?.address;
-
-      if (!userAddress) {
-        return res.status(401).json({ error: "User not authenticated" });
+      // クエリパラメータからevm_addressを取得
+      const { evm_address } = req.query;
+      
+      let targetAddress: string;
+      
+      if (evm_address && typeof evm_address === "string") {
+        // 他のユーザーの情報を取得（読み取り専用）
+        targetAddress = evm_address;
+      } else {
+        // クエリパラメータがない場合は認証されたユーザー自身の情報を取得
+        const userAddress = req.user?.address;
+        if (!userAddress) {
+          return res.status(401).json({ error: "User not authenticated" });
+        }
+        targetAddress = userAddress;
       }
 
       const { data, error } = await supabase
         .from("USER")
         .select()
-        .eq("evm_address", userAddress)
+        .eq("evm_address", targetAddress)
         .single();
 
       if (error) {
