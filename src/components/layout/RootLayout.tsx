@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useMe } from "@/hooks/useMe";
 import { useSignOut } from "@/hooks/useSignOut";
 import { useActiveAccount } from "thirdweb/react";
+import { useUser } from "@/hooks/useUser";
 
 const initialPages = ["/login", "/estuary/[estId]"];
 
@@ -11,10 +12,14 @@ export const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   const smartAccount = useActiveAccount();
   const { me, isLoading: isMeLoading } = useMe();
   const { signOut } = useSignOut();
+  const { user } = useUser(smartAccount?.address || "");
 
   useEffect(() => {
     if (initialPages.includes(router.pathname)) {
       return;
+    }
+    if (user?.status === "preSignUp" || !user?.status) {
+      router.push(`/login`);
     }
     console.log("smartAccount: ", smartAccount);
     if (!isMeLoading && !me) {
@@ -22,7 +27,7 @@ export const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
       console.log("logout-address: ", smartAccount);
       signOut();
     }
-  }, [me, smartAccount, router, isMeLoading]);
+  }, [me, smartAccount, router, isMeLoading, user]);
 
   return <>{children}</>;
 };

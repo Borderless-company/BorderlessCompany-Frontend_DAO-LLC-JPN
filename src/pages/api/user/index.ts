@@ -13,6 +13,7 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   switch (req.method) {
     case "GET": {
       // 認証されたユーザーの情報を取得
+      console.log("🍅req.user: ", req.user);
       const userAddress = req.user?.address;
 
       if (!userAddress) {
