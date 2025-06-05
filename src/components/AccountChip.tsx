@@ -21,7 +21,6 @@ import {
   PiCopy,
   PiSignOut,
   PiWallet,
-  PiUser,
   PiCheckCircle,
 } from "react-icons/pi";
 import { Balance } from "./wallet/balance";
@@ -96,7 +95,7 @@ export const AccountChip: FC<AccountChipProps> = ({ name, size = "md" }) => {
           />
           <p
             className={cn(
-              "text-foreground overflow-hidden text-ellipsis whitespace-nowrap",
+              "flex-1 text-foreground overflow-hidden text-left text-ellipsis whitespace-nowrap",
               sizeClasses.text
             )}
           >
@@ -166,16 +165,13 @@ export const AccountChip: FC<AccountChipProps> = ({ name, size = "md" }) => {
               {smartAccount?.address && (
                 <Card className="bg-default-50">
                   <CardBody className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
+                    <div className="flex items-center justify-start">
+                      <div className="flex-1 flex flex-col overflow-hidden">
                         <p className="text-sm text-default-500 mb-1">
                           ウォレットアドレス
                         </p>
-                        <p className="font-mono text-sm text-foreground">
-                          {`${smartAccount.address.slice(
-                            0,
-                            6
-                          )}...${smartAccount.address.slice(-4)}`}
+                        <p className="font-mono text-sm text-foreground w-full text-ellipsis overflow-hidden">
+                          {smartAccount.address}
                         </p>
                       </div>
                       <NextUIButton
@@ -184,6 +180,7 @@ export const AccountChip: FC<AccountChipProps> = ({ name, size = "md" }) => {
                         variant="light"
                         onPress={handleCopyAddress}
                         color={copied ? "success" : "default"}
+                        className="flex-shrink-0"
                       >
                         {copied ? (
                           <PiCheckCircle size={16} />

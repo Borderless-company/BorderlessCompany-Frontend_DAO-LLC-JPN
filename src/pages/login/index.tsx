@@ -41,7 +41,7 @@ export default function Login() {
     console.log("company: ", company);
     console.log("isLoadingCompany: ", isLoadingCompany);
     console.log("user: ", user);
-    
+
     if (!me?.isLogin) {
       setPage(0);
     } else if (me?.isLogin) {
@@ -73,7 +73,7 @@ export default function Login() {
     <CLayout className="relative shadow-[inset_0px_0px_40px_-7px_#6EBFB8] px-4">
       {/* AccountChipを右上に配置 */}
       {smartAccount && (
-        <div className="absolute top-6 right-6 z-30 w-48">
+        <div className="absolute top-6 right-6 z-30 w-40">
           <AccountChip size="sm" />
         </div>
       )}
@@ -89,7 +89,7 @@ export default function Login() {
       {page === 2 && <KYCPage page={page} onPageChange={setPage} />}
       {page === 3 && <UserInfoPage page={page} onPageChange={setPage} />}
       {page === 4 && <SignupCompletePage page={page} onPageChange={setPage} />}
-      
+
       <Image
         src="/borderless_logo.png"
         alt="Borderlss Logo"
