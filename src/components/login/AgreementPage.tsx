@@ -12,6 +12,7 @@ import { usePrivacyPolicy } from "@/hooks/usePrivacyPolicy";
 import { useTermsOfUse } from "@/hooks/useTermsOfUse";
 import { useAgreement } from "@/hooks/useAgreement";
 import { useRouter } from "next/router";
+import { useRouterLoading } from "@/hooks/useRouter";
 
 type AgreementPageProps = {
   page: number;
@@ -34,6 +35,7 @@ export const AgreementPage: FC<AgreementPageProps> = ({
   const { latest: latestTermsOfUse } = useTermsOfUse();
   const { createAgreement } = useAgreement();
   const router = useRouter();
+  const { isNavigating } = useRouterLoading();
   const onAccept = async () => {
     if (!smartAccount) {
       return;
@@ -118,7 +120,7 @@ export const AgreementPage: FC<AgreementPageProps> = ({
         <Button
           color="primary"
           isDisabled={!activeAcceptButton}
-          isLoading={isAccepting}
+          isLoading={isAccepting || isNavigating}
           onPress={onAccept}
         >
           {t("Accept")}
