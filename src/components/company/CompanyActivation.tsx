@@ -122,42 +122,45 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       if (!exeToken || !nonExeToken) {
         throw new Error("Token not found");
       }
+      if (company.id !== process.env.NEXT_PUBLIC_KIBOTCHA_COMPANY_ID) {
+        // Executive Token メタデータ
+        const exeTokenMetadata = {
+          name: exeToken.name || "Executive Token",
+          description: exeToken.description || "",
+          image: exeToken.image || "",
+        };
 
-      // Executive Token メタデータ
-      const exeTokenMetadata = {
-        name: exeToken.name || "Executive Token",
-        description: exeToken.description || "",
-        image: exeToken.image || "",
-      };
+        // Non-Executive Token メタデータ
+        const nonExeTokenMetadata = {
+          name: nonExeToken.name || "Non-Executive Token",
+          description: nonExeToken.description || "",
+          image: nonExeToken.image || "",
+        };
 
-      // Non-Executive Token メタデータ
-      const nonExeTokenMetadata = {
-        name: nonExeToken.name || "Non-Executive Token",
-        description: nonExeToken.description || "",
-        image: nonExeToken.image || "",
-      };
+        // メタデータをアップロード
+        const [exeMetadataResult, nonExeMetadataResult] = await Promise.all([
+          uploadJSON("token-metadata", `${exeToken.id}.json`, exeTokenMetadata),
+          uploadJSON(
+            "token-metadata",
+            `${nonExeToken.id}.json`,
+            nonExeTokenMetadata
+          ),
+        ]);
 
-      // メタデータをアップロード
-      const [exeMetadataResult, nonExeMetadataResult] = await Promise.all([
-        uploadJSON("token-metadata", `${exeToken.id}.json`, exeTokenMetadata),
-        uploadJSON(
-          "token-metadata",
-          `${nonExeToken.id}.json`,
-          nonExeTokenMetadata
-        ),
-      ]);
+        if (exeMetadataResult.error || nonExeMetadataResult.error) {
+          throw new Error("Failed to upload token metadata");
+        }
 
-      if (exeMetadataResult.error || nonExeMetadataResult.error) {
-        throw new Error("Failed to upload token metadata");
+        console.log("Token metadata uploaded successfully");
+        console.log(
+          "Executive token metadata URL:",
+          exeMetadataResult.publicUrl
+        );
+        console.log(
+          "Non-executive token metadata URL:",
+          nonExeMetadataResult.publicUrl
+        );
       }
-
-      console.log("Token metadata uploaded successfully");
-      console.log("Executive token metadata URL:", exeMetadataResult.publicUrl);
-      console.log(
-        "Non-executive token metadata URL:",
-        nonExeMetadataResult.publicUrl
-      );
-
       // Smart Companyデプロイ開始
       setActivationStatus("deploying");
       const abiCoder = new ethers.AbiCoder();
@@ -173,17 +176,44 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
           0,
         ]
       );
-      const nonExecutiveTokenExtraParams = abiCoder.encode(
-        ["string", "string", "string", "string", "bool", "uint256"],
-        [
-          nonExeToken.name,
-          nonExeToken.symbol,
-          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${nonExeToken.id}`,
-          ".json",
-          true,
-          0,
-        ]
-      );
+
+      let nonExecutiveTokenExtraParams;
+
+      // KIBOTCHA の場合は非実行社員トークンのメタデータを変更する
+      if (company.id == process.env.NEXT_PUBLIC_KIBOTCHA_COMPANY_ID) {
+        nonExecutiveTokenExtraParams = abiCoder.encode(
+          [
+            "string",
+            "string",
+            "string",
+            "string",
+            "bool",
+            "uint256",
+            "uint256",
+          ],
+          [
+            nonExeToken.name,
+            nonExeToken.symbol,
+            `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/kibotcha/non-exe/`,
+            ".json",
+            false,
+            0,
+            708, // magic number
+          ]
+        );
+      } else {
+        nonExecutiveTokenExtraParams = abiCoder.encode(
+          ["string", "string", "string", "string", "bool", "uint256"],
+          [
+            nonExeToken.name,
+            nonExeToken.symbol,
+            `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${nonExeToken.id}`,
+            ".json",
+            true,
+            0,
+          ]
+        );
+      }
 
       // 実際の会社名を取得
       const actualCompanyName =
@@ -217,10 +247,6 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
         entityType: company?.company_type,
         scDeployParam: "0x" as `0x${string}`,
         companyInfo: [
-          aoi?.location,
-          aoi?.location,
-          aoi?.location,
-          aoi?.location,
           aoi?.location,
           aoi?.location,
           aoi?.location,
