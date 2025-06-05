@@ -63,6 +63,7 @@ const AddMemberModal: FC<AddMemberModalProps> = ({
       evm_address: formData.walletAddress,
       address: formData.address,
       name: formData.name,
+      status: "signedUp",
     });
 
     // メンバー作成

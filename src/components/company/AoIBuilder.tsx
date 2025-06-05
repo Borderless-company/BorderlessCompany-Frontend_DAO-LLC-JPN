@@ -116,6 +116,7 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ companyId, ...props }) => {
           evm_address: member.walletAddress,
           address: member.address,
           name: member.name,
+          status: "preSignUp",
         });
 
         // メンバー作成/更新

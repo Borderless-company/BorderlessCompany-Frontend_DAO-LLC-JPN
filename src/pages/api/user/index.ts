@@ -14,7 +14,7 @@ export default async function handler(
 ) {
   switch (req.method) {
     case "POST": {
-      const { evm_address, name, furigana, address, kyc_status, email } =
+      const { evm_address, name, furigana, address, kyc_status, email, status } =
         req.body;
 
       const { data, error } = await supabase
@@ -26,6 +26,7 @@ export default async function handler(
           address,
           kyc_status: kyc_status as Enums<"KycStatus">,
           email,
+          status: status as Enums<"UserStatus">,
         })
         .select();
 
@@ -38,7 +39,7 @@ export default async function handler(
 
     case "PUT": {
       // USER更新 (evm_addressで指定)
-      const { evm_address, name, furigana, address, kyc_status, email } =
+      const { evm_address, name, furigana, address, kyc_status, email, status } =
         req.body;
 
       if (!evm_address) {
@@ -55,6 +56,7 @@ export default async function handler(
           address,
           kyc_status: kyc_status as Enums<"KycStatus">,
           email,
+          status: status as Enums<"UserStatus">,
         })
         .eq("evm_address", evm_address)
         .select();

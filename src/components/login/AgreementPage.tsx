@@ -45,6 +45,7 @@ export const AgreementPage: FC<AgreementPageProps> = ({
       console.log("smartAccount AgreementPage", smartAccount);
       const createdUser = await createUser({
         evm_address: smartAccount?.address,
+        status: "signedUp",
       });
       const createdAgreement = await createAgreement({
         user_id: createdUser.evm_address,
