@@ -9,15 +9,12 @@ const serviveRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabase = createClient<Database>(supabaseUrl!, serviveRoleKey!);
 
-async function handler(
-  req: AuthenticatedRequest,
-  res: NextApiResponse
-) {
+async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   switch (req.method) {
     case "GET": {
       // 認証されたユーザーの情報を取得
       const userAddress = req.user?.address;
-      
+
       if (!userAddress) {
         return res.status(401).json({ error: "User not authenticated" });
       }
@@ -29,7 +26,7 @@ async function handler(
         .single();
 
       if (error) {
-        if (error.code === 'PGRST116') {
+        if (error.code === "PGRST116") {
           // ユーザーが見つからない場合
           return res.status(404).json({ error: "User not found" });
         }
@@ -40,12 +37,21 @@ async function handler(
     }
 
     case "POST": {
-      const { evm_address, name, furigana, address, kyc_status, email, status } =
-        req.body;
+      const {
+        evm_address,
+        name,
+        furigana,
+        address,
+        kyc_status,
+        email,
+        status,
+      } = req.body;
 
       // 認証されたユーザーのアドレスと作成するユーザーのアドレスが一致することを確認
       if (req.user?.address !== evm_address) {
-        return res.status(403).json({ error: "You can only create your own user record" });
+        return res
+          .status(403)
+          .json({ error: "You can only create your own user record" });
       }
 
       const { data, error } = await supabase
@@ -70,8 +76,15 @@ async function handler(
 
     case "PUT": {
       // USER更新 (evm_addressで指定)
-      const { evm_address, name, furigana, address, kyc_status, email, status } =
-        req.body;
+      const {
+        evm_address,
+        name,
+        furigana,
+        address,
+        kyc_status,
+        email,
+        status,
+      } = req.body;
 
       if (!evm_address) {
         return res
@@ -81,7 +94,9 @@ async function handler(
 
       // 認証されたユーザーのアドレスと更新するユーザーのアドレスが一致することを確認
       if (req.user?.address !== evm_address) {
-        return res.status(403).json({ error: "You can only update your own user record" });
+        return res
+          .status(403)
+          .json({ error: "You can only update your own user record" });
       }
 
       const { data, error } = await supabase
@@ -115,7 +130,9 @@ async function handler(
 
       // 認証されたユーザーのアドレスと削除するユーザーのアドレスが一致することを確認
       if (req.user?.address !== evm_address) {
-        return res.status(403).json({ error: "You can only delete your own user record" });
+        return res
+          .status(403)
+          .json({ error: "You can only delete your own user record" });
       }
 
       const { data, error } = await supabase
