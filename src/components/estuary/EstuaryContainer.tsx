@@ -39,7 +39,7 @@ export const EstuaryContainer: FC = () => {
         setPage(7);
       }
     }
-  }, [account?.address, me, estuary?.company_id]);
+  }, [account?.address, me, estuary?.company_id, isMemberLoading, isMember]);
   return (
     <div className="w-full h-svh flex flex-col items-center justify-center gap-4">
       <div className="relative w-full max-w-[35rem] h-[720px] bg-stone-50 rounded-3xl shadow-xl flex flex-col justify-center border-1 border-slate-200 overflow-y-scroll">
