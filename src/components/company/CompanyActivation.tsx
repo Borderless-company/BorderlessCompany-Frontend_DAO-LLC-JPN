@@ -19,6 +19,7 @@ import { motion } from "framer-motion";
 import {
   scrProxyContract,
   useCreateSmartCompany,
+  useSmartCompanyId,
   useInitialMintExeToken,
   useMintExeToken,
   useSetContractURI,
@@ -31,6 +32,7 @@ import {
   LETS_JP_LLC_EXE_BEACON_ADDRESS,
   SCT_BEACON_ADDRESS,
   LETS_JP_LLC_NON_EXE_BEACON_ADDRESS,
+  KIBOTCHA_LETS_JP_LLC_NON_EXE_BEACON_ADDRESS,
 } from "@/constants";
 import { client } from "@/utils/client";
 import { defineChain } from "thirdweb/chains";
@@ -177,10 +179,11 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
         ]
       );
 
-      let nonExecutiveTokenExtraParams;
+      let nonExecutiveTokenExtraParams: string;
 
       // KIBOTCHA の場合は非実行社員トークンのメタデータを変更する
       if (company.id == process.env.NEXT_PUBLIC_KIBOTCHA_COMPANY_ID) {
+        console.log("KIBOTCHA");
         nonExecutiveTokenExtraParams = abiCoder.encode(
           [
             "string",
@@ -197,7 +200,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
             `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/kibotcha/non-exe/`,
             ".json",
             false,
-            0,
+            2000,
             708, // magic number
           ]
         );
@@ -237,6 +240,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       }
 
       // トランザクションを送信してハッシュを取得
+
       const transactionHash = await sendCreateCompanyTx({
         scId: formData?.company_number,
         beacon: SCT_BEACON_ADDRESS,
@@ -246,16 +250,13 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
         jurisdiction: company?.jurisdiction,
         entityType: company?.company_type,
         scDeployParam: "0x" as `0x${string}`,
-        companyInfo: [
-          aoi?.location,
-          aoi?.location,
-          aoi?.location,
-          aoi?.location,
-        ],
+        companyInfo: ["Temp", "Temp", "Temp", "Temp"],
         scsBeaconProxy: [
           GOVERNANCE_BEACON_ADDRESS,
           LETS_JP_LLC_EXE_BEACON_ADDRESS,
-          LETS_JP_LLC_NON_EXE_BEACON_ADDRESS,
+          company.id === process.env.NEXT_PUBLIC_KIBOTCHA_COMPANY_ID
+            ? KIBOTCHA_LETS_JP_LLC_NON_EXE_BEACON_ADDRESS
+            : LETS_JP_LLC_NON_EXE_BEACON_ADDRESS,
         ],
         scsDeployParams: [
           "0x",
