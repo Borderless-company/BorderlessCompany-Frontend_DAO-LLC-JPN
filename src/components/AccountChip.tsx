@@ -78,7 +78,7 @@ export const AccountChip: FC<AccountChipProps> = ({ name, size = "md" }) => {
     <>
       <Button
         className={cn(
-          "appearance-none transition-colors duration-150 w-full flex items-center justify-between gap-2 rounded-lg border-1 border-divider",
+          "appearance-none transition-colors duration-150 w-full flex items-center justify-between gap-2 rounded-lg border-1 border-divider z-10",
           "data-[hovered]:cursor-pointer data-[hovered]:bg-neutral-backing data-[focused]:outline-none",
           "shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10),0px_1px_2px_0px_rgba(0,0,0,0.06)]",
           sizeClasses.container

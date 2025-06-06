@@ -18,7 +18,6 @@ export const TokenSelection: FC = () => {
   const account = useActiveAccount();
   const { setPage } = useEstuaryContext();
   const [selectedTokenId, setSelectedTokenId] = useState<string>();
-  const { token, updateToken } = useToken(selectedTokenId);
   const router = useRouter();
   const { estId } = router.query;
   const { estuary, isLoading } = useEstuary(estId as string);
@@ -56,10 +55,6 @@ export const TokenSelection: FC = () => {
     }
     setSelectedTokenId(estuary?.token.id);
   }, [estuary, isLoading]);
-
-  useEffect(() => {
-    setSelectedTokenId(selectedTokenId);
-  }, [token, selectedTokenId]);
 
   useEffect(() => {
     if (me?.isLogin) {
@@ -154,7 +149,7 @@ export const TokenSelection: FC = () => {
                 isSaleActive ? <PiArrowRight color="white" /> : undefined
               }
               onPress={onClickNext}
-              isDisabled={!token || !isSaleActive}
+              isDisabled={!isSaleActive}
               size="lg"
             >
               {!isSaleActive ? "販売期間外です" : t("Next")}
