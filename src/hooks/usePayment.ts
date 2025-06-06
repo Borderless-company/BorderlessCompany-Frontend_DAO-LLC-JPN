@@ -100,3 +100,47 @@ export const usePayment = (userId?: string) => {
 
   return { updatePayment, createPayment, payments, getPayments };
 };
+
+// Company IDによるPayment一覧取得フック
+export const usePaymentByCompanyId = (companyId?: string) => {
+  const {
+    data: payments,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery<
+    (Tables<"PAYMENT"> & {
+      estuary: Tables<"ESTUARY"> & {
+        company: Tables<"COMPANY">;
+      };
+    })[]
+  >({
+    queryKey: ["payments", "company", companyId],
+    queryFn: async () => {
+      if (!companyId) return [];
+      
+      const response = await fetch(`/api/payment/company/${companyId}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+
+      const json = await response.json();
+      if (!response.ok) {
+        throw new Error(json.error || "Paymentの取得に失敗しました");
+      }
+
+      return json.data;
+    },
+    enabled: !!companyId,
+  });
+
+  return {
+    payments: payments || [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  };
+};

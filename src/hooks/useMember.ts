@@ -112,7 +112,7 @@ export const useMember = () => {
     daoId?: string;
     userId?: string;
   }) => {
-    if (daoId) {
+    if (daoId && !userId) {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       return useQuery({
         queryKey: ["members", daoId],
@@ -127,7 +127,7 @@ export const useMember = () => {
           return json.data;
         },
       });
-    } else if (userId) {
+    } else if (userId && !daoId) {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       return useQuery({
         queryKey: ["members", userId],
@@ -148,7 +148,7 @@ export const useMember = () => {
         queryKey: ["members", userId, daoId],
         queryFn: async () => {
           const response = await fetch(
-            `/api/member?user_id=${userId}&company_id=${daoId}`,
+            `/api/member?userId=${userId}&companyId=${daoId}`,
             {
               method: "GET",
             }
@@ -216,4 +216,35 @@ export const useMembersByCompanyId = (companyId?: string) => {
   });
 
   return { members, isLoadingMembers, membersError, refetch };
+};
+
+export const useIsCompanyMember = (companyId?: string, userId?: string) => {
+  const {
+    data: isMember,
+    isLoading,
+    error,
+  } = useQuery<boolean, Error>({
+    queryKey: ["isMember", companyId, userId],
+    queryFn: async () => {
+      if (!companyId || !userId) return false;
+
+      const response = await fetch(
+        `/api/member?userId=${userId}&companyId=${companyId}`,
+        {
+          method: "GET",
+        }
+      );
+      const json = await response.json();
+
+      if (!response.ok) {
+        throw new Error(json.error);
+      }
+
+      console.log("[SUCCESS] isMember: ", json.data);
+      return Array.isArray(json.data) ? json.data.length > 0 : !!json.data;
+    },
+    enabled: !!companyId && !!userId,
+  });
+
+  return { isMember: isMember ?? false, isLoading, error };
 };

@@ -60,7 +60,7 @@ export default async function handler(
       // 1. walletAddressからpending状態のpaymentを取得
       const { data: payments, error: paymentError } = await supabase
         .from("PAYMENT")
-        .select("*, ESTUARY(*)")
+        .select("*, ESTUARY(*, TOKEN(*))")
         .eq("user_id", walletAddress)
         .eq("payment_status", "pending");
 
@@ -79,6 +79,7 @@ export default async function handler(
 
       const payment = payments[0];
       const estuary = payment.ESTUARY;
+      const token = estuary?.TOKEN;
 
       // 2. paymentをdoneに更新
       const { error: updateError } = await supabase
@@ -108,8 +109,8 @@ export default async function handler(
             company_id: estuary.company_id,
             token_id: estuary.token_id,
             invested_amount: payment.price,
-            is_minted: false,
-            is_executive: false,
+            is_minted: true,
+            is_executive: token?.is_executable || false,
             is_admin: false,
             is_representative: false,
             is_initial_member: false,

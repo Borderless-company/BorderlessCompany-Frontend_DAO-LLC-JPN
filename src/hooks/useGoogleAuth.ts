@@ -111,6 +111,8 @@ export const useGoogleAuth = (props?: UseGoogleAuthProps) => {
    */
   const signIn = async () => {
     if (!smartAccount?.address) return;
+
+    setIsConnecting(true);
     let nonce = 0;
 
     console.log("signIn: smartAccount?.address: ", smartAccount?.address);
@@ -207,6 +209,7 @@ Expiration Time: ${expirationTime}`;
       if (smartWallet) {
         disconnect(smartWallet);
       }
+      setIsConnecting(false);
       props?.onSignInError?.(e instanceof Error ? e : new Error(String(e)));
     }
   };

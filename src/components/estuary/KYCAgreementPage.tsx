@@ -30,13 +30,8 @@ const KYCAgreementPage: FC = () => {
   const [termChecked, setTermChecked] = useState<string[]>([]);
   const { register, handleSubmit, setValue } = useForm<InputType>();
   const account = useActiveAccount();
-  const { createUser, user } = useUser(account?.address);
-  const { createPayment, getPayments } = usePayment();
+  const { createUser, updateUser, user } = useUser(account?.address);
   const router = useRouter();
-  const { data: payments } = getPayments({
-    userId: account?.address as string,
-    estId: router.query.estId as string,
-  });
 
   const isAllChecked = useMemo(() => {
     return PRODUCT_TERMS.every((term) => termChecked.includes(term.id));
@@ -51,47 +46,19 @@ const KYCAgreementPage: FC = () => {
 
       // 全ての必要な情報が設定されていれば次のページに進む
       if (user.name && user.furigana && user.address) {
-        console.log("User information already exists, skipping to next page");
-        // 支払い情報がまだなければ作成
-        if (!payments || payments.length === 0) {
-          createPayment({
-            user_id: user.evm_address,
-            estuary_id: router.query.estId as string,
-            price: price,
-            payment_status: "yet",
-          }).then(() => {
-            setPage((page) => page + 1);
-          });
-        } else {
-          setPage((page) => page + 1);
-        }
+        setPage((page) => page + 1);
       }
     }
-  }, [
-    user,
-    setValue,
-    payments,
-    createPayment,
-    router.query.estId,
-    price,
-    setPage,
-  ]);
+  }, [user, setValue, setPage]);
 
   const onSubmit = async (data: InputType) => {
-    const user = await createUser({
+    const user = await updateUser({
       evm_address: account?.address,
-      status: "preSignUp",
+      status: "signedUp",
+      kyc_status: "done",
       ...data,
     });
     console.log("user:", user);
-    const payment = await createPayment({
-      user_id: user.evm_address,
-      estuary_id: router.query.estId as string,
-      price: price,
-      payment_status: "yet",
-    });
-    console.log("original payment:", payments);
-    console.log("payment:", payment);
     setPage((page) => page + 1);
   };
 

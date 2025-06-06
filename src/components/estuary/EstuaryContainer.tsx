@@ -6,7 +6,7 @@ import KYCAgreementPage from "@/components/estuary/KYCAgreementPage";
 import ReceivedPage from "@/components/estuary/ReceivedPage";
 import { TokenSelection } from "@/components/estuary/TokenSelection";
 import { FC, useEffect } from "react";
-import { ConnectButton } from "@/components/estuary/ConnectButton";
+import { AccountChip } from "@/components/AccountChip";
 import { useActiveAccount } from "thirdweb/react";
 import { useEstuaryContext } from "./EstuaryContext";
 import { useEstuary } from "@/hooks/useEstuary";
@@ -15,6 +15,8 @@ import { supabase } from "@/utils/supabase";
 import AlreadyMember from "./AlreadyMemberPage";
 import { useTranslation } from "next-i18next";
 import PaymentPage from "./PaymentPage";
+import { useGoogleAuth } from "@/hooks/useGoogleAuth";
+import { useIsCompanyMember } from "@/hooks/useMember";
 
 export const EstuaryContainer: FC = () => {
   const { t } = useTranslation("estuary");
@@ -23,34 +25,29 @@ export const EstuaryContainer: FC = () => {
   const router = useRouter();
   const { estId } = router.query;
   const { estuary } = useEstuary(estId as string);
-
+  const { me } = useGoogleAuth();
+  const { isMember, isLoading: isMemberLoading } = useIsCompanyMember(
+    estuary?.company_id || undefined,
+    account?.address
+  );
   useEffect(() => {
-    const checkPaymentStatus = async () => {
-      if (account && estuary) {
-        // TODO: read supabase
-        const { data, error } = await supabase
-          .from("MEMBER")
-          .select()
-          .eq("user_id", account?.address)
-          .eq("dao_id", estuary?.dao_id as string);
-        if (data && data?.length > 0) {
-          setPage(7);
-        }
-      }
-    };
-    if (!account) {
+    if (!me?.isLogin || !account?.address) {
       setPage(0);
-    } else {
-      checkPaymentStatus();
     }
-  }, [account]);
-
+    if (account?.address) {
+      if (!isMemberLoading && isMember) {
+        setPage(7);
+      }
+    }
+  }, [account?.address, me, estuary?.company_id]);
   return (
     <div className="w-full h-svh flex flex-col items-center justify-center gap-4">
       <div className="relative w-full max-w-[35rem] h-[720px] bg-stone-50 rounded-3xl shadow-xl flex flex-col justify-center border-1 border-slate-200 overflow-y-scroll">
-        <div className="absolute top-3 right-3">
-          <ConnectButton />
-        </div>
+        {account?.address && (
+          <div className="absolute top-3 right-3">
+            <AccountChip size="sm" />
+          </div>
+        )}
         {page === 0 ? (
           <TokenSelection />
         ) : page === 1 ? (
@@ -67,8 +64,8 @@ export const EstuaryContainer: FC = () => {
           <ReceivedPage />
         ) : page === 7 ? (
           <AlreadyMember
-            orgLogo={estuary?.org_logo as string}
-            orgName={estuary?.sale_name as string}
+            orgLogo={estuary?.company?.icon as string}
+            orgName={estuary?.company?.COMPANY_NAME?.["ja-jp"] as string}
           />
         ) : null}
       </div>

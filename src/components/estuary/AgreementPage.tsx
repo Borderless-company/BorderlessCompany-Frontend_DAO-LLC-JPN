@@ -1,5 +1,5 @@
 import { Button, CheckboxGroup, useDisclosure } from "@heroui/react";
-import { FC, useState, useMemo, useEffect } from "react";
+import { FC, useState, useMemo, useEffect, useRef } from "react";
 import {
   PiArrowLeft,
   PiCheckCircleFill,
@@ -12,21 +12,27 @@ import { useEstuaryContext } from "./EstuaryContext";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
 import { useEstuary } from "@/hooks/useEstuary";
+import { usePayment } from "@/hooks/usePayment";
 import { TokenAgreementModal } from "../company/TokenAgreementModal";
 import { OperationRegulationModal } from "../company/OperationRegulationModal";
 import { GovAgreementModal } from "../company/GovAgreementModal";
 import { AoIModal } from "../company/AoIModal";
+import { useActiveAccount } from "thirdweb/react";
 
 const AgreementPage: FC = () => {
   const { t } = useTranslation("estuary");
   const router = useRouter();
   const { estId } = router.query;
   const { estuary } = useEstuary(estId as string);
+  const account = useActiveAccount();
+  const { createPayment } = usePayment();
   const [termChecked, setTermChecked] = useState<string[]>([]);
   const [paymentStatus, setPaymentStatus] = useState<
     "initial" | "pending" | "success" | "failed"
   >("initial");
   const { setPage } = useEstuaryContext();
+  const pollingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const {
     isOpen: isOpenAoIModal,
     onOpen: onOpenAoIModal,
@@ -51,8 +57,81 @@ const AgreementPage: FC = () => {
     onOpenChange: onOpenChangeTokenAgreementModal,
   } = useDisclosure();
 
-  const onClickPay = () => {
-    setPage((page) => page + 1);
+  const startPaymentPolling = () => {
+    if (!account?.address || !estuary?.id) return;
+
+    // 1時間後にタイムアウト
+    pollingTimeoutRef.current = setTimeout(() => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+      setPaymentStatus("failed");
+      console.log("Payment polling timed out after 1 hour");
+    }, 60 * 60 * 1000); // 1時間
+
+    // 5秒間隔でpolling
+    pollingIntervalRef.current = setInterval(async () => {
+      try {
+        const response = await fetch(
+          `/api/payment?userId=${account.address}&estuaryId=${estuary.id}`,
+          { method: "GET" }
+        );
+        const json = await response.json();
+
+        if (response.ok && json.data && json.data.length > 0) {
+          const payment = json.data[0];
+          if (payment.payment_status === "done") {
+            // polling停止
+            if (pollingIntervalRef.current) {
+              clearInterval(pollingIntervalRef.current);
+            }
+            if (pollingTimeoutRef.current) {
+              clearTimeout(pollingTimeoutRef.current);
+            }
+            
+            setPaymentStatus("success");
+            setPage(6);
+          }
+        }
+      } catch (error) {
+        console.error("Payment status polling error:", error);
+      }
+    }, 5000); // 5秒間隔
+  };
+
+  const onClickPay = async () => {
+    if (!estuary) {
+      console.error("Estuary情報が取得できません");
+      return;
+    }
+
+    setPaymentStatus("pending");
+
+    try {
+      // 新しいペイメントを作成
+      await createPayment({
+        user_id: account?.address,
+        estuary_id: estuary.id,
+        price: estuary.fixed_price,
+        payment_status: "pending",
+      });
+
+      // payment_linkがある場合は別タブで開く、ない場合は次のページに移動
+      if (estuary.payment_link) {
+        window.open(
+          `${estuary.payment_link}?recipientAddress=${account?.address}`,
+          "_blank"
+        );
+        
+        // polling開始
+        startPaymentPolling();
+      }
+    } catch (error) {
+      console.error("ペイメントの作成に失敗しました:", error);
+      setPaymentStatus("failed");
+      // エラー状態を少し表示してからリセット
+      setTimeout(() => setPaymentStatus("initial"), 3000);
+    }
   };
 
   const onClickBack = () => {
@@ -62,6 +141,18 @@ const AgreementPage: FC = () => {
   const isAllChecked = useMemo(() => {
     return termChecked.length === 4;
   }, [termChecked]);
+
+  // コンポーネントのアンマウント時にpollingをクリーンアップ
+  useEffect(() => {
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+      if (pollingTimeoutRef.current) {
+        clearTimeout(pollingTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <>
@@ -139,6 +230,7 @@ const AgreementPage: FC = () => {
             variant="bordered"
             color="primary"
             size="lg"
+            // isDisabled={paymentStatus === "pending"}
           >
             {t("Back")}
           </Button>
@@ -153,13 +245,17 @@ const AgreementPage: FC = () => {
             variant="solid"
             color="primary"
             size="lg"
-            isDisabled={!isAllChecked}
+            isDisabled={!isAllChecked || !estuary?.payment_link}
             isLoading={paymentStatus === "pending"}
             style={{ flex: 1 }}
           >
             {paymentStatus === "initial"
               ? t("Check Out")
-              : t("Processing Payment")}
+              : paymentStatus === "pending"
+              ? "支払い中..."
+              : paymentStatus === "failed"
+              ? "エラーが発生しました"
+              : t("Check Out")}
           </Button>
         </div>
         <div className="w-full flex justify-end items-center gap-2 px-2">
