@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse, NextApiHandler } from "next";
+import jwt from "jsonwebtoken";
 import { AuthenticatedRequest, authMiddleware } from "./verifyJWT";
 
 const JWT_SECRET = process.env.JWT_SECRET || "";

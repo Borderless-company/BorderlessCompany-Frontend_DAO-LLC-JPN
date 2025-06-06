@@ -17,23 +17,6 @@ const nextConfig = {
     unoptimized: true,
   },
   i18n,
-  experimental: {
-    serverComponentsExternalPackages: ["@noble/hashes"],
-  },
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals = config.externals || [];
-      config.externals.push({
-        "@noble/hashes/crypto": "@noble/hashes/crypto.js",
-      });
-    }
-
-    config.resolve.extensionAlias = {
-      ".js": [".js", ".ts", ".tsx"],
-    };
-
-    return config;
-  },
 };
 
 module.exports = nextConfig;

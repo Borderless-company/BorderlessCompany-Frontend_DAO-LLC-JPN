@@ -68,7 +68,6 @@
     "typescript": "^5.4.5"
   },
   "resolutions": {
-    "utf-8-validate": "^5.0.2",
-    "@noble/hashes": "1.8.0"
+    "utf-8-validate": "^5.0.2"
   }
 }
