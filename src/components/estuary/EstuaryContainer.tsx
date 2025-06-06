@@ -16,6 +16,7 @@ import AlreadyMember from "./AlreadyMemberPage";
 import { useTranslation } from "next-i18next";
 import PaymentPage from "./PaymentPage";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
+import { useIsCompanyMember } from "@/hooks/useMember";
 
 export const EstuaryContainer: FC = () => {
   const { t } = useTranslation("estuary");
@@ -25,12 +26,20 @@ export const EstuaryContainer: FC = () => {
   const { estId } = router.query;
   const { estuary } = useEstuary(estId as string);
   const { me } = useGoogleAuth();
-
+  const { isMember, isLoading: isMemberLoading } = useIsCompanyMember(
+    estuary?.company_id || undefined,
+    account?.address
+  );
   useEffect(() => {
     if (!me?.isLogin || !account?.address) {
       setPage(0);
     }
-  }, [account?.address, me]);
+    if (account?.address) {
+      if (!isMemberLoading && isMember) {
+        setPage(7);
+      }
+    }
+  }, [account?.address, me, estuary?.company_id]);
   return (
     <div className="w-full h-svh flex flex-col items-center justify-center gap-4">
       <div className="relative w-full max-w-[35rem] h-[720px] bg-stone-50 rounded-3xl shadow-xl flex flex-col justify-center border-1 border-slate-200 overflow-y-scroll">
@@ -55,8 +64,8 @@ export const EstuaryContainer: FC = () => {
           <ReceivedPage />
         ) : page === 7 ? (
           <AlreadyMember
-            orgLogo={estuary?.org_logo as string}
-            orgName={estuary?.sale_name as string}
+            orgLogo={estuary?.company?.icon as string}
+            orgName={estuary?.company?.COMPANY_NAME?.["ja-jp"] as string}
           />
         ) : null}
       </div>

@@ -31,7 +31,7 @@ const AlreadyMember: FC<AlreadyMemberProps> = ({ orgLogo, orgName }) => {
       {/* Content */}
       <div className="flex flex-col gap-4 flex-1 py-6 justify-center items-center">
         <Image
-          src={orgLogo || "/estuary_logo_sample.png"}
+          src={orgLogo || "/company_icon_fallback.png"}
           alt="check"
           width={112}
           height={112}
@@ -52,7 +52,7 @@ const AlreadyMember: FC<AlreadyMemberProps> = ({ orgLogo, orgName }) => {
       {/* Footer */}
       <div className="flex flex-col gap-4 p-6 pt-0 pb-4">
         <div className="flex flex-col">
-          <Button
+          {/* <Button
             className="w-full bg-yellow-700 text-white text-base font-semibold"
             endContent={<PiArrowRight color="white" />}
             size="lg"
@@ -62,7 +62,7 @@ const AlreadyMember: FC<AlreadyMemberProps> = ({ orgLogo, orgName }) => {
             // isDisabled
           >
             {t("Dive into the member's page")}
-          </Button>
+          </Button> */}
         </div>
         <div className="w-full flex justify-end items-center gap-2 px-2">
           <div className="w-fit text-slate-600 text-xs leading-3 font-normal font-mono pt-[2px]">

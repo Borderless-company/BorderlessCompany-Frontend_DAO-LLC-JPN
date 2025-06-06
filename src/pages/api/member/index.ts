@@ -14,7 +14,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     case "GET": {
       // メンバー情報取得
       const { companyId, userId } = req.query;
-      if (companyId) {
+      if (companyId && !userId) {
         // 特定の会社に所属するメンバー全員を取得
         const { data, error } = await supabase
           .from("MEMBER")
@@ -45,7 +45,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         }
 
         return res.status(200).json({ data });
-      } else if (userId) {
+      } else if (userId && !companyId) {
         // 特定のユーザーが所属する全ての会社の情報を取得
         const { data, error } = await supabase
           .from("MEMBER")
