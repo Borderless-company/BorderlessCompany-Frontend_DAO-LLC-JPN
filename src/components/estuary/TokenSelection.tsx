@@ -154,7 +154,7 @@ export const TokenSelection: FC = () => {
                 isSaleActive ? <PiArrowRight color="white" /> : undefined
               }
               onPress={onClickNext}
-              isDisabled={!token || !selectedTokenId || !isSaleActive}
+              isDisabled={!token || !isSaleActive}
               size="lg"
             >
               {!isSaleActive ? "販売期間外です" : t("Next")}

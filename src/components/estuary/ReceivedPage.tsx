@@ -19,13 +19,10 @@ import { useTranslation } from "next-i18next";
 // TODO: Context ではなくDBからToken情報取ってくる
 const ReceivedPage: FC = () => {
   const { t, i18n } = useTranslation();
-  const [estuaryPage, setEstuaryPage] = useAtom(estuaryPageAtom);
-  const { token, price } = useEstuaryContext();
   const router = useRouter();
   const { estId } = router.query;
   const { estuary } = useEstuary(estId as string);
   const account = useActiveAccount();
-  const { user } = useUser(account?.address);
 
   // useEffect(() => {
   //   const sendEmail = async () => {
@@ -58,7 +55,7 @@ const ReceivedPage: FC = () => {
       {/* Content */}
       <div className="flex flex-col gap-4 flex-1 py-6 justify-center items-center">
         <Image
-          src={token?.image || "/estuary_logo_sample.png"}
+          src={estuary?.token?.image || "/token_image_fallback.png"}
           alt="check"
           width={112}
           height={112}
