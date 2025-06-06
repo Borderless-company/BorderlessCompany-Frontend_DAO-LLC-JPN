@@ -128,7 +128,7 @@ export const RenderCell = ({ item, columnKey }: Props) => {
           color={item.isExecutive === "true" ? "primary" : "secondary"}
         >
           <span className="text-xs font-semibold">
-            {item.isExecutive === "true" ? t("Executive") : t("Non Executive")}
+            {item.isExecutive === "true" ? t("Executive") : t("Non-executive")}
           </span>
         </Chip>
       );

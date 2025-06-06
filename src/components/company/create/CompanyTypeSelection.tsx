@@ -34,7 +34,7 @@ export const CompanyTypeSelection: FC<CompanyTypeSelectionProps> = ({
         orientation="horizontal"
         defaultValue="llc"
         classNames={{
-          wrapper: cn(" gap-2 flex-nowrap"),
+          wrapper: cn("w-full gap-2 flex-nowrap"),
         }}
       >
         <CompanyTypeSelectionItem

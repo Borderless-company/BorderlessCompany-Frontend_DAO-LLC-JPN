@@ -20,7 +20,10 @@ export const useUser = (evmAddress?: string) => {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ ...props, evm_address: evmAddress }),
+        body: JSON.stringify({
+          ...props,
+          evm_address: evmAddress || props.evm_address,
+        }),
       });
       const json = await response.json();
       if (!response.ok) {
