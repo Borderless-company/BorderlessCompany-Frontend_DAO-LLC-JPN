@@ -111,15 +111,8 @@ export const AoIBuilder: FC<AoIBuilderProps> = ({ companyId, ...props }) => {
       const memberPromises = formData.executiveMembers.map(async (member) => {
         if (!member.walletAddress) return;
 
-        // ユーザー作成/更新
-        const user = await createUser({
-          evm_address: member.walletAddress,
-          address: member.address,
-          name: member.name,
-        });
-
         // メンバー作成/更新
-        if (user) {
+        if (member.walletAddress) {
           await createMember({
             user_id: member.walletAddress,
             company_id: companyId,

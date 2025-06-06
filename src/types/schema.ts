@@ -135,7 +135,6 @@ export type Database = {
           id: string
           is_active: boolean | null
           jurisdiction: Database["public"]["Enums"]["Jurisdiction"] | null
-          sc_address: string | null
         }
         Insert: {
           aoi?: string | null
@@ -153,7 +152,6 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           jurisdiction?: Database["public"]["Enums"]["Jurisdiction"] | null
-          sc_address?: string | null
         }
         Update: {
           aoi?: string | null
@@ -171,7 +169,6 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           jurisdiction?: Database["public"]["Enums"]["Jurisdiction"] | null
-          sc_address?: string | null
         }
         Relationships: [
           {
@@ -778,6 +775,7 @@ export type Database = {
           furigana: string | null
           kyc_status: Database["public"]["Enums"]["KycStatus"]
           name: string | null
+          status: Database["public"]["Enums"]["UserStatus"] | null
         }
         Insert: {
           address?: string | null
@@ -787,6 +785,7 @@ export type Database = {
           furigana?: string | null
           kyc_status?: Database["public"]["Enums"]["KycStatus"]
           name?: string | null
+          status?: Database["public"]["Enums"]["UserStatus"] | null
         }
         Update: {
           address?: string | null
@@ -796,6 +795,7 @@ export type Database = {
           furigana?: string | null
           kyc_status?: Database["public"]["Enums"]["KycStatus"]
           name?: string | null
+          status?: Database["public"]["Enums"]["UserStatus"] | null
         }
         Relationships: []
       }
@@ -907,6 +907,7 @@ export type Database = {
       LangCode: "ja-JP" | "en-US"
       PaymentStatus: "done" | "pending" | "yet" | "error"
       TaskStatus: "todo" | "completed" | "inProgress"
+      UserStatus: "preSignUp" | "signedUp"
       VoteType: "agree" | "disagree" | "abstain"
     }
     CompositeTypes: {
@@ -1031,6 +1032,7 @@ export const Constants = {
       LangCode: ["ja-JP", "en-US"],
       PaymentStatus: ["done", "pending", "yet", "error"],
       TaskStatus: ["todo", "completed", "inProgress"],
+      UserStatus: ["preSignUp", "signedUp"],
       VoteType: ["agree", "disagree", "abstain"],
     },
   },

@@ -4,9 +4,8 @@ import { CountrySelection } from "./CountrySelection";
 import { AnimatePresence } from "framer-motion";
 import { CompanyTypeSelection } from "./CompanyTypeSelection";
 import { SettingUp } from "./SettingUp";
-import { Button } from "@heroui/react";
-import { useSignOut } from "@/hooks/useSignOut";
-import { useCompany } from "@/hooks/useCompany";
+import { AccountChip } from "@/components/AccountChip";
+import { useCompany, useCompanybyFounderId } from "@/hooks/useCompany";
 import { useActiveAccount } from "thirdweb/react";
 import { useRouter } from "next/router";
 import { useTaskStatus } from "@/hooks/useTaskStatus";
@@ -19,7 +18,6 @@ import { useTranslation } from "next-i18next";
 export const CreateCompanyPage: FC = () => {
   const [page, setPage] = useState<number>(0);
   const [isGoingBack, setIsGoingBack] = useState<boolean>(false);
-  const { signOut } = useSignOut();
   const { createCompany, isCreateCompanySuccess } = useCompany();
   const smartAccount = useActiveAccount();
   const router = useRouter();
@@ -29,6 +27,12 @@ export const CreateCompanyPage: FC = () => {
   const { createCompanyName } = useCompanyName();
   const { createToken } = useToken();
   const { t } = useTranslation(["company", "common"]);
+  
+  // 既存の会社をチェック
+  const {
+    company: existingCompany,
+    isLoading: isLoadingExistingCompany,
+  } = useCompanybyFounderId(smartAccount?.address || "");
 
   const onBack = () => {
     setPage((prev) => prev - 1);
@@ -114,11 +118,32 @@ export const CreateCompanyPage: FC = () => {
     }
   };
 
+  // 既存の会社がある場合はリダイレクト
+  useEffect(() => {
+    if (existingCompany && !isLoadingExistingCompany) {
+      console.log("Existing company found, redirecting to:", existingCompany.id);
+      router.push(`/company/${existingCompany.id}`);
+    }
+  }, [existingCompany, isLoadingExistingCompany, router]);
+
+  // ローディング中は何も表示しない
+  if (isLoadingExistingCompany) {
+    return null;
+  }
+
+  // 既存の会社がある場合は何も表示しない（リダイレクト処理中）
+  if (existingCompany) {
+    return null;
+  }
+
   return (
     <CLayout className="z-0">
-      <Button onPress={signOut} className="absolute top-4 right-4 z-50">
-        Sign Out
-      </Button>
+      {/* AccountChipを右上に配置 */}
+      {smartAccount && (
+        <div className="absolute top-6 right-6 z-50 w-40">
+          <AccountChip size="sm" />
+        </div>
+      )}
 
       {page === 0 && (
         <CountrySelection

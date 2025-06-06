@@ -80,6 +80,7 @@ const KYCAgreementPage: FC = () => {
   const onSubmit = async (data: InputType) => {
     const user = await createUser({
       evm_address: account?.address,
+      status: "preSignUp",
       ...data,
     });
     console.log("user:", user);

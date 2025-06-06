@@ -11,7 +11,6 @@ import { useActiveAccount } from "thirdweb/react";
 import { usePrivacyPolicy } from "@/hooks/usePrivacyPolicy";
 import { useTermsOfUse } from "@/hooks/useTermsOfUse";
 import { useAgreement } from "@/hooks/useAgreement";
-import { useRouter } from "next/router";
 import { useRouterLoading } from "@/hooks/useRouter";
 
 type AgreementPageProps = {
@@ -34,7 +33,6 @@ export const AgreementPage: FC<AgreementPageProps> = ({
   const { latest: latestPrivacyPolicy } = usePrivacyPolicy();
   const { latest: latestTermsOfUse } = useTermsOfUse();
   const { createAgreement } = useAgreement();
-  const router = useRouter();
   const { isNavigating } = useRouterLoading();
   const onAccept = async () => {
     if (!smartAccount) {
@@ -43,16 +41,23 @@ export const AgreementPage: FC<AgreementPageProps> = ({
     try {
       setIsAccepting(true);
       console.log("smartAccount AgreementPage", smartAccount);
+      
+      // ユーザーを仮作成（preSignUpステータス）
       const createdUser = await createUser({
         evm_address: smartAccount?.address,
+        status: "preSignUp",
       });
-      const createdAgreement = await createAgreement({
+      
+      // 利用規約同意を記録
+      await createAgreement({
         user_id: createdUser.evm_address,
         type: "termsAndConditions",
         privacy_policy: latestPrivacyPolicy?.id,
         terms_of_use: latestTermsOfUse?.id,
       });
-      router.push("/company/create");
+      
+      // 次のページ（KYC）に進む
+      onPageChange(page + 1);
     } catch (e) {
       console.error(e);
     } finally {

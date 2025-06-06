@@ -7,5 +7,21 @@
   "Please review and accept our Terms of Use and Privacy Policy to continue": "Please review and accept our Terms of Use and Privacy Policy to continue",
   "Accept": "Accept",
   "Privacy Policy": "Privacy Policy",
-  "Terms of Use": "Terms of Use"
+  "Terms of Use": "Terms of Use",
+  "Identity Verification": "Identity Verification",
+  "Setting up identity verification...": "Setting up identity verification...",
+  "Please complete identity verification to continue": "Please complete identity verification to continue",
+  "Enter Your Information": "Enter Your Information",
+  "Please provide your personal information to complete registration": "Please provide your personal information to complete registration",
+  "Name": "Name",
+  "Furigana": "Furigana",
+  "Address": "Address",
+  "Please enter your name": "Please enter your name",
+  "Please enter your furigana": "Please enter your furigana",
+  "Please enter your address": "Please enter your address",
+  "Complete Registration": "Complete Registration",
+  "Registration Complete!": "Registration Complete!",
+  "Your account has been successfully created. You can now create your company and start building your DAO.": "Your account has been successfully created. You can now create your company and start building your DAO.",
+  "Create Your Company": "Create Your Company",
+  "Welcome to Borderless DAO!": "Welcome to Borderless DAO!"
 }

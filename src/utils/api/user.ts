@@ -1,16 +1,19 @@
-import { supabase } from "../supabase";
-
 export const hasAccount = async (address: string) => {
-  const { data, error } = await supabase
-    .from("USER")
-    .select()
-    .eq("evm_address", address);
-  if (error) {
+  try {
+    const response = await fetch(`/api/hasAccount?address=${address}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    
+    if (!response.ok) {
+      const json = await response.json();
+      throw new Error(json.error);
+    }
+    
+    const json = await response.json();
+    return json.hasAccount;
+  } catch (error) {
     console.error("hasAccount error: ", error);
-    throw new Error(error.message);
+    throw error;
   }
-  if (data.length === 0) {
-    return false;
-  }
-  return true;
 };

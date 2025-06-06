@@ -132,7 +132,7 @@ export default async function handler(
     }
 
     // JWTの生成と保存
-    const token = jwt.sign({ address: address.toLowerCase() }, JWT_SECRET, {
+    const token = jwt.sign({ address: address }, JWT_SECRET, {
       expiresIn: "24h",
     });
 
