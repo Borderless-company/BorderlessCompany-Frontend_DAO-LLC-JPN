@@ -63,7 +63,6 @@ const KYCPage: FC = () => {
   const kycMessageHandler: MessageHandler = (type, payload) => {
     if (type === "idCheck.onApplicantSubmitted") {
       console.log("onApplicantSubmitted: ", payload);
-      setPage((page) => page + 1);
     }
     if (type === "idCheck.onApplicantStatusChanged") {
       console.log("onApplicantStatusChanged: ", payload);
@@ -77,8 +76,6 @@ const KYCPage: FC = () => {
         })
           .then(() => console.log("KYC status updated to done"))
           .catch((err) => console.error("Failed to update KYC status:", err));
-
-        setPage((page) => page + 1);
       }
     }
     if (type === "idCheck.onModuleResultPresented") {
