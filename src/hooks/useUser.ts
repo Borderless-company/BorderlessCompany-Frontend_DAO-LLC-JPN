@@ -66,33 +66,37 @@ export const useUser = (evmAddress?: string) => {
     },
   });
 
-  const { data: user } = useQuery<Tables<"USER"> | undefined, Error>({
-    queryKey: ["user", evmAddress],
-    queryFn: async () => {
-      if (!evmAddress) return undefined;
-      
-      // evmAddressが指定されている場合はクエリパラメータとして追加
-      const url = evmAddress ? `/api/user?evm_address=${evmAddress}` : "/api/user";
-      
-      const response = await fetch(url, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-      
-      if (!response.ok) {
-        if (response.status === 404) {
-          return undefined; // ユーザーが見つからない場合はundefinedを返す
+  const { data: user, isLoading } = useQuery<Tables<"USER"> | undefined, Error>(
+    {
+      queryKey: ["user", evmAddress],
+      queryFn: async () => {
+        if (!evmAddress) return undefined;
+
+        // evmAddressが指定されている場合はクエリパラメータとして追加
+        const url = evmAddress
+          ? `/api/user?evm_address=${evmAddress}`
+          : "/api/user";
+
+        const response = await fetch(url, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            return undefined; // ユーザーが見つからない場合はundefinedを返す
+          }
+          const json = await response.json();
+          throw new Error(json.error);
         }
+
         const json = await response.json();
-        throw new Error(json.error);
-      }
-      
-      const json = await response.json();
-      return json.data;
-    },
-    enabled: !!evmAddress,
-  });
+        return json.data;
+      },
+      enabled: !!evmAddress,
+    }
+  );
 
   const deleteUser = async (evmAddress: string) => {
     const response = await fetch("/api/user", {
@@ -115,14 +119,19 @@ export const useUser = (evmAddress?: string) => {
   };
 
   // 他のユーザーの情報を取得する関数（非同期）
-  const getUserByAddress = async (targetEvmAddress: string): Promise<Tables<"USER"> | null> => {
+  const getUserByAddress = async (
+    targetEvmAddress: string
+  ): Promise<Tables<"USER"> | null> => {
     try {
-      const response = await fetch(`/api/user?evm_address=${targetEvmAddress}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-      
+      const response = await fetch(
+        `/api/user?evm_address=${targetEvmAddress}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+
       if (!response.ok) {
         if (response.status === 404) {
           return null; // ユーザーが見つからない場合はnullを返す
@@ -130,7 +139,7 @@ export const useUser = (evmAddress?: string) => {
         const json = await response.json();
         throw new Error(json.error);
       }
-      
+
       const json = await response.json();
       return json.data;
     } catch (error) {
@@ -139,5 +148,12 @@ export const useUser = (evmAddress?: string) => {
     }
   };
 
-  return { updateUser, createUser, user, deleteUser, getUserByAddress };
+  return {
+    updateUser,
+    createUser,
+    user,
+    isLoading,
+    deleteUser,
+    getUserByAddress,
+  };
 };

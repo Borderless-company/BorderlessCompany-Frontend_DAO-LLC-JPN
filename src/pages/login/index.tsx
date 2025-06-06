@@ -15,6 +15,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useActiveAccount } from "thirdweb/react";
+import { Spinner } from "@heroui/react";
 
 export const getServerSideProps = async ({ locale }: { locale: string }) => {
   return {
@@ -34,8 +35,10 @@ export default function Login() {
     isLoading: isLoadingCompany,
     isError,
   } = useCompanybyFounderId(smartAccount?.address || "");
-  const { user } = useUser(smartAccount?.address || "");
-  const { agreements } = useAgreement(user?.evm_address);
+  const { user, isLoading: isLoadingUser } = useUser(
+    smartAccount?.address || ""
+  );
+  const { agreements, isLoadingAgreements } = useAgreement(user?.evm_address);
 
   // 初期化
   useEffect(() => {
@@ -89,6 +92,14 @@ export default function Login() {
       }
     }
   }, [me, company, router, isLoadingCompany, user, isError, agreements]);
+
+  if (isLoadingCompany || isLoadingUser || isLoadingAgreements) {
+    return (
+      <CLayout>
+        <Spinner />
+      </CLayout>
+    );
+  }
 
   return (
     <CLayout className="relative shadow-[inset_0px_0px_40px_-7px_#6EBFB8] px-4">

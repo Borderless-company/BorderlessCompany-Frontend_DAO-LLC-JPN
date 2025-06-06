@@ -12,7 +12,9 @@ export const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   const smartAccount = useActiveAccount();
   const { me, isLoading: isMeLoading } = useMe();
   const { signOut } = useSignOut();
-  const { user } = useUser(smartAccount?.address || "");
+  const { user, isLoading: isLoadingUser } = useUser(
+    smartAccount?.address || ""
+  );
 
   useEffect(() => {
     if (initialPages.includes(router.pathname)) {
@@ -27,7 +29,7 @@ export const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
       console.log("logout-address: ", smartAccount);
       signOut();
     }
-  }, [me, smartAccount, router, isMeLoading, user]);
+  }, [me, smartAccount, router, isMeLoading, user, isLoadingUser]);
 
   return <>{children}</>;
 };
