@@ -93,13 +93,13 @@ export default function Login() {
     }
   }, [me, company, router, isLoadingCompany, user, isError, agreements]);
 
-  if (isLoadingCompany || isLoadingUser || isLoadingAgreements) {
-    return (
-      <CLayout>
-        <Spinner />
-      </CLayout>
-    );
-  }
+  // if (isLoadingCompany || isLoadingUser || isLoadingAgreements) {
+  //   return (
+  //     <CLayout>
+  //       <Spinner />
+  //     </CLayout>
+  //   );
+  // }
 
   return (
     <CLayout className="relative shadow-[inset_0px_0px_40px_-7px_#6EBFB8] px-4">
