@@ -21,6 +21,7 @@ import {
   PiPencil,
 } from "react-icons/pi";
 import { EstuaryWithRelations } from "@/hooks/useEstuary";
+import { usePaymentByCompanyId } from "@/hooks/usePayment";
 import { EditSaleModal } from "./EditSaleModal";
 import Image from "next/image";
 
@@ -35,6 +36,24 @@ export const TokenSaleItem: FC<TokenSaleItemProps> = ({ estuary }) => {
     onOpen: onEditOpen,
     onOpenChange: onEditOpenChange,
   } = useDisclosure();
+
+  // 会社に紐づくペイメント情報を取得
+  const { payments } = usePaymentByCompanyId(estuary.company_id || undefined);
+
+  // この特定のestuaryに関連するペイメントをフィルタリング
+  const estuaryPayments = payments.filter(
+    (payment) => payment.estuary_id === estuary.id
+  );
+
+  // 調達額を計算（決済完了のペイメントのみ）
+  const totalRaised = estuaryPayments
+    .filter((payment) => payment.payment_status === "done")
+    .reduce((sum, payment) => sum + (payment.price || 0), 0);
+
+  // 購入者数を計算（決済完了のペイメントのみ）
+  const buyerCount = estuaryPayments.filter(
+    (payment) => payment.payment_status === "done"
+  ).length;
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "未設定";
@@ -169,12 +188,14 @@ export const TokenSaleItem: FC<TokenSaleItemProps> = ({ estuary }) => {
         <Stack h className="bg-content2 p-4 rounded-lg gap-2">
           <Stack className="flex-[2] gap-1">
             <p className="font-label-md text-neutral">調達額</p>
-            <p className="font-body-lg text-foreground">¥100,000</p>
+            <p className="font-body-lg text-foreground">
+              {formatPrice(totalRaised)}
+            </p>
           </Stack>
 
           <Stack className="flex-1 gap-1 border-l-1 border-divider pl-4">
             <p className="font-label-md text-neutral">購入者数</p>
-            <p className="font-body-lg text-foreground">100</p>
+            <p className="font-body-lg text-foreground">{buyerCount}人</p>
           </Stack>
         </Stack>
       </CardFooter>
