@@ -67,9 +67,9 @@ export default function Login() {
         if (!hasAgreedToTerms) {
           // 利用規約未同意なら利用規約同意へ
           setPage(1);
-        } else if (user.kyc_status !== "done") {
-          // KYC未完了ならKYCへ
-          setPage(2);
+          // } else if (user.kyc_status !== "done") {
+          //   // KYC未完了ならKYCへ
+          //   setPage(2);
         } else {
           // KYC完了済みの場合、個人情報が入力済みかチェック
           const hasUserInfo = user.name && user.furigana && user.address;
@@ -93,14 +93,6 @@ export default function Login() {
     }
   }, [me, company, router, isLoadingCompany, user, isError, agreements]);
 
-  // if (isLoadingCompany || isLoadingUser || isLoadingAgreements) {
-  //   return (
-  //     <CLayout>
-  //       <Spinner />
-  //     </CLayout>
-  //   );
-  // }
-
   return (
     <CLayout className="relative shadow-[inset_0px_0px_40px_-7px_#6EBFB8] px-4">
       {/* AccountChipを右上に配置 */}
@@ -117,7 +109,13 @@ export default function Login() {
           isLoadingCompany={isLoadingCompany}
         />
       )}
-      {page === 1 && <AgreementPage page={page} onPageChange={setPage} />}
+      {page === 1 && (
+        <AgreementPage
+          page={page}
+          onPageChange={setPage}
+          isPreparing={isLoadingAgreements || isLoadingUser || isLoadingCompany}
+        />
+      )}
       {page === 2 && <KYCPage page={page} onPageChange={setPage} />}
       {page === 3 && <UserInfoPage page={page} onPageChange={setPage} />}
       {page === 4 && <SignupCompletePage page={page} onPageChange={setPage} />}

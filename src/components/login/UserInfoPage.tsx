@@ -42,7 +42,12 @@ export const UserInfoPage: FC<UserInfoPageProps> = ({ page, onPageChange }) => {
       if (user.address) setValue("address", user.address);
 
       // 全ての必要な情報が設定されていれば次のページに進む
-      if (user.name && user.furigana && user.address && user.status === "signedUp") {
+      if (
+        user.name &&
+        user.furigana &&
+        user.address &&
+        user.status === "signedUp"
+      ) {
         console.log("User information already complete, skipping to next page");
         onPageChange(page + 1);
       }
@@ -54,7 +59,7 @@ export const UserInfoPage: FC<UserInfoPageProps> = ({ page, onPageChange }) => {
 
     try {
       setIsSubmitting(true);
-      
+
       if (user) {
         // ユーザーが既に存在する場合は更新
         await updateUser({
@@ -80,11 +85,17 @@ export const UserInfoPage: FC<UserInfoPageProps> = ({ page, onPageChange }) => {
   };
 
   const onBack = () => {
-    onPageChange(page - 1);
+    onPageChange(page - 2);
   };
 
   // ユーザー情報が完了済みの場合はローディング表示
-  if (user && user.name && user.furigana && user.address && user.status === "signedUp") {
+  if (
+    user &&
+    user.name &&
+    user.furigana &&
+    user.address &&
+    user.status === "signedUp"
+  ) {
     return (
       <motion.div
         className="flex flex-col items-center justify-center gap-4 w-full max-w-lg p-8"
@@ -110,7 +121,9 @@ export const UserInfoPage: FC<UserInfoPageProps> = ({ page, onPageChange }) => {
           {t("Enter Your Information")}
         </p>
         <p className="w-full text-medium text-center text-foreground">
-          {t("Please provide your personal information to complete registration")}
+          {t(
+            "Please provide your personal information to complete registration"
+          )}
         </p>
       </Stack>
 
@@ -127,8 +140,8 @@ export const UserInfoPage: FC<UserInfoPageProps> = ({ page, onPageChange }) => {
             isRequired
             isInvalid={!!errors.name}
             errorMessage={errors.name?.message}
-            {...register("name", { 
-              required: t("Please enter your name") 
+            {...register("name", {
+              required: t("Please enter your name"),
             })}
           />
           <Input

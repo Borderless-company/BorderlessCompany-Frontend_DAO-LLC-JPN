@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { CheckboxGroup } from "@heroui/react";
+import { CheckboxGroup, Spinner } from "@heroui/react";
 import { TermCheckbox } from "../estuary/TermCheckbox";
 import { useTranslation } from "next-i18next";
 import { Stack } from "@/sphere/Stack";
@@ -16,11 +16,13 @@ import { useRouterLoading } from "@/hooks/useRouter";
 type AgreementPageProps = {
   page: number;
   onPageChange: (page: number) => void;
+  isPreparing?: boolean;
 };
 
 export const AgreementPage: FC<AgreementPageProps> = ({
   page,
   onPageChange,
+  isPreparing,
 }) => {
   const [termChecked, setTermChecked] = useState<string[]>([]);
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -40,14 +42,13 @@ export const AgreementPage: FC<AgreementPageProps> = ({
     }
     try {
       setIsAccepting(true);
-      console.log("smartAccount AgreementPage", smartAccount);
-      
+
       // ユーザーを仮作成（preSignUpステータス）
       const createdUser = await createUser({
         evm_address: smartAccount?.address,
         status: "preSignUp",
       });
-      
+
       // 利用規約同意を記録
       await createAgreement({
         user_id: createdUser.evm_address,
@@ -55,9 +56,12 @@ export const AgreementPage: FC<AgreementPageProps> = ({
         privacy_policy: latestPrivacyPolicy?.id,
         terms_of_use: latestTermsOfUse?.id,
       });
-      
+
       // 次のページ（KYC）に進む
-      onPageChange(page + 1);
+      // onPageChange(page + 1);
+
+      // TODO: 元に戻す (臨時的にKYCスキップ)
+      onPageChange(page + 2);
     } catch (e) {
       console.error(e);
     } finally {
@@ -72,6 +76,14 @@ export const AgreementPage: FC<AgreementPageProps> = ({
       setActiveAcceptButton(false);
     }
   }, [termChecked]);
+
+  if (isPreparing) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 w-full max-w-lg p-8">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <motion.div

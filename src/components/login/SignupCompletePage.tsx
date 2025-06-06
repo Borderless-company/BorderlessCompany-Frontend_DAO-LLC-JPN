@@ -7,6 +7,8 @@ import { useRouter } from "next/router";
 import { useRouterLoading } from "@/hooks/useRouter";
 import { PiCheckCircleFill, PiCopy, PiCheckCircle } from "react-icons/pi";
 import { useActiveAccount } from "thirdweb/react";
+import { useUser } from "@/hooks/useUser";
+import { useCompanybyFounderId } from "@/hooks/useCompany";
 
 type SignupCompletePageProps = {
   page: number;
@@ -22,9 +24,23 @@ export const SignupCompletePage: FC<SignupCompletePageProps> = ({
   const { isNavigating } = useRouterLoading();
   const smartAccount = useActiveAccount();
   const [copied, setCopied] = useState(false);
+  const { updateUser } = useUser();
+  const { company, isLoading: isLoadingCompany } = useCompanybyFounderId(
+    smartAccount?.address || ""
+  );
 
-  const onContinue = () => {
-    router.push("/company/create");
+  const onContinue = async () => {
+    console.log("onContinue", smartAccount?.address);
+    if (!smartAccount?.address) return;
+    await updateUser({
+      evm_address: smartAccount?.address,
+      status: "signedUp",
+    });
+    if (company) {
+      await router.push(`/company/${company.id}`);
+    } else {
+      await router.push("/company/create");
+    }
   };
 
   const handleCopyAddress = () => {
@@ -123,9 +139,11 @@ export const SignupCompletePage: FC<SignupCompletePageProps> = ({
           size="lg"
           fullWidth
           onPress={onContinue}
-          isLoading={isNavigating}
+          isLoading={isNavigating || isLoadingCompany}
         >
-          {t("Create Your Company")}
+          {company
+            ? `(${company.COMPANY_NAME?.["ja-jp"]})へ`
+            : t("Create Your Company")}
         </Button>
       </motion.div>
     </motion.div>
