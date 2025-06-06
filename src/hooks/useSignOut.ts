@@ -18,7 +18,10 @@ export const useSignOut = () => {
         credentials: "include",
       });
       await refetch();
-      router.push("/login");
+      // estuaryページの場合は/loginに遷移しない
+      if (!router.pathname.includes("/estuary")) {
+        router.push("/login");
+      }
     } catch (e) {
       throw new Error("Failed to sign out");
     }

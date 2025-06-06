@@ -22,14 +22,8 @@ export const TokenSelection: FC = () => {
   const router = useRouter();
   const { estId } = router.query;
   const { estuary, isLoading } = useEstuary(estId as string);
-  const { connectWithGoogle, signIn, isConnecting } = useGoogleAuth({
-    onSignInSuccess: () => {
-      console.log("サインイン成功");
-    },
-    onSignInError: (error) => {
-      console.error("サインインエラー:", error);
-    },
-  });
+  const { connectWithGoogle, signIn, checkAccount, isConnecting, me } =
+    useGoogleAuth();
 
   // 販売期間の状態を判定する関数
   const getSaleStatus = (startDate: string | null, endDate: string | null) => {
@@ -67,11 +61,18 @@ export const TokenSelection: FC = () => {
     setSelectedTokenId(selectedTokenId);
   }, [token, selectedTokenId]);
 
+  useEffect(() => {
+    if (me?.isLogin) {
+      checkAccount();
+    } else if (account?.address) {
+      signIn();
+    }
+  }, [account?.address, me]);
+
+  console.log("connecting: ", isConnecting);
   const handleConnect = async () => {
     try {
       await connectWithGoogle();
-      // Googleで接続した後、SIWEサインインを実行
-      await signIn();
     } catch (error) {
       console.error("接続エラー:", error);
     }
@@ -146,7 +147,7 @@ export const TokenSelection: FC = () => {
               ¥{estuary?.fixed_price?.toLocaleString()}
             </p>
           </div>
-          {account?.address ? (
+          {me?.isLogin ? (
             <Button
               className="w-full bg-yellow-700 text-white text-base font-semibold"
               endContent={
@@ -172,7 +173,7 @@ export const TokenSelection: FC = () => {
               {!isSaleActive
                 ? saleStatus.message
                 : isConnecting
-                ? t("Connecting...")
+                ? "サインインしています..."
                 : t("Sign In")}
             </Button>
           )}

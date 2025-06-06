@@ -268,6 +268,7 @@ export type Database = {
           max_price: number | null
           min_price: number | null
           org_logo: string | null
+          payment_link: string | null
           payment_methods: string[] | null
           sale_name: string | null
           start_date: string | null
@@ -285,6 +286,7 @@ export type Database = {
           max_price?: number | null
           min_price?: number | null
           org_logo?: string | null
+          payment_link?: string | null
           payment_methods?: string[] | null
           sale_name?: string | null
           start_date?: string | null
@@ -302,6 +304,7 @@ export type Database = {
           max_price?: number | null
           min_price?: number | null
           org_logo?: string | null
+          payment_link?: string | null
           payment_methods?: string[] | null
           sale_name?: string | null
           start_date?: string | null

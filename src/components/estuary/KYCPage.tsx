@@ -11,7 +11,7 @@ const KYCPage: FC = () => {
   const { page, setPage } = useEstuaryContext();
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const account = useActiveAccount();
-  const { updateUser, user } = useUser(account?.address);
+  const { updateUser, createUser, user } = useUser(account?.address);
 
   // ユーザーのKYCステータスが「done」の場合は次のページに自動的に進む
   useEffect(() => {
@@ -20,29 +20,6 @@ const KYCPage: FC = () => {
       setPage((page) => page + 1);
     }
   }, [user, setPage]);
-
-  const onClickBack = () => {
-    setPage((page) => page - 1);
-  };
-
-  useEffect(() => {
-    const generateSDKLink = async () => {
-      try {
-        const res = await fetch("/api/kyc/generateSDKLink", {
-          method: "POST",
-          body: JSON.stringify({
-            levelName: "borderless-kyc-level",
-            userId: account?.address,
-          }),
-        });
-        const sdkLink = await res.json();
-        console.log("sdkLink", sdkLink);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    generateSDKLink();
-  }, [account?.address]);
 
   useEffect(() => {
     const getAccessToken = async () => {
@@ -94,7 +71,10 @@ const KYCPage: FC = () => {
         payload as EventPayload<"idCheck.onApplicantStatusChanged">;
       if (CastedPayload.reviewStatus === "completed") {
         // KYCの審査が完了したらユーザーのKYCステータスを更新
-        updateUser({ kyc_status: "done" })
+        createUser({
+          evm_address: account?.address,
+          kyc_status: "done",
+        })
           .then(() => console.log("KYC status updated to done"))
           .catch((err) => console.error("Failed to update KYC status:", err));
 

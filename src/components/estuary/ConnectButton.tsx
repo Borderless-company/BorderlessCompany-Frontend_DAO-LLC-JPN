@@ -17,8 +17,20 @@ export const ConnectButton: FC<ConnectButtonProps> = ({ ...props }) => {
   const { t } = useTranslation("estuary");
   const account = useActiveAccount();
   const walletDetail = useWalletDetailsModal();
-  const { connectWithGoogle, isConnecting } = useGoogleAuth();
+  const { connectWithGoogle, isConnecting, me, checkAccount, signIn } =
+    useGoogleAuth();
   const { email, picture } = useGoogleEmail();
+
+  useEffect(() => {
+    console.log("me: ", me);
+    console.log("account: ", account);
+    if (me?.isLogin) {
+      checkAccount();
+    } else if (account?.address) {
+      console.log("signIn");
+      signIn();
+    }
+  }, [account?.address, me]);
 
   // プロフィール画像を決定する関数
   const getProfileImage = () => {
