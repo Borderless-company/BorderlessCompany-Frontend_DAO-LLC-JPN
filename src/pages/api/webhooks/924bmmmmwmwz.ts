@@ -114,6 +114,7 @@ export default async function handler(
             is_admin: false,
             is_representative: false,
             is_initial_member: false,
+            date_joined: new Date().toISOString(),
           });
 
           if (memberError) {
