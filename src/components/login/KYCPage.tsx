@@ -109,7 +109,7 @@ export const KYCPage: FC<KYCPageProps> = ({ page, onPageChange }) => {
   if (user && user.kyc_status === "done") {
     return (
       <motion.div
-        className="flex flex-col items-center justify-center gap-4 w-full max-w-lg p-8"
+        className="flex flex-col items-center justify-center gap-4 w-full max-w-lg p-8 z-10"
         initial={{ opacity: 0, x: 0 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
