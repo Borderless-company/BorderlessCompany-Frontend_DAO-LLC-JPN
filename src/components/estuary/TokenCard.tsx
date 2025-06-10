@@ -24,7 +24,7 @@ export const TokenCard: FC<TokenCardProps> = ({
       value={props.value}
       classNames={{
         base: cn(
-          "flex flex-col w-64 h-[340px] flex-shrink-0 p-0 bg-white rounded-2xl shadow-lg overflow-hidden m-0 box-content",
+          "flex flex-col w-64 h-[360px] flex-shrink-0 p-0 bg-white rounded-2xl shadow-lg overflow-hidden m-0 box-content",
           isSelected &&
             "outline outline-1 outline-yellow-500 shadow-lg shadow-yellow-500/50 transition-all"
         ),
@@ -46,9 +46,11 @@ export const TokenCard: FC<TokenCardProps> = ({
           className="w-full aspect-square object-cover hover:scale-105 transition-all"
         />
       </div>
-      <div className="flex flex-col gap-0 p-4 pt-3">
-        <h3 className="text-slate-800 text-xl font-semibold">{name}</h3>
-        <p className="text-slate-600 text-lg font-semibold">
+      <div className="flex flex-col gap-0 p-4 pt-3 flex-1">
+        <h3 className="text-slate-800 font-label-lg font-semibold w-full line-clamp-3">
+          {name}
+        </h3>
+        <p className="text-slate-600 font-label-lg font-semibold w-full mt-2">
           {fixedPrice
             ? `¥${fixedPrice}`
             : maxPrice
