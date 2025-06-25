@@ -231,7 +231,9 @@ export const TokenSelection: FC = () => {
       <FirebasePhoneAuthModal
         isOpen={isPhoneAuthModalOpen}
         onClose={handlePhoneAuthClose}
-        onSiweTrigger={handleSiweTrigger}
+        onAuthSuccess={async (jwt: string, address: string) => {
+          await handleSiweTrigger();
+        }}
       />
     </>
   );
