@@ -5,9 +5,11 @@ import {
   getContract,
   prepareContractCall,
   readContract,
+  estimateGas,
+  toWei,
 } from "thirdweb";
 import { defineChain } from "thirdweb/chains";
-import { useSendTransaction } from "thirdweb/react";
+import { useSendTransaction, useActiveAccount } from "thirdweb/react";
 import { SCR_PROXY_ADDRESS } from "@/constants";
 import SCR_ABI from "@/utils/abi/SCR_V2.json";
 import SERVICE_FACTORY_ABI from "@/utils/abi/ServiceFactory.json";
@@ -15,6 +17,7 @@ import VOTE_ABI from "@/utils/abi/Vote.json";
 import EXE_TOKEN_ABI from "@/utils/abi/LETS_JP_LLC_EXE_V2.json";
 import NON_EXE_TOKEN_ABI from "@/utils/abi/LETS_JP_LLC_NON_EXE.json";
 import SALE_ABI from "@/utils/abi/LETS_JP_LLC_SALE.json";
+import BORDERLESS_ACCESS_CONTROL_ABI from "@/utils/abi/BorderlessAccessControl.json";
 import { AbiCoder, ethers } from "ethers";
 
 // contract
@@ -32,6 +35,7 @@ export const scrProxyContract = () => {
     client,
     chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
     address: SCR_PROXY_ADDRESS,
+    abi: JSON.parse(JSON.stringify(SCR_ABI.abi)),
   });
 };
 
@@ -70,10 +74,20 @@ export const accountFactoryContract = (address: string) => {
   });
 };
 
+export const accessControlContract = () => {
+  return getContract({
+    client,
+    chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
+    address: SCR_PROXY_ADDRESS,
+    abi: JSON.parse(JSON.stringify(BORDERLESS_ACCESS_CONTROL_ABI.abi)),
+  });
+};
+
 // write
 
 export const useSetContractURI = () => {
   const { mutateAsync: sendTransaction } = useSendTransaction();
+  const activeAccount = useActiveAccount();
   const sendTx = async (smartAccount: string) => {
     const account = smartAccountContract(smartAccount);
 
@@ -84,7 +98,21 @@ export const useSetContractURI = () => {
       method: "function setContractURI(string _uri)",
       params: [account.address],
     }) as any;
-    const result = await sendTransaction(transaction);
+
+    // Estimate gas and apply 1.5x multiplier
+    let gasLimit = BigInt(300000); // Default gas limit
+    try {
+      const gasEstimate = await estimateGas({
+        transaction,
+        account: activeAccount,
+      });
+      gasLimit = (gasEstimate * BigInt(15)) / BigInt(10);
+    } catch (error) {
+      console.warn("Gas estimation failed, using default gas limit:", error);
+    }
+    const txWithGas = { ...transaction, gas: gasLimit };
+
+    const result = await sendTransaction(txWithGas);
     return result.transactionHash;
   };
 
@@ -93,6 +121,7 @@ export const useSetContractURI = () => {
 
 export const useCreateSmartCompany = () => {
   const { mutateAsync: sendTransaction } = useSendTransaction();
+  const activeAccount = useActiveAccount();
   const sendTx = async (props: {
     scId: string;
     beacon: string;
@@ -109,6 +138,7 @@ export const useCreateSmartCompany = () => {
     const contract = scrProxyContract();
     const transaction = prepareContractCall({
       contract: contract,
+
       method: SCR_ABI.abi.find(
         (item) => item.name === "createSmartCompany"
       ) as any,
@@ -127,8 +157,26 @@ export const useCreateSmartCompany = () => {
       ],
     });
     console.log("transaction", transaction);
+
+    // Estimate gas and apply 1.5x multiplier
+    console.log("will estimate gas");
+    let gasLimit = BigInt(300000); // Default gas limit
+    try {
+      const gasEstimate = await estimateGas({
+        transaction,
+        account: activeAccount,
+      });
+      console.log("gasEstimate", gasEstimate);
+      gasLimit = (gasEstimate * BigInt(15)) / BigInt(10);
+      console.log("gasLimit", gasLimit);
+    } catch (error) {
+      console.warn("Gas estimation failed, using default gas limit:", error);
+    }
+    const txWithGas = { ...transaction, gas: gasLimit };
+    console.log("txWithGas", txWithGas);
+
     // トランザクションハッシュを返す
-    const result = await sendTransaction(transaction);
+    const result = await sendTransaction(txWithGas);
     console.log("result", result);
     return result.transactionHash;
   };
@@ -139,6 +187,7 @@ export const useCreateSmartCompany = () => {
 // TODO: 型直す
 export const useSetSaleInfo = () => {
   const { mutate: sendTransaction } = useSendTransaction();
+  const activeAccount = useActiveAccount();
 
   const sendTx = async ({
     type,
@@ -178,7 +227,21 @@ export const useSetSaleInfo = () => {
         saleInfo.maxPrice,
       ],
     });
-    sendTransaction(transaction);
+
+    // Estimate gas and apply 1.5x multiplier
+    let gasLimit = BigInt(300000);
+    try {
+      const gasEstimate = await estimateGas({
+        transaction,
+        account: activeAccount,
+      });
+      gasLimit = (gasEstimate * BigInt(15)) / BigInt(10);
+    } catch (error) {
+      console.warn("Gas estimation failed, using default gas limit:", error);
+    }
+    const txWithGas = { ...transaction, gas: gasLimit };
+
+    sendTransaction(txWithGas);
   };
 
   return { sendTx };
@@ -186,6 +249,7 @@ export const useSetSaleInfo = () => {
 
 export const useMintExeToken = () => {
   const { mutateAsync: sendTransaction } = useSendTransaction();
+  const activeAccount = useActiveAccount();
   const sendTx = async (exeTokenAddress: string, to: string) => {
     const contract = exeTokenContract(exeTokenAddress);
     const transaction = prepareContractCall({
@@ -194,7 +258,21 @@ export const useMintExeToken = () => {
       params: [to],
     });
     console.log("address", to);
-    const result = await sendTransaction(transaction);
+
+    // Estimate gas and apply 1.5x multiplier
+    let gasLimit = BigInt(300000);
+    try {
+      const gasEstimate = await estimateGas({
+        transaction,
+        account: activeAccount,
+      });
+      gasLimit = (gasEstimate * BigInt(15)) / BigInt(10);
+    } catch (error) {
+      console.warn("Gas estimation failed, using default gas limit:", error);
+    }
+    const txWithGas = { ...transaction, gas: gasLimit };
+
+    const result = await sendTransaction(txWithGas);
     return result.transactionHash;
   };
 
@@ -203,6 +281,7 @@ export const useMintExeToken = () => {
 
 export const useInitialMintExeToken = () => {
   const { mutateAsync: sendTransaction } = useSendTransaction();
+  const activeAccount = useActiveAccount();
   const sendTx = async (exeTokenAddress: string, tos: string[]) => {
     const contract = exeTokenContract(exeTokenAddress);
     const transaction = prepareContractCall({
@@ -212,7 +291,21 @@ export const useInitialMintExeToken = () => {
       ) as any,
       params: [tos],
     });
-    const result = await sendTransaction(transaction);
+
+    // Estimate gas and apply 1.5x multiplier
+    let gasLimit = BigInt(300000);
+    try {
+      const gasEstimate = await estimateGas({
+        transaction,
+        account: activeAccount,
+      });
+      gasLimit = (gasEstimate * BigInt(15)) / BigInt(10);
+    } catch (error) {
+      console.warn("Gas estimation failed, using default gas limit:", error);
+    }
+    const txWithGas = { ...transaction, gas: gasLimit };
+
+    const result = await sendTransaction(txWithGas);
     return result.transactionHash;
   };
 
@@ -220,7 +313,8 @@ export const useInitialMintExeToken = () => {
 };
 
 export const useVote = () => {
-  const { mutate: sendTransaction } = useSendTransaction();
+  const { mutateAsync: sendTransaction } = useSendTransaction();
+  const activeAccount = useActiveAccount();
   const sendTx = async (
     proposalId: string,
     voteContractAddress: string,
@@ -232,13 +326,30 @@ export const useVote = () => {
       method: "function vote(string calldata proposalId, uint8 voteType)",
       params: [proposalId, voteType],
     });
+
+    // Estimate gas and apply 1.5x multiplier
+    let gasLimit = BigInt(300000);
+    try {
+      const gasEstimate = await estimateGas({
+        transaction,
+        account: activeAccount,
+      });
+      gasLimit = (gasEstimate * BigInt(15)) / BigInt(10);
+    } catch (error) {
+      console.warn("Gas estimation failed, using default gas limit:", error);
+    }
+    const txWithGas = { ...transaction, gas: gasLimit };
+
+    const result = await sendTransaction(txWithGas);
+    return result.transactionHash;
   };
 
   return { sendTx };
 };
 
 export const useCreateProposal = () => {
-  const { mutate: sendTransaction } = useSendTransaction();
+  const { mutateAsync: sendTransaction } = useSendTransaction();
+  const activeAccount = useActiveAccount();
   const sendTx = async (voteContractAddress: string, executor: string) => {
     const contract = voteContract(voteContractAddress);
     const now = Math.floor(Date.now() / 1000);
@@ -255,7 +366,55 @@ export const useCreateProposal = () => {
         BigInt(now + 30 * 24 * 60 * 60),
       ],
     });
-    sendTransaction(transaction);
+
+    // Estimate gas and apply 1.5x multiplier
+    let gasLimit = BigInt(300000);
+    try {
+      const gasEstimate = await estimateGas({
+        transaction,
+        account: activeAccount,
+      });
+      gasLimit = (gasEstimate * BigInt(15)) / BigInt(10);
+    } catch (error) {
+      console.warn("Gas estimation failed, using default gas limit:", error);
+    }
+    const txWithGas = { ...transaction, gas: gasLimit };
+
+    const result = await sendTransaction(txWithGas);
+    return result.transactionHash;
+  };
+
+  return { sendTx };
+};
+
+export const useGrantRole = () => {
+  const { mutateAsync: sendTransaction } = useSendTransaction();
+  const activeAccount = useActiveAccount();
+  const sendTx = async (role: string, account: string) => {
+    const contract = accessControlContract();
+    const transaction = prepareContractCall({
+      contract: contract,
+      method: BORDERLESS_ACCESS_CONTROL_ABI.abi.find(
+        (item) => item.name === "grantRole"
+      ) as any,
+      params: [role, account],
+    });
+
+    // Estimate gas and apply 1.5x multiplier
+    let gasLimit = BigInt(300000);
+    try {
+      const gasEstimate = await estimateGas({
+        transaction,
+        account: activeAccount,
+      });
+      gasLimit = (gasEstimate * BigInt(15)) / BigInt(10);
+    } catch (error) {
+      console.warn("Gas estimation failed, using default gas limit:", error);
+    }
+    const txWithGas = { ...transaction, gas: gasLimit };
+
+    const result = await sendTransaction(txWithGas);
+    return result.transactionHash;
   };
 
   return { sendTx };
