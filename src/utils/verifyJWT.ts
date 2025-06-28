@@ -1,6 +1,12 @@
 import { NextApiRequest, NextApiResponse, NextApiHandler } from "next";
 import jwt from "jsonwebtoken";
-const JWT_SECRET = process.env.JWT_SECRET || "";
+
+// JWTシークレット（必須）
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET environment variable is required for security");
+}
+const jwtSecret: string = JWT_SECRET;
 
 export interface AuthenticatedRequest extends NextApiRequest {
   user?: {
@@ -19,7 +25,7 @@ export function authMiddleware(handler: NextApiHandler) {
         return res.status(401).json({ error: "No token provided" });
       }
 
-      const decoded = jwt.verify(token, JWT_SECRET) as {
+      const decoded = jwt.verify(token, jwtSecret) as {
         address: string;
         iat: number;
         exp: number;

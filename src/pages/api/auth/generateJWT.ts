@@ -37,8 +37,13 @@ const contractABI = [
   },
 ];
 
-// JWTシークレット（なければデフォルト値）
-const JWT_SECRET = process.env.JWT_SECRET || "";
+// JWTシークレット（必須）
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET environment variable is required for security");
+}
+// TypeScript用の型アサーション
+const jwtSecret: string = JWT_SECRET;
 
 export default async function handler(
   req: NextApiRequest,
@@ -132,7 +137,7 @@ export default async function handler(
     }
 
     // JWTの生成と保存
-    const token = jwt.sign({ address: address }, JWT_SECRET, {
+    const token = jwt.sign({ address: address }, jwtSecret, {
       expiresIn: "24h",
     });
 
