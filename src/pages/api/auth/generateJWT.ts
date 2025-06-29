@@ -45,6 +45,24 @@ if (!JWT_SECRET) {
 // TypeScript用の型アサーション
 const jwtSecret: string = JWT_SECRET;
 
+// JWT有効期限設定（環境変数で設定可能）
+const getJWTExpiry = () => {
+  const customExpiry = process.env.JWT_EXPIRY_HOURS;
+  const isProduction = process.env.NODE_ENV === "production";
+
+  // 環境変数が設定されている場合はそれを使用
+  if (customExpiry) {
+    const hours = parseInt(customExpiry, 10);
+    if (!isNaN(hours) && hours > 0 && hours <= 168) {
+      // 最大7日間
+      return hours;
+    }
+  }
+
+  // デフォルト値: 本番環境では8時間、開発環境では24時間
+  return isProduction ? 8 : 24;
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -136,20 +154,33 @@ export default async function handler(
       return res.status(500).json({ error: "Failed to update nonce" });
     }
 
-    // JWTの生成と保存
+    // JWTとCookieの有効期限を統一（セキュリティ強化）
+    const TOKEN_EXPIRY_HOURS = getJWTExpiry();
+    const TOKEN_EXPIRY_SECONDS = TOKEN_EXPIRY_HOURS * 60 * 60;
+
     const token = jwt.sign({ address: address }, jwtSecret, {
-      expiresIn: "24h",
+      expiresIn: `${TOKEN_EXPIRY_HOURS}h`,
     });
 
+    // セキュアなCookie設定
+    const isProduction = process.env.NODE_ENV === "production";
     const cookie = serialize("token", token, {
-      httpOnly: true,
-      secure: false,
-      path: "/",
-      maxAge: 60 * 60 * 24 * 10,
-      sameSite: "strict",
+      httpOnly: true, // XSS攻撃を防ぐ
+      secure: isProduction, // 本番環境ではHTTPS必須
+      path: "/", // アプリ全体でアクセス可能
+      maxAge: TOKEN_EXPIRY_SECONDS, // JWTと同じ有効期限
+      sameSite: "strict", // CSRF攻撃を防ぐ
     });
 
+    // セキュリティヘッダーの設定
     res.setHeader("Set-Cookie", cookie);
+    res.setHeader(
+      "Cache-Control",
+      "no-store, no-cache, must-revalidate, proxy-revalidate"
+    );
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error(error);
