@@ -167,16 +167,23 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       setActivationStatus("deploying");
       const abiCoder = new ethers.AbiCoder();
 
+      const executiveTokenParams = [
+        exeToken.name,
+        exeToken.symbol,
+        `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${exeToken.id}`,
+        ".json",
+        true,
+        0,
+      ];
+
+      console.log(
+        "executiveTokenExtraParams (before encode):",
+        executiveTokenParams
+      );
+
       const executiveTokenExtraParams = abiCoder.encode(
         ["string", "string", "string", "string", "bool", "uint256"],
-        [
-          exeToken.name,
-          exeToken.symbol,
-          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${exeToken.id}`,
-          ".json",
-          true,
-          0,
-        ]
+        executiveTokenParams
       );
 
       let nonExecutiveTokenExtraParams: string;
@@ -184,6 +191,21 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       // KIBOTCHA の場合は非実行社員トークンのメタデータを変更する
       if (company.id == process.env.NEXT_PUBLIC_KIBOTCHA_COMPANY_ID) {
         console.log("KIBOTCHA");
+        const nonExecutiveTokenParams = [
+          nonExeToken.name,
+          nonExeToken.symbol,
+          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/kibotcha/non-exe/`,
+          ".json",
+          false,
+          2000,
+          862, // magic number
+        ];
+
+        console.log(
+          "nonExecutiveTokenExtraParams (KIBOTCHA, before encode):",
+          nonExecutiveTokenParams
+        );
+
         nonExecutiveTokenExtraParams = abiCoder.encode(
           [
             "string",
@@ -194,27 +216,26 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
             "uint256",
             "uint256",
           ],
-          [
-            nonExeToken.name,
-            nonExeToken.symbol,
-            `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/kibotcha/non-exe/`,
-            ".json",
-            false,
-            2000,
-            708, // magic number
-          ]
+          nonExecutiveTokenParams
         );
       } else {
+        const nonExecutiveTokenParams = [
+          nonExeToken.name,
+          nonExeToken.symbol,
+          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${nonExeToken.id}`,
+          ".json",
+          true,
+          0,
+        ];
+
+        console.log(
+          "nonExecutiveTokenExtraParams (before encode):",
+          nonExecutiveTokenParams
+        );
+
         nonExecutiveTokenExtraParams = abiCoder.encode(
           ["string", "string", "string", "string", "bool", "uint256"],
-          [
-            nonExeToken.name,
-            nonExeToken.symbol,
-            `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${nonExeToken.id}`,
-            ".json",
-            true,
-            0,
-          ]
+          nonExecutiveTokenParams
         );
       }
 

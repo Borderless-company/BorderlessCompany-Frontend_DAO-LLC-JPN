@@ -25,7 +25,7 @@ export default function ThirdwebProviderWrapper({
         accountAbstraction={{
           chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
           factoryAddress: ACCOUNT_FACTORY_ADDRESS,
-          sponsorGas: true,
+          sponsorGas: false,
         }}
       />
       {children}

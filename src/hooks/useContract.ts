@@ -7,6 +7,9 @@ import {
   readContract,
   estimateGas,
   toWei,
+  eth_maxPriorityFeePerGas,
+  eth_gasPrice,
+  getRpcClient,
 } from "thirdweb";
 import { defineChain } from "thirdweb/chains";
 import { useSendTransaction, useActiveAccount } from "thirdweb/react";
@@ -136,6 +139,14 @@ export const useCreateSmartCompany = () => {
     scsDeployParams: `0x${string}`[];
   }) => {
     const contract = scrProxyContract();
+    const rpcRequest = getRpcClient({
+      client,
+      chain: defineChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID)),
+    });
+    const currentGasPrice = await eth_gasPrice(rpcRequest);
+    const currentPriorityFee = await eth_maxPriorityFeePerGas(rpcRequest);
+    console.log("currentGasPrice", currentGasPrice);
+    console.log("currentPriorityFee", currentPriorityFee);
     const transaction = prepareContractCall({
       contract: contract,
 
@@ -155,6 +166,8 @@ export const useCreateSmartCompany = () => {
         props.scsBeaconProxy as readonly Address[],
         props.scsDeployParams,
       ],
+      maxPriorityFeePerGas: currentPriorityFee,
+      maxFeePerGas: (currentGasPrice * BigInt(15)) / BigInt(10),
     });
     console.log("transaction", transaction);
 
@@ -172,7 +185,10 @@ export const useCreateSmartCompany = () => {
     } catch (error) {
       console.warn("Gas estimation failed, using default gas limit:", error);
     }
-    const txWithGas = { ...transaction, gas: gasLimit };
+    const txWithGas = {
+      ...transaction,
+      gas: gasLimit,
+    };
     console.log("txWithGas", txWithGas);
 
     // トランザクションハッシュを返す
