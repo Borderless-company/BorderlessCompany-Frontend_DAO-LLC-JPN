@@ -25,9 +25,7 @@ export const syncWalletToKyosoId = async (
   firebaseIdToken: string
 ): Promise<KyosoIdWalletResponse> => {
   const apiKey = process.env.NEXT_PUBLIC_KYOSO_API_KEY;
-  const apiUrl =
-    process.env.NEXT_PUBLIC_KYOSO_API_URL ||
-    process.env.NEXT_PUBLIC_KYOSO_API_BASE_URL;
+  const apiUrl = process.env.NEXT_PUBLIC_KYOSO_API_BASE_URL;
 
   if (!apiKey) {
     throw new Error("共創DAO APIキーが設定されていません");
