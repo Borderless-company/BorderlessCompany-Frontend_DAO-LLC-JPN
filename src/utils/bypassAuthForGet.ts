@@ -2,8 +2,6 @@ import { NextApiRequest, NextApiResponse, NextApiHandler } from "next";
 import jwt from "jsonwebtoken";
 import { AuthenticatedRequest, authMiddleware } from "./verifyJWT";
 
-const JWT_SECRET = process.env.JWT_SECRET || "";
-
 export function bypassAuthForGet(handler: NextApiHandler) {
   return async (req: AuthenticatedRequest, res: NextApiResponse) => {
     // GETリクエストの場合は認証をバイパス
