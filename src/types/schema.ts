@@ -903,9 +903,9 @@ export type Database = {
     }
     Enums: {
       AgreementType: "termsAndConditions" | "termSheets"
-      CompanyType: "llc"
+      CompanyType: "llc" | "dao"
       Currency: "yen" | "usd"
-      Jurisdiction: "jp"
+      Jurisdiction: "jp" | "stateless"
       KycStatus: "done" | "reviewing" | "yet" | "error"
       LangCode: "ja-JP" | "en-US"
       PaymentStatus: "done" | "pending" | "yet" | "error"
@@ -1028,9 +1028,9 @@ export const Constants = {
   public: {
     Enums: {
       AgreementType: ["termsAndConditions", "termSheets"],
-      CompanyType: ["llc"],
+      CompanyType: ["llc", "dao"],
       Currency: ["yen", "usd"],
-      Jurisdiction: ["jp"],
+      Jurisdiction: ["jp", "stateless"],
       KycStatus: ["done", "reviewing", "yet", "error"],
       LangCode: ["ja-JP", "en-US"],
       PaymentStatus: ["done", "pending", "yet", "error"],
