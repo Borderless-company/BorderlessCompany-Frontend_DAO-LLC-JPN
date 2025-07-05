@@ -1,16 +1,12 @@
 import { CLayout } from "@/components/layout/CLayout";
 import { FC, useState } from "react";
-import { Button, Input, Textarea } from "@heroui/react";
+import { Button, Input, Spinner, Textarea } from "@heroui/react";
 import { Stack } from "@/sphere/Stack";
 import { useTranslation } from "next-i18next";
 import { useActiveAccount } from "thirdweb/react";
 import { useRouter } from "next/router";
 import { useCompany } from "@/hooks/useCompany";
-import { useToken } from "@/hooks/useToken";
 import { useCompanyName } from "@/hooks/useCompanyName";
-import { deployERC721Contract } from "thirdweb/deploys";
-import { defineChain } from "thirdweb/chains";
-import { client } from "@/utils/client";
 import { motion } from "framer-motion";
 import ImageUploader from "@/components/ImageUploader";
 import { useAtom } from "jotai";
@@ -21,10 +17,8 @@ import { Enums } from "@/types/schema";
 
 export const StatelessDaoCreationPage: FC = () => {
   const { t } = useTranslation(["company", "common"]);
-  const [daoName, setDaoName] = useState("");
-  const [daoDescription, setDaoDescription] = useState("");
-  const [tokenName, setTokenName] = useState("");
-  const [tokenSymbol, setTokenSymbol] = useState("");
+  const [daoNameJa, setDaoNameJa] = useState("");
+  const [daoNameEn, setDaoNameEn] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [selectedFile, setSelectedFile] = useAtom(selectedFileAtom);
   const [imgUrl, setImgUrl] = useState<string | undefined>(undefined);
@@ -32,7 +26,6 @@ export const StatelessDaoCreationPage: FC = () => {
   const smartAccount = useActiveAccount();
   const router = useRouter();
   const { createCompany } = useCompany();
-  const { createToken } = useToken();
   const { createCompanyName } = useCompanyName();
 
   const onCreateStatelessDao = async () => {
@@ -43,56 +36,30 @@ export const StatelessDaoCreationPage: FC = () => {
     }
 
     console.log("📋 DAO Creation Parameters:", {
-      daoName,
-      daoDescription,
-      tokenName,
-      tokenSymbol,
+      daoNameJa,
+      daoNameEn,
       smartAccountAddress: smartAccount.address,
     });
 
     setIsCreating(true);
     try {
       // 画像をアップロード
-      let imageUrl = imgUrl;
       if (selectedFile) {
-        console.log("📸 Uploading token image...");
+        console.log("📸 Uploading DAO icon...");
         const { publicUrl } = await uploadFile(
-          "token-image",
-          `${uuidv4()}-dao-token-image`,
+          "dao-icons",
+          `${uuidv4()}-dao-icon`,
           selectedFile
         );
         setImgUrl(publicUrl);
-        imageUrl = publicUrl;
-        console.log("✅ Token image uploaded:", publicUrl);
+        console.log("✅ DAO icon uploaded:", publicUrl);
       }
-
-      // ERC721コントラクトをデプロイ
-      console.log("⛓️ Starting ERC721 contract deployment...");
-      const chain = defineChain(
-        parseInt(process.env.NEXT_PUBLIC_CHAIN_ID || "1946")
-      );
-      console.log("🔗 Chain ID:", chain.id);
-
-      const contractAddress = await deployERC721Contract({
-        client,
-        chain,
-        account: smartAccount,
-        type: "DropERC721",
-        params: {
-          name: tokenName,
-          symbol: tokenSymbol,
-          description: daoDescription,
-          image: imageUrl,
-          defaultAdmin: smartAccount.address,
-        },
-      });
-      console.log("✅ ERC721 contract deployed at:", contractAddress);
 
       // 会社名を作成
       console.log("📝 Creating company name...");
       const companyName = await createCompanyName({
-        "ja-jp": daoName,
-        "en-us": daoName,
+        "ja-jp": daoNameJa,
+        "en-us": daoNameEn,
       });
       console.log("✅ Company name created:", companyName);
 
@@ -103,28 +70,11 @@ export const StatelessDaoCreationPage: FC = () => {
         jurisdiction: "stateless" as Enums<"Jurisdiction">,
         company_type: "dao" as Enums<"CompanyType">,
         company_name: companyName.id,
-        contract_address: contractAddress,
       };
       console.log("📋 Company creation parameters:", companyParams);
 
       const company = await createCompany(companyParams);
       console.log("✅ Company created:", company);
-
-      // トークンを作成
-      console.log("🪙 Creating token...");
-      const tokenParams = {
-        company_id: company.id,
-        contract_address: contractAddress,
-        name: tokenName,
-        symbol: tokenSymbol,
-        image: imageUrl,
-        description: daoDescription,
-        is_executable: true,
-      };
-      console.log("📋 Token creation parameters:", tokenParams);
-
-      await createToken(tokenParams);
-      console.log("✅ Token created successfully");
 
       // 成功時に会社ページにリダイレクト
       console.log(
@@ -146,7 +96,7 @@ export const StatelessDaoCreationPage: FC = () => {
     }
   };
 
-  const isFormValid = daoName && daoDescription && tokenName && tokenSymbol;
+  const isFormValid = daoNameJa && daoNameEn;
 
   if (isCreating) {
     return (
@@ -159,12 +109,9 @@ export const StatelessDaoCreationPage: FC = () => {
             transition={{ duration: 0.5 }}
           >
             <h2 className="text-2xl font-bold mb-4">
-              {t("Creating Stateless DAO...")}
+              無国籍DAOを作成しています...
             </h2>
-            <p className="text-neutral mb-8">
-              {t("Deploying ERC721 contract and setting up your DAO...")}
-            </p>
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto"></div>
+            <Spinner />
           </motion.div>
         </div>
       </CLayout>
@@ -174,52 +121,32 @@ export const StatelessDaoCreationPage: FC = () => {
   return (
     <CLayout>
       <motion.div
-        className="flex flex-col items-center justify-center min-h-screen p-8"
+        className="flex flex-col items-center justify-center min-h-screen p-8 w-[600px]"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="max-w-2xl w-full">
+        <div className="w-full">
           <h1 className="text-3xl font-bold mb-8 text-center">
-            {t("Create Stateless DAO")}
+            無国籍DAOを作成
           </h1>
 
           <Stack className="gap-6">
-            <Input
-              label={t("DAO Name")}
-              placeholder={t("Enter your DAO name")}
-              value={daoName}
-              onChange={(e) => setDaoName(e.target.value)}
-              required
-            />
-
-            <Textarea
-              label={t("DAO Description")}
-              placeholder={t("Describe your DAO's purpose and goals")}
-              value={daoDescription}
-              onChange={(e) => setDaoDescription(e.target.value)}
-              required
-              minRows={3}
-            />
-
-            <ImageUploader
-              label={t("Token Image")}
-              defaultImage={imgUrl}
-            />
+            <ImageUploader label="アイコン" defaultImage={imgUrl} />
 
             <Input
-              label={t("Token Name")}
-              placeholder={t("Enter ERC721 token name")}
-              value={tokenName}
-              onChange={(e) => setTokenName(e.target.value)}
+              label="DAO名（日本語）"
+              placeholder="例) ネクストコミュニティDAO"
+              value={daoNameJa}
+              onChange={(e) => setDaoNameJa(e.target.value)}
               required
             />
 
             <Input
-              label={t("Token Symbol")}
-              placeholder={t("Enter ERC721 token symbol")}
-              value={tokenSymbol}
-              onChange={(e) => setTokenSymbol(e.target.value)}
+              label="DAO名（英語）"
+              placeholder="例) Next Community DAO"
+              value={daoNameEn}
+              onChange={(e) => setDaoNameEn(e.target.value)}
               required
             />
 
@@ -238,7 +165,7 @@ export const StatelessDaoCreationPage: FC = () => {
                 onPress={onCreateStatelessDao}
                 isDisabled={!isFormValid || !smartAccount}
               >
-                {t("Create Stateless DAO")}
+                作成する
               </Button>
             </Stack>
           </Stack>
