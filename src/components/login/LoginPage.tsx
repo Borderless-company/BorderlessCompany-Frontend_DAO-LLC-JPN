@@ -269,7 +269,7 @@ export const LoginWidget: FC<LoginWidgetProps> = ({
         {...connectButtonOptions}
         isLoading={isConnecting}
       >
-        {isConnecting ? t("Connecting...") : t("Sign In")}
+        {isConnecting ? t("Connecting...") : "サインイン"}
       </Button>
     </div>
   );
