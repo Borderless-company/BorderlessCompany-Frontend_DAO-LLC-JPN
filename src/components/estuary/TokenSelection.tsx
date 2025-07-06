@@ -3,28 +3,37 @@ import { RadioGroup } from "@heroui/react";
 import { cn } from "@heroui/react";
 import Image from "next/image";
 import { Button } from "@heroui/react";
-import { PiArrowRight, PiSignIn } from "react-icons/pi";
+import { PiArrowRight, PiSignIn, PiGoogleLogo } from "react-icons/pi";
 import { TokenCard } from "./TokenCard";
-import { useActiveAccount } from "thirdweb/react";
 import { useEstuaryContext } from "./EstuaryContext";
-import { useToken, createProduct } from "@/hooks/useToken";
-import { useEstuary } from "@/hooks/useEstuary";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
-import { useGoogleAuth } from "@/hooks/useGoogleAuth";
+import { useWalletConnection } from "@/hooks/useWalletConnection";
+import { useSiweAuth } from "@/hooks/useSiweAuth";
+import { FirebasePhoneAuthModal } from "@/components/login/FirebasePhoneAuthModal";
+import { useEstuary } from "@/hooks/useEstuary";
+import { SignInOptionsModal } from "@/components/login/SignInOptionsModal";
 
 export const TokenSelection: FC = () => {
   const { t, i18n } = useTranslation("estuary");
-  const account = useActiveAccount();
   const { setPage } = useEstuaryContext();
   const [selectedTokenId, setSelectedTokenId] = useState<string>();
   const router = useRouter();
   const { estId } = router.query;
   const { estuary, isLoading } = useEstuary(estId as string);
-  const { connectWithGoogle, signIn, checkAccount, isConnecting, me } =
-    useGoogleAuth();
 
-  // 販売期間の状態を判定する関数
+  // 分離されたフックを使用
+  const { connectWithGoogle, isConnecting: isWalletConnecting } =
+    useWalletConnection();
+  const { signIn, isAuthenticating, me } = useSiweAuth();
+
+  const [isPhoneAuthModalOpen, setIsPhoneAuthModalOpen] = useState(false);
+  const [isSignInOptionsModalOpen, setIsSignInOptionsModalOpen] =
+    useState(false);
+  const [isPhoneConnecting, setIsPhoneConnecting] = useState(false);
+
+  const showKyosoIdLogin = true;
+
   const getSaleStatus = (startDate: string | null, endDate: string | null) => {
     if (!startDate || !endDate)
       return { status: "unknown", message: "販売期間が設定されていません" };
@@ -56,24 +65,49 @@ export const TokenSelection: FC = () => {
     setSelectedTokenId(estuary?.token.id);
   }, [estuary, isLoading]);
 
-  useEffect(() => {
-    if (me?.isLogin) {
-      checkAccount();
-    } else if (account?.address) {
-      signIn();
-    }
-  }, [account?.address, me]);
-
-  console.log("connecting: ", isConnecting);
-  const handleConnect = async () => {
+  const handleGoogleConnect = async () => {
     try {
+      // ウォレット接続後に認証を実行
       await connectWithGoogle();
+      await signIn();
     } catch (error) {
-      console.error("接続エラー:", error);
+      console.error("Google接続エラー:", error);
     }
   };
 
-  console.log("language: ", i18n.language);
+  const handlePhoneAuthOpen = () => {
+    setIsPhoneAuthModalOpen(true);
+  };
+
+  const handlePhoneAuthClose = () => {
+    setIsPhoneAuthModalOpen(false);
+  };
+
+  const handleSiweTrigger = async () => {
+    try {
+      setIsPhoneConnecting(true);
+      await signIn();
+    } catch (error) {
+      console.error("SIWE-trigger failed:", error);
+    } finally {
+      setIsPhoneConnecting(false);
+      handlePhoneAuthClose();
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsSignInOptionsModalOpen(false);
+    await handleGoogleConnect();
+  };
+
+  const handleKyosoIdSignIn = () => {
+    setIsSignInOptionsModalOpen(false);
+    handlePhoneAuthOpen();
+  };
+
+  // ローディング状態の計算
+  const isGoogleLoading = isWalletConnecting || isAuthenticating;
+  const isPhoneLoading = isPhoneConnecting || isAuthenticating;
 
   return (
     <>
@@ -165,18 +199,18 @@ export const TokenSelection: FC = () => {
             <Button
               startContent={<PiSignIn color="white" />}
               className={`w-full text-white text-base font-semibold ${
-                isSaleActive ? "bg-purple-700" : "bg-gray-400"
+                isSaleActive ? "bg-blue-700" : "bg-gray-400"
               }`}
-              onPress={handleConnect}
-              isLoading={isConnecting}
+              onPress={() => setIsSignInOptionsModalOpen(true)}
+              isLoading={isGoogleLoading || isPhoneLoading}
               isDisabled={!isSaleActive}
               size="lg"
             >
               {!isSaleActive
                 ? saleStatus.message
-                : isConnecting
-                ? "サインインしています..."
-                : t("Sign In")}
+                : isGoogleLoading || isPhoneLoading
+                ? "処理中..."
+                : "サインインして進む"}
             </Button>
           )}
         </div>
@@ -192,6 +226,22 @@ export const TokenSelection: FC = () => {
           />
         </div>
       </div>
+      <SignInOptionsModal
+        isOpen={isSignInOptionsModalOpen}
+        onClose={() => setIsSignInOptionsModalOpen(false)}
+        onGoogleClick={handleGoogleSignIn}
+        onKyosoIdClick={handleKyosoIdSignIn}
+        showKyosoIdLogin={showKyosoIdLogin}
+        isGoogleLoading={isGoogleLoading}
+        isPhoneLoading={isPhoneLoading}
+      />
+      <FirebasePhoneAuthModal
+        isOpen={isPhoneAuthModalOpen}
+        onClose={handlePhoneAuthClose}
+        onAuthSuccess={async (jwt: string, address: string) => {
+          await handleSiweTrigger();
+        }}
+      />
     </>
   );
 };
