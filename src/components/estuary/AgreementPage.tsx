@@ -18,6 +18,7 @@ import { OperationRegulationModal } from "../company/OperationRegulationModal";
 import { GovAgreementModal } from "../company/GovAgreementModal";
 import { AoIModal } from "../company/AoIModal";
 import { useActiveAccount } from "thirdweb/react";
+import { isStatelessDao } from "@/utils/company";
 
 const AgreementPage: FC = () => {
   const { t } = useTranslation("estuary");
@@ -88,7 +89,7 @@ const AgreementPage: FC = () => {
             if (pollingTimeoutRef.current) {
               clearTimeout(pollingTimeoutRef.current);
             }
-            
+
             setPaymentStatus("success");
             setPage(6);
           }
@@ -122,7 +123,7 @@ const AgreementPage: FC = () => {
           `${estuary.payment_link}?recipientAddress=${account?.address}`,
           "_blank"
         );
-        
+
         // polling開始
         startPaymentPolling();
       }
@@ -139,7 +140,7 @@ const AgreementPage: FC = () => {
   };
 
   const isAllChecked = useMemo(() => {
-    return termChecked.length === 4;
+    return termChecked.length === 4 && !isStatelessDao(estuary?.company);
   }, [termChecked]);
 
   // コンポーネントのアンマウント時にpollingをクリーンアップ
@@ -179,43 +180,43 @@ const AgreementPage: FC = () => {
             </div>
           </div>
         </div>
-        <CheckboxGroup
-          className="flex flex-col gap-2 w-full h-fit bg-stone-100 rounded-2xl px-4 py-1"
-          value={termChecked}
-          onValueChange={setTermChecked}
-          isDisabled={paymentStatus === "pending"}
-        >
-          {/* TODO: TermsheetsのDB作成繋ぎ込み */}
-
-          <TermCheckbox
-            value={"aoi"}
-            termName={"定款"}
-            isBorder
-            isExternal={false}
-            onPressLink={onOpenAoIModal}
-          />
-          <TermCheckbox
-            value={"gov-agreement"}
-            termName={"総会規定"}
-            isBorder
-            isExternal={false}
-            onPressLink={onOpenGovAgreementModal}
-          />
-          <TermCheckbox
-            value={"token-agreement"}
-            termName={"トークン規定"}
-            isBorder
-            isExternal={false}
-            onPressLink={onOpenTokenAgreementModal}
-          />
-          <TermCheckbox
-            value={"op-regulation"}
-            termName={"運用規定"}
-            isBorder={false}
-            isExternal={false}
-            onPressLink={onOpenOperationRegulationModal}
-          />
-        </CheckboxGroup>
+        {!isStatelessDao(estuary?.company) && (
+          <CheckboxGroup
+            className="flex flex-col gap-2 w-full h-fit bg-stone-100 rounded-2xl px-4 py-1"
+            value={termChecked}
+            onValueChange={setTermChecked}
+            isDisabled={paymentStatus === "pending"}
+          >
+            <TermCheckbox
+              value={"aoi"}
+              termName={"定款"}
+              isBorder
+              isExternal={false}
+              onPressLink={onOpenAoIModal}
+            />
+            <TermCheckbox
+              value={"gov-agreement"}
+              termName={"総会規定"}
+              isBorder
+              isExternal={false}
+              onPressLink={onOpenGovAgreementModal}
+            />
+            <TermCheckbox
+              value={"token-agreement"}
+              termName={"トークン規定"}
+              isBorder
+              isExternal={false}
+              onPressLink={onOpenTokenAgreementModal}
+            />
+            <TermCheckbox
+              value={"op-regulation"}
+              termName={"運用規定"}
+              isBorder={false}
+              isExternal={false}
+              onPressLink={onOpenOperationRegulationModal}
+            />
+          </CheckboxGroup>
+        )}
       </div>
 
       {/* Footer */}

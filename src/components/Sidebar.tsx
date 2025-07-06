@@ -18,6 +18,7 @@ import { Button } from "react-aria-components";
 import Image from "next/image";
 import { AccountChip } from "./AccountChip";
 import { useCompany } from "@/hooks/useCompany";
+import { isStatelessDao } from "@/utils/company";
 
 export type SidebarProps = {
   companyId?: string;
@@ -43,18 +44,18 @@ export const Sidebar: FC<SidebarProps> = ({ companyId }) => {
           href={`/company/${companyId}`}
         />
         <SidebarItem
-          title={t("Members")}
+          title={!isStatelessDao(company) ? t("Members") : "メンバー一覧"}
           icon={<PiUsersThree size={24} />}
           isActive={pathname.includes(`/company/${companyId}/members`)}
           href={`/company/${companyId}/members`}
-          isLocked={!company?.is_active}
+          isLocked={!company?.is_active && !isStatelessDao(company)}
         />
         <SidebarItem
           title={t("Tokens")}
           icon={<PiCoins size={24} />}
           isActive={pathname.includes(`/company/${companyId}/tokens`)}
           href={`/company/${companyId}/tokens`}
-          isLocked={!company?.is_active}
+          isLocked={!company?.is_active && !isStatelessDao(company)}
         />
         {/* <SidebarItem
           title="Estuary"

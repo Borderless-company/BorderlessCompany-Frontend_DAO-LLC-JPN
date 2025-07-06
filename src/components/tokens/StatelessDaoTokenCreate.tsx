@@ -62,7 +62,7 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
 
     console.log("🚀 Starting stateless DAO token creation");
     setIsCreating(true);
-    
+
     try {
       // 画像をアップロード
       let imageUrl = imgUrl;
@@ -109,7 +109,6 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
         symbol: formData.symbol,
         image: imageUrl,
         description: formData.description,
-        is_executable: true,
       };
       console.log("📋 Token creation parameters:", tokenParams);
 
@@ -124,7 +123,7 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
         symbol: "",
         description: "",
       });
-      
+
       onSuccess?.();
       props.onClose?.();
       props.onOpenChange?.(false);
@@ -165,11 +164,9 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1">
-              <h2 className="font-headline-sm text-primary">
-                {t("Create Stateless DAO Token")}
-              </h2>
+              <h2 className="font-headline-sm text-primary">トークンを作成</h2>
               <p className="font-body-md text-neutral">
-                {t("Create an ERC721 token for your stateless DAO.")}
+                ERC721トークンを作成するための情報を記入してください。
               </p>
             </ModalHeader>
             <form onSubmit={handleSubmit} id="stateless-dao-token-form">
@@ -186,7 +183,9 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
                     label={t("Token Name")}
                     labelPlacement="outside"
                     placeholder={t("Enter token name")}
-                    description={t("This will be the name of your ERC721 token")}
+                    description={t(
+                      "This will be the name of your ERC721 token"
+                    )}
                     isRequired
                   />
                   <Input
@@ -214,17 +213,22 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
                 </Stack>
               </ModalBody>
               <ModalFooter>
-                <Button color="default" variant="light" onPress={onClose} isDisabled={isCreating}>
+                <Button
+                  color="default"
+                  variant="light"
+                  onPress={onClose}
+                  isDisabled={isCreating}
+                >
                   {t("Cancel", { ns: "common" })}
                 </Button>
-                <Button 
-                  color="primary" 
-                  type="submit" 
+                <Button
+                  color="primary"
+                  type="submit"
                   form="stateless-dao-token-form"
                   isLoading={isCreating}
                   isDisabled={!isFormValid || !smartAccount}
                 >
-                  {isCreating ? t("Creating...") : t("Create Token")}
+                  {isCreating ? "作成中..." : "作成する"}
                 </Button>
               </ModalFooter>
             </form>

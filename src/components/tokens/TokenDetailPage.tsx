@@ -53,11 +53,13 @@ export const TokenDetailPage: FC<TokenDetailPageProps> = ({
           <h2 className="font-title-lg text-foreground ">
             {token?.name || "未設定"}
           </h2>
-          <TokenTypeChip
-            isExecutable={token?.is_executable ?? false}
-            size="sm"
-            className="rounded-md z-20"
-          />
+          {token?.is_executable !== null && (
+            <TokenTypeChip
+              isExecutable={token?.is_executable ?? false}
+              size="sm"
+              className="rounded-md z-20"
+            />
+          )}
         </Stack>
 
         <Stack className="gap-1">

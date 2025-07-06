@@ -13,7 +13,7 @@ import { useAtom } from "jotai";
 import { selectedFileAtom } from "@/atoms";
 import { uploadFile } from "@/utils/supabase";
 import { v4 as uuidv4 } from "uuid";
-import { Enums } from "@/types/schema";
+import { Enums, Tables } from "@/types/schema";
 
 export const StatelessDaoCreationPage: FC = () => {
   const { t } = useTranslation(["company", "common"]);
@@ -70,7 +70,9 @@ export const StatelessDaoCreationPage: FC = () => {
         jurisdiction: "stateless" as Enums<"Jurisdiction">,
         company_type: "dao" as Enums<"CompanyType">,
         company_name: companyName.id,
-      };
+        display_name: daoNameJa,
+        icon: imgUrl,
+      } as Tables<"COMPANY">;
       console.log("📋 Company creation parameters:", companyParams);
 
       const company = await createCompany(companyParams);

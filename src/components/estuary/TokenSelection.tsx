@@ -94,20 +94,27 @@ export const TokenSelection: FC = () => {
             borderRadius: "4px",
           }}
         />
+
         <h1 className="text-xl md:text-[28px] leading-8 font-bold text-slate-800">
           {i18n.language === "ja"
-            ? `${estuary?.company?.COMPANY_NAME?.["ja-jp"]} ${t("Invest")}`
-            : `${t("Invest")} ${estuary?.company?.COMPANY_NAME?.["en-us"]}`}
+            ? `${estuary?.company?.COMPANY_NAME?.["ja-jp"]}`
+            : `${estuary?.company?.COMPANY_NAME?.["en-us"]}`}
         </h1>
       </div>
 
       {/* Content */}
       <div className="flex flex-col gap-2 md:gap-4 flex-1 py-2 md:py-1">
-        <p className="text-slate-800 text-base md:text-lg font-semibold pl-6">
-          {estuary?.token.is_executable
-            ? "業務執行社員権トークンを購入する"
-            : "非業務執行社員権トークンを購入する"}
-        </p>
+        {estuary?.token.is_executable !== null ? (
+          <p className="text-slate-800 text-base md:text-lg font-semibold pl-6">
+            {estuary?.token.is_executable
+              ? "業務執行社員権トークンを購入する"
+              : "非業務執行社員権トークンを購入する"}
+          </p>
+        ) : (
+          <p className="text-slate-800 text-base md:text-lg font-semibold pl-6">
+            {`${estuary?.token.name}を購入する`}
+          </p>
+        )}
 
         <RadioGroup
           value={selectedTokenId}

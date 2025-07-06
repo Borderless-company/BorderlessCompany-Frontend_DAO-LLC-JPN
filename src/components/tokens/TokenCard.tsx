@@ -33,11 +33,13 @@ export const TokenCard: FC<TokenCardProps> = ({ token, ...props }) => {
           <h3 className="font-bold text-lg text-foreground">{token.name}</h3>
           <p className="font-label-md text-neutral">{token.symbol}</p>
         </Stack>
-        <TokenTypeChip
-          isExecutable={token.is_executable ?? false}
-          size="sm"
-          className="rounded-md z-20"
-        />
+        {token.is_executable !== null && (
+          <TokenTypeChip
+            isExecutable={token.is_executable ?? false}
+            size="sm"
+            className="rounded-md z-20"
+          />
+        )}
 
         {/* <div className="flex flex-col gap-1 mb-4">
           <div className="flex justify-between">

@@ -37,11 +37,11 @@ export const TokenListPage: FC<TokensPageProps> = ({ companyId }) => {
             startContent={<PiPlus size={20} />}
             onPress={() => setShowCreateModal(true)}
           >
-            {t("Create Token")}
+            トークンを作成
           </Button>
         </div>
       )}
-      
+
       {isLoadingTokens || isLoadingCompany ? (
         <Spinner />
       ) : (
@@ -58,7 +58,7 @@ export const TokenListPage: FC<TokensPageProps> = ({ companyId }) => {
           ))}
         </div>
       )}
-      
+
       {/* 無国籍DAO用のトークン作成モーダル */}
       {isStatelessDaoCompany && (
         <StatelessDaoTokenCreate
