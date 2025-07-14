@@ -373,7 +373,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       const companyInfo = (await readContract({
         contract: scrProxyContract(),
         method: SCR_ABI.abi.find(
-          (item) => item.name === "getCompanyInfo"
+          (item) => item.name === "getCompanyBaseInfo"
         ) as any,
         params: [formData?.company_number],
       })) as CompanyInfo;
