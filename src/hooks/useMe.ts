@@ -7,13 +7,14 @@ export const useMe = () => {
     error,
     isLoading,
     isError,
-    refetch
-  } = useQuery<{isLogin: boolean} | null, Error>({
+    refetch,
+  } = useQuery<{ isLogin: boolean } | null, Error>({
     queryKey: ["me"],
     queryFn: async () => {
       const response = await fetch("/api/auth/me", {
         method: "GET",
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
       });
       if (!response.ok) {
         if (response.status === 401) {

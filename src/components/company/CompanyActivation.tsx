@@ -167,16 +167,23 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       setActivationStatus("deploying");
       const abiCoder = new ethers.AbiCoder();
 
+      const executiveTokenParams = [
+        exeToken.name,
+        exeToken.symbol,
+        `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${exeToken.id}`,
+        ".json",
+        true,
+        0,
+      ];
+
+      console.log(
+        "executiveTokenExtraParams (before encode):",
+        executiveTokenParams
+      );
+
       const executiveTokenExtraParams = abiCoder.encode(
         ["string", "string", "string", "string", "bool", "uint256"],
-        [
-          exeToken.name,
-          exeToken.symbol,
-          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${exeToken.id}`,
-          ".json",
-          true,
-          0,
-        ]
+        executiveTokenParams
       );
 
       let nonExecutiveTokenExtraParams: string;
@@ -184,6 +191,21 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       // KIBOTCHA の場合は非実行社員トークンのメタデータを変更する
       if (company.id == process.env.NEXT_PUBLIC_KIBOTCHA_COMPANY_ID) {
         console.log("KIBOTCHA");
+        const nonExecutiveTokenParams = [
+          nonExeToken.name,
+          nonExeToken.symbol,
+          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/kibotcha/non-exe/`,
+          ".json",
+          false,
+          2000,
+          863, // magic number
+        ];
+
+        console.log(
+          "nonExecutiveTokenExtraParams (KIBOTCHA, before encode):",
+          nonExecutiveTokenParams
+        );
+
         nonExecutiveTokenExtraParams = abiCoder.encode(
           [
             "string",
@@ -194,27 +216,26 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
             "uint256",
             "uint256",
           ],
-          [
-            nonExeToken.name,
-            nonExeToken.symbol,
-            `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/kibotcha/non-exe/`,
-            ".json",
-            false,
-            2000,
-            708, // magic number
-          ]
+          nonExecutiveTokenParams
         );
       } else {
+        const nonExecutiveTokenParams = [
+          nonExeToken.name,
+          nonExeToken.symbol,
+          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${nonExeToken.id}`,
+          ".json",
+          true,
+          0,
+        ];
+
+        console.log(
+          "nonExecutiveTokenExtraParams (before encode):",
+          nonExecutiveTokenParams
+        );
+
         nonExecutiveTokenExtraParams = abiCoder.encode(
           ["string", "string", "string", "string", "bool", "uint256"],
-          [
-            nonExeToken.name,
-            nonExeToken.symbol,
-            `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${nonExeToken.id}`,
-            ".json",
-            true,
-            0,
-          ]
+          nonExecutiveTokenParams
         );
       }
 
@@ -243,13 +264,13 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
 
       const transactionHash = await sendCreateCompanyTx({
         scId: formData?.company_number,
-        beacon: SCT_BEACON_ADDRESS,
-        legalEntityCode: "SC_JP_DAOLLC",
+        scBeaconProxy: SCT_BEACON_ADDRESS,
+        legalEntityCode: "SC_JP_DAO_LLC",
         companyName: actualCompanyName, // 実際の会社名を使用
         establishmentDate: aoi?.establishment_date,
-        jurisdiction: company?.jurisdiction,
-        entityType: company?.company_type,
-        scDeployParam: "0x" as `0x${string}`,
+        jurisdiction: company?.jurisdiction.toUpperCase(),
+        entityType: company?.company_type.toUpperCase(),
+        scDeployParams: "0x" as `0x${string}`,
         companyInfo: ["Temp", "Temp", "Temp", "Temp"],
         scsBeaconProxy: [
           GOVERNANCE_BEACON_ADDRESS,
@@ -320,6 +341,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
         const memberAddresses = members
           .map((member) => member.user_id)
           .filter((address) => address !== null);
+        console.log("memberAddresses", memberAddresses);
         const tx = await sendMintExeTokenTx(exeTokenAddress, memberAddresses);
         console.log("tx", tx);
         const receipt = await waitForReceipt({
@@ -351,7 +373,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       const companyInfo = (await readContract({
         contract: scrProxyContract(),
         method: SCR_ABI.abi.find(
-          (item) => item.name === "getCompanyInfo"
+          (item) => item.name === "getCompanyBaseInfo"
         ) as any,
         params: [formData?.company_number],
       })) as CompanyInfo;
