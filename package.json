@@ -54,7 +54,8 @@
     "utf-8-validate": "^5.0.10",
     "uuid": "^10.0.0",
     "web3": "^4.8.0",
-    "@adraffy/ens-normalize": "1.11.0"
+    "@adraffy/ens-normalize": "1.11.0",
+    "@heroui/react-rsc-utils": "2.1.2"
   },
   "devDependencies": {
     "@types/jspdf": "^2.0.0",
@@ -72,6 +73,7 @@
   "resolutions": {
     "utf-8-validate": "^5.0.2",
     "ox": "0.6.9",
-    "@adraffy/ens-normalize": "1.11.0"
+    "@adraffy/ens-normalize": "1.11.0",
+    "@heroui/react-rsc-utils": "2.1.2"
   }
 }
