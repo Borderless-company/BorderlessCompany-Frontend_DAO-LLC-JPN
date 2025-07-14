@@ -72,7 +72,7 @@ const KYCPage: FC = () => {
         // KYCの審査が完了したらユーザーのKYCステータスを更新
         createUser({
           evm_address: account?.address,
-          kyc_status: "done",
+          kyc_status: "yet",
         })
           .then(() => console.log("KYC status updated to done"))
           .catch((err) => console.error("Failed to update KYC status:", err));

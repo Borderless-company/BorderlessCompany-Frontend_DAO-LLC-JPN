@@ -52,10 +52,10 @@ const KYCAgreementPage: FC = () => {
   }, [user, setValue, setPage]);
 
   const onSubmit = async (data: InputType) => {
-    const user = await updateUser({
+    const user = await createUser({
       evm_address: account?.address,
       status: "signedUp",
-      kyc_status: "done",
+      kyc_status: "yet",
       ...data,
     });
     console.log("user:", user);

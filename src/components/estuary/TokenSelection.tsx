@@ -55,7 +55,7 @@ export const TokenSelection: FC = () => {
   const isSaleActive = saleStatus.status === "active";
 
   const onClickNext = async () => {
-    setPage(1);
+    setPage(2);
   };
 
   useEffect(() => {
