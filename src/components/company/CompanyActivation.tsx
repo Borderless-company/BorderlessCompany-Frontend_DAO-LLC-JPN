@@ -198,7 +198,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
           ".json",
           false,
           2000,
-          862, // magic number
+          863, // magic number
         ];
 
         console.log(
@@ -264,13 +264,13 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
 
       const transactionHash = await sendCreateCompanyTx({
         scId: formData?.company_number,
-        beacon: SCT_BEACON_ADDRESS,
-        legalEntityCode: "SC_JP_DAOLLC",
+        scBeaconProxy: SCT_BEACON_ADDRESS,
+        legalEntityCode: "SC_JP_DAO_LLC",
         companyName: actualCompanyName, // 実際の会社名を使用
         establishmentDate: aoi?.establishment_date,
-        jurisdiction: company?.jurisdiction,
-        entityType: company?.company_type,
-        scDeployParam: "0x" as `0x${string}`,
+        jurisdiction: company?.jurisdiction.toUpperCase(),
+        entityType: company?.company_type.toUpperCase(),
+        scDeployParams: "0x" as `0x${string}`,
         companyInfo: ["Temp", "Temp", "Temp", "Temp"],
         scsBeaconProxy: [
           GOVERNANCE_BEACON_ADDRESS,
@@ -341,6 +341,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
         const memberAddresses = members
           .map((member) => member.user_id)
           .filter((address) => address !== null);
+        console.log("memberAddresses", memberAddresses);
         const tx = await sendMintExeTokenTx(exeTokenAddress, memberAddresses);
         console.log("tx", tx);
         const receipt = await waitForReceipt({

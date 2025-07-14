@@ -127,13 +127,13 @@ export const useCreateSmartCompany = () => {
   const activeAccount = useActiveAccount();
   const sendTx = async (props: {
     scId: string;
-    beacon: string;
+    scBeaconProxy: string;
     legalEntityCode: string;
     companyName: string;
     establishmentDate: string;
     jurisdiction: string;
     entityType: string;
-    scDeployParam: `0x${string}`;
+    scDeployParams: `0x${string}`;
     companyInfo: string[];
     scsBeaconProxy: string[];
     scsDeployParams: `0x${string}`[];
@@ -147,6 +147,20 @@ export const useCreateSmartCompany = () => {
     const currentPriorityFee = await eth_maxPriorityFeePerGas(rpcRequest);
     console.log("currentGasPrice", currentGasPrice);
     console.log("currentPriorityFee", currentPriorityFee);
+
+    console.log("createSmartCompanyTx Props", {
+      scid: props.scId,
+      scBeaconProxy: props.scBeaconProxy as Address,
+      legalEntityCode: props.legalEntityCode,
+      companyName: props.companyName,
+      establishmentDate: props.establishmentDate,
+      jurisdiction: props.jurisdiction,
+      entityType: props.entityType,
+      scDeployParams: props.scDeployParams,
+      companyInfo: props.companyInfo,
+      scsBeaconProxy: props.scsBeaconProxy as readonly Address[],
+      scsDeployParams: props.scsDeployParams,
+    });
     const transaction = prepareContractCall({
       contract: contract,
 
@@ -154,17 +168,19 @@ export const useCreateSmartCompany = () => {
         (item) => item.name === "createSmartCompany"
       ) as any,
       params: [
-        props.scId,
-        props.beacon as Address,
-        props.legalEntityCode,
-        props.companyName,
-        props.establishmentDate,
-        props.jurisdiction,
-        props.entityType,
-        props.scDeployParam,
-        props.companyInfo,
-        props.scsBeaconProxy as readonly Address[],
-        props.scsDeployParams,
+        {
+          scid: props.scId,
+          scBeaconProxy: props.scBeaconProxy as Address,
+          legalEntityCode: props.legalEntityCode,
+          companyName: props.companyName,
+          establishmentDate: props.establishmentDate,
+          jurisdiction: props.jurisdiction,
+          entityType: props.entityType,
+          scDeployParams: props.scDeployParams,
+          companyInfo: props.companyInfo,
+          scsBeaconProxy: props.scsBeaconProxy as readonly Address[],
+          scsDeployParams: props.scsDeployParams,
+        },
       ],
       maxPriorityFeePerGas: currentPriorityFee,
       maxFeePerGas: (currentGasPrice * BigInt(15)) / BigInt(10),
@@ -299,13 +315,23 @@ export const useInitialMintExeToken = () => {
   const { mutateAsync: sendTransaction } = useSendTransaction();
   const activeAccount = useActiveAccount();
   const sendTx = async (exeTokenAddress: string, tos: string[]) => {
+    console.log("exeTokenAddress", exeTokenAddress);
     const contract = exeTokenContract(exeTokenAddress);
+    console.log("contract", contract);
+
     const transaction = prepareContractCall({
       contract: contract,
       method: EXE_TOKEN_ABI.abi.find(
         (item) => item.name === "initialMint"
       ) as any,
       params: [tos],
+    });
+
+    console.log("initialMintExeToken Props", {
+      exeTokenAddress: exeTokenAddress,
+      tos: tos,
+      transaction: transaction,
+      activeAccount: activeAccount,
     });
 
     // Estimate gas and apply 1.5x multiplier
@@ -316,8 +342,9 @@ export const useInitialMintExeToken = () => {
         account: activeAccount,
       });
       gasLimit = (gasEstimate * BigInt(15)) / BigInt(10);
+      console.log("gasEstimate for initialMint", gasEstimate);
     } catch (error) {
-      console.warn("Gas estimation failed, using default gas limit:", error);
+      console.warn("Gas estimation failed for initialMint:", error);
     }
     const txWithGas = { ...transaction, gas: gasLimit };
 
