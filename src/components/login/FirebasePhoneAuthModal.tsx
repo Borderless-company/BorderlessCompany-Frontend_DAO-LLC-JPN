@@ -15,8 +15,8 @@ export const FirebasePhoneAuthModal = ({
   return (
     <Modal isOpen={isOpen} onOpenChange={onClose}>
       <ModalContent>
-        <ModalHeader>共創IDでログイン</ModalHeader>
-        <ModalBody>
+        <ModalHeader className="p-4">共創IDでログイン</ModalHeader>
+        <ModalBody className="p-4 pt-0">
           <FirebasePhoneAuth onAuthSuccess={onAuthSuccess} />
         </ModalBody>
       </ModalContent>

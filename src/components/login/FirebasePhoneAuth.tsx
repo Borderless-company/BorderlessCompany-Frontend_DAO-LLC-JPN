@@ -1,13 +1,7 @@
 import { useState } from "react";
 import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
-import {
-  Button,
-  Input,
-  Card,
-  CardBody,
-  CardHeader,
-  Divider,
-} from "@heroui/react";
+import { Button, Input } from "@heroui/react";
+import { Stack } from "@/sphere/Stack";
 
 interface FirebasePhoneAuthProps {
   onAuthSuccess: (jwt: string, address: string) => void;
@@ -52,59 +46,55 @@ export const FirebasePhoneAuth = ({
     sendVerificationCode,
     verifyCodeAndConnect,
     isCodeSent,
+    goBackToPhoneInput,
   } = useFirebaseAuth({
     onAuthSuccess: handleAuthSuccess,
     onSiweTrigger: () => {}, // 空の関数で削除予定
   });
 
   return (
-    <Card className="max-w-md mx-auto mt-8">
-      <CardHeader>
-        <h2 className="font-bold text-lg">共創IDでログイン（電話番号）</h2>
-      </CardHeader>
-      <CardBody className="space-y-4">
-        {/* reCAPTCHA用の非表示コンテナ */}
-        <div id="recaptcha-container"></div>
+    <div>
+      {/* reCAPTCHA用の非表示コンテナ */}
+      <div id="recaptcha-container"></div>
 
-        {!isCodeSent ? (
-          <div>
-            <p className="text-sm text-gray-600 mb-2">
-              SMSで認証コードを送信します。
-            </p>
-            <Input
-              type="tel"
-              label="電話番号（例: +819012345678）"
-              placeholder="+819012345678"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              disabled={isLoading}
-              fullWidth
-            />
-            <Button
-              type="submit"
-              color="primary"
-              onPress={sendVerificationCode}
-              isLoading={isLoading}
-              isDisabled={!phoneNumber}
-              className="w-full"
-            >
-              {isLoading ? "Sending..." : "Send Code"}
-            </Button>
-          </div>
-        ) : (
-          <div>
-            <p className="text-sm text-gray-600 mb-2">
-              SMSで送信された6桁の認証コードを入力してください。
-            </p>
-            <Input
-              type="text"
-              label="認証コード"
-              placeholder="123456"
-              value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value)}
-              disabled={isLoading}
-              fullWidth
-            />
+      {!isCodeSent ? (
+        <Stack className="gap-4">
+          <p className="text-sm text-gray-600">SMSで認証コードを送信します。</p>
+          <Input
+            type="tel"
+            label="電話番号"
+            placeholder="09012345678"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            disabled={isLoading}
+            fullWidth
+          />
+          <Button
+            type="submit"
+            color="primary"
+            onPress={sendVerificationCode}
+            isLoading={isLoading}
+            isDisabled={!phoneNumber}
+            className="w-full"
+          >
+            {isLoading ? "送信中..." : "認証コードを送信"}
+          </Button>
+        </Stack>
+      ) : (
+        <Stack className="gap-4">
+          <p className="text-sm text-gray-600">
+            SMSで送信された6桁の認証コードを入力してください。
+          </p>
+          <Input
+            type="text"
+            label="認証コード"
+            placeholder="123456"
+            value={verificationCode}
+            onChange={(e) => setVerificationCode(e.target.value)}
+            disabled={isLoading}
+            fullWidth
+          />
+          <Stack className="flex flex-row gap-2">
             <Button
               onPress={verifyCodeAndConnect}
               color="primary"
@@ -112,13 +102,23 @@ export const FirebasePhoneAuth = ({
               isDisabled={!verificationCode}
               className="w-full"
             >
-              {isLoading ? "Verifying..." : "Verify"}
+              {isLoading ? "認証中..." : "認証する"}
             </Button>
-          </div>
-        )}
+            <Button
+              onPress={goBackToPhoneInput}
+              color="secondary"
+              variant="light"
+              isDisabled={isLoading}
+              className="w-full"
+              size="sm"
+            >
+              電話番号を変更する
+            </Button>
+          </Stack>
+        </Stack>
+      )}
 
-        {error && <p className="text-danger mt-4 text-center">{error}</p>}
-      </CardBody>
-    </Card>
+      {error && <p className="text-danger mt-4 text-center">{error}</p>}
+    </div>
   );
 };

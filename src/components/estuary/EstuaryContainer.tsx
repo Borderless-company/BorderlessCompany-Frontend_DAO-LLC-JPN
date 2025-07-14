@@ -35,7 +35,10 @@ export const EstuaryContainer: FC = () => {
   useEffect(() => {
     if (!me?.isLogin || !account?.address) {
       if (page !== 0) {
-        signOut();
+        // /estuaryパスでのみsignOutを実行
+        if (router.pathname.includes("/estuary")) {
+          signOut();
+        }
       }
       setPage(0);
     }

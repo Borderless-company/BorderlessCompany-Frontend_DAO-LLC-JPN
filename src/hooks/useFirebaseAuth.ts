@@ -43,6 +43,25 @@ export const useFirebaseAuth = ({
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // 日本の電話番号を国際形式に変換する関数
+  const parseJapanesePhoneNumber = (input: string): string => {
+    // 空白とハイフンを削除
+    const cleaned = input.replace(/[\s-]/g, "");
+    
+    // 既に+81で始まる場合はそのまま返す
+    if (cleaned.startsWith("+81")) {
+      return cleaned;
+    }
+    
+    // 0で始まる日本の電話番号の場合、0を削除して+81を追加
+    if (cleaned.startsWith("0")) {
+      return "+81" + cleaned.substring(1);
+    }
+    
+    // その他の場合はそのまま返す（エラーハンドリングは後続の処理に任せる）
+    return cleaned;
+  };
   const { connect } = useConnect({
     client,
     accountAbstraction: {
@@ -156,6 +175,10 @@ export const useFirebaseAuth = ({
     setError("");
 
     try {
+      // 電話番号を国際形式に変換
+      const formattedPhoneNumber = parseJapanesePhoneNumber(phoneNumber);
+      console.log("📞 電話番号変換:", phoneNumber, "->", formattedPhoneNumber);
+
       // reCAPTCHAが初期化されていない場合は再初期化
       if (!window.recaptchaVerifier) {
         initializeRecaptcha();
@@ -166,10 +189,10 @@ export const useFirebaseAuth = ({
         }
       }
 
-      console.log("📞 確認コード送信開始:", phoneNumber);
+      console.log("📞 確認コード送信開始:", formattedPhoneNumber);
       const confirmationResult = await signInWithPhoneNumber(
         firebaseAuth,
-        phoneNumber,
+        formattedPhoneNumber,
         window.recaptchaVerifier
       );
 
@@ -252,6 +275,14 @@ export const useFirebaseAuth = ({
     }
   };
 
+  // 電話番号入力画面に戻る関数
+  const goBackToPhoneInput = () => {
+    setIsCodeSent(false);
+    setVerificationCode("");
+    setError(null);
+    setConfirmationResult(null);
+  };
+
   return {
     phoneNumber,
     setPhoneNumber,
@@ -262,5 +293,6 @@ export const useFirebaseAuth = ({
     sendVerificationCode,
     verifyCodeAndConnect,
     isCodeSent,
+    goBackToPhoneInput,
   };
 };
