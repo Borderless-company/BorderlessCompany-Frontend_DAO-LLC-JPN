@@ -22,6 +22,7 @@ type InputType = {
   name: string;
   furigana: string;
   address: string;
+  email: string;
 };
 
 const KYCAgreementPage: FC = () => {
@@ -43,9 +44,10 @@ const KYCAgreementPage: FC = () => {
       if (user.name) setValue("name", user.name);
       if (user.furigana) setValue("furigana", user.furigana);
       if (user.address) setValue("address", user.address);
+      if (user.email) setValue("email", user.email);
 
       // 全ての必要な情報が設定されていれば次のページに進む
-      if (user.name && user.furigana && user.address) {
+      if (user.name && user.furigana && user.address && user.email) {
         setPage((page) => page + 1);
       }
     }
@@ -63,7 +65,7 @@ const KYCAgreementPage: FC = () => {
   };
 
   // ユーザー情報の読み込み中は読み込み表示
-  if (user && user.name && user.furigana && user.address) {
+  if (user && user.name && user.furigana && user.address && user.email) {
     return (
       <div className="flex justify-center items-center p-4 h-full">
         <Spinner />
@@ -118,6 +120,21 @@ const KYCAgreementPage: FC = () => {
             isRequired
             {...register("address", {
               required: t("Please Enter Your Address"),
+            })}
+          />
+          <Input
+            label={t("Email")}
+            labelPlacement="outside"
+            placeholder="example@example.com"
+            size="lg"
+            type="email"
+            isRequired
+            {...register("email", {
+              required: t("Please Enter Your Email"),
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: t("Please Enter a Valid Email Address"),
+              },
             })}
           />
         </form>
