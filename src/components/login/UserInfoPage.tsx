@@ -114,7 +114,7 @@ export const UserInfoPage: FC<UserInfoPageProps> = ({ page, onPageChange }) => {
 
   return (
     <motion.div
-      className="flex flex-col items-start justify-center gap-4 w-full max-w-lg p-8"
+      className="flex flex-col items-start justify-center gap-4 w-full max-w-lg p-8 z-20"
       initial={{ opacity: 0, x: 0 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
@@ -133,7 +133,7 @@ export const UserInfoPage: FC<UserInfoPageProps> = ({ page, onPageChange }) => {
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 w-full"
+        className="flex flex-col gap-4 w-full z-20"
       >
         <div className="w-full flex flex-col gap-4">
           <Input
