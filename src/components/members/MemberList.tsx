@@ -30,6 +30,7 @@ import { useCompanybyFounderId } from "@/hooks/useCompany";
 const columns = [
   { name: "Name", uid: "name" },
   { name: "Address", uid: "address" },
+  { name: "Email", uid: "email" },
   { name: "Wallet Address", uid: "walletAddress" },
   { name: "Date of Employment", uid: "dateOfEmployment" },
   { name: "Invested Amount", uid: "investedAmount" },
@@ -37,12 +38,12 @@ const columns = [
   { name: "Status", uid: "status" },
   // { name: "Actions", uid: "actions" },
   // { name: "Receipt", uid: "receipt" },
-  // { name: "Email", uid: "email" },
 ];
 
 type MemberRow = {
   name: string;
   address: string;
+  email: string;
   walletAddress: string;
   dateOfEmployment: string;
   investedAmount: string;
@@ -96,6 +97,8 @@ export const RenderCell = ({ item, columnKey }: Props) => {
       return <span className="whitespace-nowrap">{cellValue as string}</span>;
     case "address":
       return <span className="whitespace-nowrap">{cellValue as string}</span>;
+    case "email":
+      return <span className="whitespace-nowrap">{cellValue as string || "N/A"}</span>;
     case "walletAddress":
       return (
         <span className="whitespace-nowrap">
@@ -179,6 +182,7 @@ const MemberList = ({
         key: member.id,
         name: member.USER?.name ?? "",
         address: member.USER?.address ?? "",
+        email: member.USER?.email ?? "",
         walletAddress: member.USER?.evm_address ?? "",
         dateOfEmployment: new Date(
           member.date_of_employment ?? ""
@@ -193,7 +197,6 @@ const MemberList = ({
           isMinted: member.is_minted,
         },
         // receipt: member.receipt,
-        // email: member.USER?.email,
       };
     });
 
