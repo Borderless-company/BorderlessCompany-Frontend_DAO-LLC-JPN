@@ -204,6 +204,11 @@ export const TokenSelection: FC = () => {
                 : "サインインして進む"}
             </Button>
           )}
+          {isGoogleLoading || isPhoneLoading ? (
+            <p className=" text-sm font-semibold text-secondary w-full text-center">
+              この処理には数分かかる場合があります。
+            </p>
+          ) : null}
         </div>
         <div className="w-full flex justify-end items-center gap-2 px-2">
           <div className="w-fit text-slate-600 text-xs leading-3 font-normal font-mono pt-[2px]">
