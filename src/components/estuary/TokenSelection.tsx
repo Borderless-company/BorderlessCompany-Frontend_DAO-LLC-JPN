@@ -138,9 +138,7 @@ export const TokenSelection: FC = () => {
       {/* Content */}
       <div className="flex flex-col gap-2 md:gap-4 flex-1 py-2 md:py-1">
         <p className="text-slate-800 text-base md:text-lg font-semibold pl-6">
-          {estuary?.token.is_executable
-            ? "業務執行社員権トークンを購入する"
-            : "非業務執行社員権トークンを購入する"}
+          購入するトークンを選択する
         </p>
 
         <RadioGroup
