@@ -15,7 +15,7 @@ export default async function handler(
     secure: process.env.NODE_ENV === "production",
     path: "/",
     maxAge: -1,
-    sameSite: "strict",
+    sameSite: "none",
   });
 
   // セキュリティヘッダーの設定
