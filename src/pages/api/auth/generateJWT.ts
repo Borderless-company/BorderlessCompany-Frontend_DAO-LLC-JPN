@@ -169,7 +169,7 @@ export default async function handler(
       secure: isProduction, // 本番環境ではHTTPS必須
       path: "/", // アプリ全体でアクセス可能
       maxAge: TOKEN_EXPIRY_SECONDS, // JWTと同じ有効期限
-      sameSite: "strict", // CSRF攻撃を防ぐ
+      sameSite: "none", // CSRF攻撃を防ぐ
     });
 
     // セキュリティヘッダーの設定
