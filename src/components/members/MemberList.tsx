@@ -34,6 +34,7 @@ const columns = [
   { name: "Wallet Address", uid: "walletAddress" },
   { name: "Date of Employment", uid: "dateOfEmployment" },
   { name: "Invested Amount", uid: "investedAmount" },
+  { name: "Token ID", uid: "tokenNumber" },
   { name: "Type", uid: "isExecutive" },
   { name: "Status", uid: "status" },
   // { name: "Actions", uid: "actions" },
@@ -47,6 +48,7 @@ type MemberRow = {
   walletAddress: string;
   dateOfEmployment: string;
   investedAmount: string;
+  tokenNumber: string;
   status: string;
   isExecutive: string;
   actions: {
@@ -98,7 +100,11 @@ export const RenderCell = ({ item, columnKey }: Props) => {
     case "address":
       return <span className="whitespace-nowrap">{cellValue as string}</span>;
     case "email":
-      return <span className="whitespace-nowrap">{cellValue as string || "N/A"}</span>;
+      return (
+        <span className="whitespace-nowrap">
+          {(cellValue as string) || "N/A"}
+        </span>
+      );
     case "walletAddress":
       return (
         <span className="whitespace-nowrap">
@@ -112,6 +118,8 @@ export const RenderCell = ({ item, columnKey }: Props) => {
         </span>
       );
     case "investedAmount":
+      return <span className="whitespace-nowrap">{cellValue as string}</span>;
+    case "tokenNumber":
       return <span className="whitespace-nowrap">{cellValue as string}</span>;
     case "status":
       return (
@@ -188,6 +196,7 @@ const MemberList = ({
           member.date_of_employment ?? ""
         ).toLocaleDateString("ja-JP"),
         investedAmount: member.invested_amount?.toString() ?? "",
+        tokenNumber: member.token_number?.toString() ?? "N/A",
         status: member.is_minted ? t("Issued") : t("Not issued"),
         isExecutive: member.is_executive?.toString() ?? "false",
         actions: {
