@@ -222,6 +222,9 @@ export const TokenSelection: FC = () => {
         onClose={() => setIsSignInOptionsModalOpen(false)}
         onGoogleClick={handleGoogleSignIn}
         onKyosoIdClick={handleKyosoIdSignIn}
+        showGoogleLogin={
+          process.env.NEXT_PUBLIC_KIBOTCHA_COMPANY_ID !== estuary?.company_id
+        }
         showKyosoIdLogin={showKyosoIdLogin}
         isGoogleLoading={isGoogleLoading}
         isPhoneLoading={isPhoneLoading}
