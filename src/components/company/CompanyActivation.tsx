@@ -398,12 +398,13 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       // メンバーを追加
       if (members?.length) {
         await Promise.all(
-          members.map(async (member) => {
+          members.map(async (member, index) => {
             await updateMember({
               user_id: member.user_id,
               company_id: company.id,
               token_id: exeToken.id,
               is_minted: true,
+              token_number: index,
               date_of_employment: new Date().toISOString(),
             });
           })
