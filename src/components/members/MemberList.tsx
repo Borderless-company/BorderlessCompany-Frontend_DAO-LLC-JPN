@@ -206,17 +206,25 @@ const MemberList = ({
           isMinted: member.is_minted,
         },
         // receipt: member.receipt,
+        rawDateOfEmployment: member.date_of_employment ?? "",
       };
+    });
+
+    // Sort by date_of_employment in ascending order
+    const sortedData = data?.sort((a, b) => {
+      const dateA = new Date(a.rawDateOfEmployment);
+      const dateB = new Date(b.rawDateOfEmployment);
+      return dateA.getTime() - dateB.getTime();
     });
 
     // Apply filter
     if (filter === "executive") {
-      return data?.filter((member) => member.isExecutive === "true");
+      return sortedData?.filter((member) => member.isExecutive === "true");
     } else if (filter === "non-executive") {
-      return data?.filter((member) => member.isExecutive === "false");
+      return sortedData?.filter((member) => member.isExecutive === "false");
     }
 
-    return data;
+    return sortedData;
   }, [members, filter, t]);
 
   useEffect(() => {
