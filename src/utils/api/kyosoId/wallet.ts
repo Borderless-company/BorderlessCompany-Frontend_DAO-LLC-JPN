@@ -2,6 +2,8 @@
  * 共創ID - ウォレット連携API関連のユーティリティ関数
  */
 
+import { apiClient } from "@/utils/api/client";
+
 export interface KyosoIdWalletRequest {
   walletAddress: string;
 }
@@ -24,63 +26,30 @@ export const syncWalletToKyosoId = async (
   walletAddress: string,
   firebaseIdToken: string
 ): Promise<KyosoIdWalletResponse> => {
-  const apiKey = process.env.NEXT_PUBLIC_KYOSO_API_KEY;
-  const apiUrl = process.env.NEXT_PUBLIC_KYOSO_API_BASE_URL;
-
-  if (!apiKey) {
-    throw new Error("共創DAO APIキーが設定されていません");
-  }
-
-  if (!apiUrl) {
-    throw new Error("共創DAO API URLが設定されていません");
-  }
-
   // ウォレットアドレスの検証
   if (!walletAddress || !walletAddress.match(/^0x[a-fA-F0-9]{40}$/)) {
     throw new Error("無効なウォレットアドレスです");
   }
 
-  const endpoint = `${apiUrl}/api/nft-wallets`;
+  const endpoint = "/api/nft-wallets";
 
   try {
     console.log("🚀 共創DAO API呼び出し開始:", endpoint);
 
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-API-Key": apiKey,
-        Authorization: `Bearer ${firebaseIdToken}`,
-      },
-      body: JSON.stringify({
+    const response = (await apiClient.post(
+      "kyosoDao",
+      endpoint,
+      {
         walletAddress,
-      }),
-    });
-
-    console.log(
-      "📡 共創DAO APIレスポンス:",
-      response.status,
-      response.statusText
-    );
-
-    if (response.status === 429) {
-      // レート制限の場合
-      const errorData = (await response.json()) as KyosoIdWalletError;
-      throw new Error(`レート制限に達しました: ${errorData.error}`);
-    }
-
-    if (!response.ok) {
-      const errorData = (await response.json()) as KyosoIdWalletError;
-      throw new Error(
-        `共創DAO API呼び出しが失敗しました (${response.status}): ${errorData.error}`
-      );
-    }
-
-    const data = (await response.json()) as KyosoIdWalletResponse;
+      },
+      {
+        Authorization: `Bearer ${firebaseIdToken}`,
+      }
+    )) as KyosoIdWalletResponse;
 
     console.log("✅ 共創DAO ウォレット同期成功");
 
-    return data;
+    return response;
   } catch (error) {
     console.error("❌ 共創DAO API呼び出しエラー:", error);
 
