@@ -88,7 +88,7 @@ const AgreementPage: FC = () => {
             if (pollingTimeoutRef.current) {
               clearTimeout(pollingTimeoutRef.current);
             }
-            
+
             setPaymentStatus("success");
             setPage(6);
           }
@@ -122,7 +122,7 @@ const AgreementPage: FC = () => {
           `${estuary.payment_link}?recipientAddress=${account?.address}`,
           "_blank"
         );
-        
+
         // polling開始
         startPaymentPolling();
       }
@@ -139,7 +139,7 @@ const AgreementPage: FC = () => {
   };
 
   const isAllChecked = useMemo(() => {
-    return termChecked.length === 4;
+    return termChecked.length === 3;
   }, [termChecked]);
 
   // コンポーネントのアンマウント時にpollingをクリーンアップ
@@ -208,13 +208,13 @@ const AgreementPage: FC = () => {
             isExternal={false}
             onPressLink={onOpenTokenAgreementModal}
           />
-          <TermCheckbox
+          {/* <TermCheckbox
             value={"op-regulation"}
             termName={"運用規定"}
             isBorder={false}
             isExternal={false}
             onPressLink={onOpenOperationRegulationModal}
-          />
+          /> */}
         </CheckboxGroup>
       </div>
 
@@ -280,11 +280,11 @@ const AgreementPage: FC = () => {
         isOpen={isOpenGovAgreementModal}
         onOpenChange={onOpenChangeGovAgreementModal}
       />
-      <OperationRegulationModal
+      {/* <OperationRegulationModal
         companyId={estuary?.company_id || ""}
         isOpen={isOpenOperationRegulationModal}
         onOpenChange={onOpenChangeOperationRegulationModal}
-      />
+      /> */}
       <TokenAgreementModal
         companyId={estuary?.company_id || ""}
         isOpen={isOpenTokenAgreementModal}
