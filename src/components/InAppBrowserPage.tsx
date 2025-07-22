@@ -5,6 +5,7 @@ import { useInAppBrowser } from "@/hooks/useInAppBrowser";
 import Image from "next/image";
 
 export const InAppBrowserPage: FC = () => {
+  const { browserType } = useInAppBrowser();
   const [copied, setCopied] = useState(false);
   const currentUrl = typeof window !== "undefined" ? window.location.href : "";
 
@@ -21,14 +22,22 @@ export const InAppBrowserPage: FC = () => {
   const handleOpenInChrome = () => {
     const currentUrl = window.location.href;
     try {
-      // iOS Safariの場合
-      if (
-        navigator.userAgent.includes("iPhone") ||
-        navigator.userAgent.includes("iPad")
-      ) {
-        window.open(currentUrl, "_blank");
+      // LINEの場合、openExternalBrowser=1クエリパラメータを使用
+      if (browserType === "LINE") {
+        const urlWithParam = currentUrl.includes("?")
+          ? `${currentUrl}&openExternalBrowser=1`
+          : `${currentUrl}?openExternalBrowser=1`;
+        window.location.href = urlWithParam;
+      }
+      // Androidの場合、Intentスキームを使用
+      else if (navigator.userAgent.includes("Android")) {
+        const intentUrl = `intent://${currentUrl.replace(
+          /^https?:\/\//,
+          ""
+        )}#Intent;scheme=http;action=android.intent.action.VIEW;package=com.android.chrome;end`;
+        window.location.href = intentUrl;
       } else {
-        // Androidやその他の場合
+        // iOSやその他の場合
         const newWindow = window.open(currentUrl, "_blank");
         if (
           !newWindow ||
@@ -47,25 +56,15 @@ export const InAppBrowserPage: FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-        {/* ロゴ */}
-        <div className="mb-8">
-          <Image
-            src="/borderless_logotype.png"
-            alt="Borderless"
-            width={200}
-            height={40}
-            className="mx-auto"
-          />
-        </div>
-
         {/* メインコンテンツ */}
         <div className="space-y-6">
+          {/*}
           <h1 className="text-2xl font-bold text-gray-900">
             Chromeでこのページを開く
           </h1>
-
+          */}
           <p className="text-gray-600 leading-relaxed">
-            このデバイスでBorderlessを使用するには、Chromeモバイルブラウザでこのページを参照してください。すでにお持ちの場合はこちらをクリックしてください。
+            このデバイスでトークンを購入するには、Chromeモバイルブラウザでこのページを参照してください。
           </p>
 
           {/* Chromeで開くボタン */}
