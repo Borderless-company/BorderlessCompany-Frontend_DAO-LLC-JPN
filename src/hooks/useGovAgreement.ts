@@ -323,7 +323,9 @@ export const useGovAgreementByCompanyId = (companyId?: string) => {
         votingLevels: votingLevelsJson.data,
         emergencyVoting: emergencyVoting,
         enforcementDate: baseData.enforcement_date,
-        initialExecutive: membersJson.data,
+        initialExecutive: membersJson.data.filter(
+          (member: Member) => member.is_initial_member === true
+        ),
         company_id: companyId,
       };
     },

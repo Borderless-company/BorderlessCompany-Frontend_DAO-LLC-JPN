@@ -180,12 +180,12 @@ export const GovAgreementPreview = forwardRef<
             {parseParticipants(data.votingLevels[1].participants || []) ||
               "＿＿＿"}
             がもつ総議決権数の
-            {(data.votingLevels[1].quorum || 0) * 100 || "＿＿＿"}
+            {data.votingLevels[1].quorum || 0 || "＿＿＿"}
             %を有する
             {parseParticipants(data.votingLevels[1].participants || []) ||
               "＿＿＿"}
             が投票し、
-            {(data.votingLevels[1].threshold || 0) * 100 || "＿＿＿"}
+            {data.votingLevels[1].threshold || 0 || "＿＿＿"}
             %以上の賛成をもって決議する。
           </li>
         </ul>
@@ -203,12 +203,12 @@ export const GovAgreementPreview = forwardRef<
             {parseParticipants(data.votingLevels[0].participants || []) ||
               "＿＿＿"}
             がもつ総議決権数の
-            {(data.votingLevels[0].quorum || 0) * 100 || "＿＿＿"}
+            {data.votingLevels[0].quorum || 0 || "＿＿＿"}
             %を有する
             {parseParticipants(data.votingLevels[0].participants || []) ||
               "＿＿＿"}
             が投票し、投票した議決権の
-            {(data.votingLevels[0].threshold || 0) * 100 || "＿＿＿"}
+            {data.votingLevels[0].threshold || 0 || "＿＿＿"}
             %以上の賛成をもって議決する。
           </li>
         </ul>
@@ -229,12 +229,12 @@ export const GovAgreementPreview = forwardRef<
             {parseParticipants(data.emergencyVoting?.participants || []) ||
               "＿＿＿"}
             がもつ総議決権数の
-            {(data.emergencyVoting?.quorum || 0) * 100 || "＿＿＿"}
+            {data.emergencyVoting?.quorum || 0 || "＿＿＿"}
             %を有する
             {parseParticipants(data.emergencyVoting?.participants || []) ||
               "＿＿＿"}
             が投票し、
-            {(data.emergencyVoting?.threshold || 0) * 100 || "＿＿＿"}
+            {data.emergencyVoting?.threshold || 0 || "＿＿＿"}
             %以上の賛成をもって、直ちに投票を開始することができる。
           </li>
         </ol>
