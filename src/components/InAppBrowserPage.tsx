@@ -64,7 +64,7 @@ export const InAppBrowserPage: FC = () => {
           </h1>
           */}
           <p className="text-gray-600 leading-relaxed">
-            このデバイスでトークンを購入するには、Chromeモバイルブラウザでこのページを参照してください。
+            トークンを購入するには、このページをGoogle Chromeで開いてください。
           </p>
 
           {/* Chromeで開くボタン */}
@@ -81,7 +81,7 @@ export const InAppBrowserPage: FC = () => {
           {/* Chromeがインストールされていない場合の手順 */}
           <div className="bg-gray-50 rounded-xl p-6 space-y-4">
             <h2 className="text-lg font-semibold text-gray-900">
-              このデバイスにChromeがインストールされていませんか？
+              Chromeがない場合
             </h2>
 
             <div className="space-y-4 text-left">
@@ -91,7 +91,7 @@ export const InAppBrowserPage: FC = () => {
                 </div>
                 <div className="flex-1">
                   <p className="text-gray-700 mb-2">
-                    ページのリンクをコピーします
+                    下のボタンでリンクをコピー
                   </p>
                   <Button
                     size="sm"
@@ -111,7 +111,7 @@ export const InAppBrowserPage: FC = () => {
                 </div>
                 <div className="flex-1">
                   <p className="text-gray-700">
-                    Chromeモバイルブラウザをインストールします
+                    スマホにGoogle Chromeをインストール
                   </p>
                 </div>
               </div>
@@ -122,7 +122,7 @@ export const InAppBrowserPage: FC = () => {
                 </div>
                 <div className="flex-1">
                   <p className="text-gray-700">
-                    検索バーにリンクを貼り付けます
+                    Chromeでリンクを貼り付けて開く
                   </p>
                 </div>
               </div>
@@ -133,12 +133,10 @@ export const InAppBrowserPage: FC = () => {
           <div className="bg-yellow-50 rounded-xl p-6 space-y-3">
             <div className="flex items-center justify-center gap-2 text-yellow-800">
               <PiDesktop size={20} />
-              <h3 className="text-lg font-semibold">
-                ノートパソコンをお持ちですか？
-              </h3>
+              <h3 className="text-lg font-semibold">パソコンをお持ちの方へ</h3>
             </div>
             <p className="text-yellow-700 text-sm">
-              最適な環境で使用するには、このページをノートパソコンデスクトップパソコンで開いてください
+              パソコンのブラウザで開くと、全ての機能をスムーズにご利用いただけます。
             </p>
           </div>
         </div>
