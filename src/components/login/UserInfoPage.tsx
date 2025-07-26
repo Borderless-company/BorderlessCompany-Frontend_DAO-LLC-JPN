@@ -17,6 +17,7 @@ type UserInfoFormData = {
   name: string;
   furigana: string;
   address: string;
+  email: string;
 };
 
 export const UserInfoPage: FC<UserInfoPageProps> = ({ page, onPageChange }) => {
@@ -40,12 +41,14 @@ export const UserInfoPage: FC<UserInfoPageProps> = ({ page, onPageChange }) => {
       if (user.name) setValue("name", user.name);
       if (user.furigana) setValue("furigana", user.furigana);
       if (user.address) setValue("address", user.address);
+      if (user.email) setValue("email", user.email);
 
       // 全ての必要な情報が設定されていれば次のページに進む
       if (
         user.name &&
         user.furigana &&
         user.address &&
+        user.email &&
         user.status === "signedUp"
       ) {
         console.log("User information already complete, skipping to next page");
@@ -94,6 +97,7 @@ export const UserInfoPage: FC<UserInfoPageProps> = ({ page, onPageChange }) => {
     user.name &&
     user.furigana &&
     user.address &&
+    user.email &&
     user.status === "signedUp"
   ) {
     return (
@@ -110,7 +114,7 @@ export const UserInfoPage: FC<UserInfoPageProps> = ({ page, onPageChange }) => {
 
   return (
     <motion.div
-      className="flex flex-col items-start justify-center gap-4 w-full max-w-lg p-8"
+      className="flex flex-col items-start justify-center gap-4 w-full max-w-lg p-8 z-20"
       initial={{ opacity: 0, x: 0 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
@@ -129,7 +133,7 @@ export const UserInfoPage: FC<UserInfoPageProps> = ({ page, onPageChange }) => {
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 w-full"
+        className="flex flex-col gap-4 w-full z-20"
       >
         <div className="w-full flex flex-col gap-4">
           <Input
@@ -166,6 +170,23 @@ export const UserInfoPage: FC<UserInfoPageProps> = ({ page, onPageChange }) => {
             errorMessage={errors.address?.message}
             {...register("address", {
               required: t("Please enter your address"),
+            })}
+          />
+          <Input
+            label={t("Email")}
+            labelPlacement="outside"
+            placeholder="example@example.com"
+            size="lg"
+            type="email"
+            isRequired
+            isInvalid={!!errors.email}
+            errorMessage={errors.email?.message}
+            {...register("email", {
+              required: t("Please enter your email"),
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: t("Please enter a valid email address"),
+              },
             })}
           />
         </div>

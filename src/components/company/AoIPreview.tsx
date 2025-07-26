@@ -223,8 +223,10 @@ export const AoIPreview = forwardRef<HTMLDivElement, AoIPreviewProps>(
             </li>
             <li>
               設立時の代表社員は、
-              {formData.executiveMembers.find((m) => m.isRepresentative)
-                ?.name || "＿＿＿"}
+              {formData.executiveMembers
+                .filter((m) => m.isRepresentative)
+                .map((m) => m.name)
+                .join("、") || "＿＿＿"}
               とする。
             </li>
           </ol>

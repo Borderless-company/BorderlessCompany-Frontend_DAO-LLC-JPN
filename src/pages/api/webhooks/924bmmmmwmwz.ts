@@ -50,7 +50,7 @@ export default async function handler(
 
     try {
       const payload: WebhookPayload = req.body;
-      const { walletAddress } = payload;
+      const { walletAddress, tokenId } = payload;
 
       console.log("✅ Authenticated webhook request received:", {
         timestamp: new Date().toISOString(),
@@ -114,7 +114,8 @@ export default async function handler(
             is_admin: false,
             is_representative: false,
             is_initial_member: false,
-            date_joined: new Date().toISOString(),
+            token_number: tokenId,
+            date_of_employment: new Date().toISOString(),
           });
 
           if (memberError) {

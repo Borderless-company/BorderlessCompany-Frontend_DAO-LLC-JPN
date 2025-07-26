@@ -124,59 +124,63 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       if (!exeToken || !nonExeToken) {
         throw new Error("Token not found");
       }
-      if (company.id !== process.env.NEXT_PUBLIC_KIBOTCHA_COMPANY_ID) {
-        // Executive Token メタデータ
-        const exeTokenMetadata = {
-          name: exeToken.name || "Executive Token",
-          description: exeToken.description || "",
-          image: exeToken.image || "",
-        };
 
-        // Non-Executive Token メタデータ
-        const nonExeTokenMetadata = {
-          name: nonExeToken.name || "Non-Executive Token",
-          description: nonExeToken.description || "",
-          image: nonExeToken.image || "",
-        };
+      // Executive Token メタデータ
+      const exeTokenMetadata = {
+        name: exeToken.name || "Executive Token",
+        description: exeToken.description || "",
+        image: exeToken.image || "",
+      };
 
-        // メタデータをアップロード
-        const [exeMetadataResult, nonExeMetadataResult] = await Promise.all([
-          uploadJSON("token-metadata", `${exeToken.id}.json`, exeTokenMetadata),
-          uploadJSON(
-            "token-metadata",
-            `${nonExeToken.id}.json`,
-            nonExeTokenMetadata
-          ),
-        ]);
+      // Non-Executive Token メタデータ
+      const nonExeTokenMetadata = {
+        name: nonExeToken.name || "Non-Executive Token",
+        description: nonExeToken.description || "",
+        image: nonExeToken.image || "",
+      };
 
-        if (exeMetadataResult.error || nonExeMetadataResult.error) {
-          throw new Error("Failed to upload token metadata");
-        }
+      // メタデータをアップロード
+      const [exeMetadataResult, nonExeMetadataResult] = await Promise.all([
+        uploadJSON("token-metadata", `${exeToken.id}.json`, exeTokenMetadata),
+        uploadJSON(
+          "token-metadata",
+          `${nonExeToken.id}.json`,
+          nonExeTokenMetadata
+        ),
+      ]);
 
-        console.log("Token metadata uploaded successfully");
-        console.log(
-          "Executive token metadata URL:",
-          exeMetadataResult.publicUrl
-        );
-        console.log(
-          "Non-executive token metadata URL:",
-          nonExeMetadataResult.publicUrl
-        );
+      if (exeMetadataResult.error || nonExeMetadataResult.error) {
+        throw new Error("Failed to upload token metadata");
       }
+
+      console.log("Token metadata uploaded successfully");
+      console.log("Executive token metadata URL:", exeMetadataResult.publicUrl);
+      console.log(
+        "Non-executive token metadata URL:",
+        nonExeMetadataResult.publicUrl
+      );
+
       // Smart Companyデプロイ開始
       setActivationStatus("deploying");
       const abiCoder = new ethers.AbiCoder();
 
+      const executiveTokenParams = [
+        exeToken.name,
+        exeToken.symbol,
+        `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${exeToken.id}`,
+        ".json",
+        true,
+        0,
+      ];
+
+      console.log(
+        "executiveTokenExtraParams (before encode):",
+        executiveTokenParams
+      );
+
       const executiveTokenExtraParams = abiCoder.encode(
         ["string", "string", "string", "string", "bool", "uint256"],
-        [
-          exeToken.name,
-          exeToken.symbol,
-          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${exeToken.id}`,
-          ".json",
-          true,
-          0,
-        ]
+        executiveTokenParams
       );
 
       let nonExecutiveTokenExtraParams: string;
@@ -184,37 +188,56 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       // KIBOTCHA の場合は非実行社員トークンのメタデータを変更する
       if (company.id == process.env.NEXT_PUBLIC_KIBOTCHA_COMPANY_ID) {
         console.log("KIBOTCHA");
-        nonExecutiveTokenExtraParams = abiCoder.encode(
-          [
-            "string",
-            "string",
-            "string",
-            "string",
-            "bool",
-            "uint256",
-            "uint256",
-          ],
-          [
-            nonExeToken.name,
-            nonExeToken.symbol,
-            `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/kibotcha/non-exe/`,
-            ".json",
-            false,
-            2000,
-            708, // magic number
-          ]
+        const nonExecutiveTokenParams = [
+          nonExeToken.name,
+          nonExeToken.symbol,
+          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/kibotcha/non-exe/`,
+          ".json",
+          false,
+          2000,
+          863, // magic number
+        ];
+
+        console.log(
+          "nonExecutiveTokenExtraParams (KIBOTCHA, before encode):",
+          nonExecutiveTokenParams
         );
+
+        try {
+          nonExecutiveTokenExtraParams = abiCoder.encode(
+            [
+              "string",
+              "string",
+              "string",
+              "string",
+              "bool",
+              "uint256",
+              "uint256",
+            ],
+            nonExecutiveTokenParams
+          );
+        } catch (encodingError) {
+          console.error("KIBOTCHA encoding failed:", encodingError);
+          throw encodingError;
+        }
       } else {
+        const nonExecutiveTokenParams = [
+          nonExeToken.name,
+          nonExeToken.symbol,
+          `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${nonExeToken.id}`,
+          ".json",
+          true,
+          0,
+        ];
+
+        console.log(
+          "nonExecutiveTokenExtraParams (before encode):",
+          nonExecutiveTokenParams
+        );
+
         nonExecutiveTokenExtraParams = abiCoder.encode(
           ["string", "string", "string", "string", "bool", "uint256"],
-          [
-            nonExeToken.name,
-            nonExeToken.symbol,
-            `${process.env.NEXT_PUBLIC_TOKEN_METADATA_BASE_URL}/${nonExeToken.id}`,
-            ".json",
-            true,
-            0,
-          ]
+          nonExecutiveTokenParams
         );
       }
 
@@ -239,30 +262,71 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
         throw new Error("Company data is missing or invalid");
       }
 
+      // KIBOTCHAの場合はbeaconの状態をデバッグ
+      if (company.id === process.env.NEXT_PUBLIC_KIBOTCHA_COMPANY_ID) {
+        // デバッグ: beacon addressesの配列を確認
+        const beaconAddresses = [
+          GOVERNANCE_BEACON_ADDRESS,
+          LETS_JP_LLC_EXE_BEACON_ADDRESS,
+          KIBOTCHA_LETS_JP_LLC_NON_EXE_BEACON_ADDRESS,
+        ];
+
+        // スマートコントラクトからbeaconの状態を確認
+        try {
+          const contract = scrProxyContract();
+
+          // KIBOTCHA beacon の状態を確認
+          const kibotchaBeaconInfo = await readContract({
+            contract,
+            method: "getServiceFactoryBeacon",
+            params: [KIBOTCHA_LETS_JP_LLC_NON_EXE_BEACON_ADDRESS],
+          });
+
+          // 通常のbeaconの状態と比較
+          const normalBeaconInfo = await readContract({
+            contract,
+            method: "getServiceFactoryBeacon",
+            params: [LETS_JP_LLC_NON_EXE_BEACON_ADDRESS],
+          });
+
+          // Service type も確認
+          const kibotchaServiceType = await readContract({
+            contract,
+            method: "getServiceType",
+            params: [KIBOTCHA_LETS_JP_LLC_NON_EXE_BEACON_ADDRESS],
+          });
+        } catch (error) {
+          console.error("Error checking beacon status:", error);
+        }
+      }
+
       // トランザクションを送信してハッシュを取得
+      const scsBeaconProxy = [
+        GOVERNANCE_BEACON_ADDRESS,
+        LETS_JP_LLC_EXE_BEACON_ADDRESS,
+        company.id === process.env.NEXT_PUBLIC_KIBOTCHA_COMPANY_ID
+          ? KIBOTCHA_LETS_JP_LLC_NON_EXE_BEACON_ADDRESS
+          : LETS_JP_LLC_NON_EXE_BEACON_ADDRESS,
+      ];
+
+      const scsDeployParams = [
+        "0x",
+        executiveTokenExtraParams,
+        nonExecutiveTokenExtraParams,
+      ] as `0x${string}`[];
 
       const transactionHash = await sendCreateCompanyTx({
         scId: formData?.company_number,
-        beacon: SCT_BEACON_ADDRESS,
-        legalEntityCode: "SC_JP_DAOLLC",
+        scBeaconProxy: SCT_BEACON_ADDRESS,
+        legalEntityCode: "SC_JP_DAO_LLC",
         companyName: actualCompanyName, // 実際の会社名を使用
         establishmentDate: aoi?.establishment_date,
-        jurisdiction: company?.jurisdiction,
-        entityType: company?.company_type,
-        scDeployParam: "0x" as `0x${string}`,
+        jurisdiction: company?.jurisdiction.toUpperCase(),
+        entityType: company?.company_type.toUpperCase(),
+        scDeployParams: "0x" as `0x${string}`,
         companyInfo: ["Temp", "Temp", "Temp", "Temp"],
-        scsBeaconProxy: [
-          GOVERNANCE_BEACON_ADDRESS,
-          LETS_JP_LLC_EXE_BEACON_ADDRESS,
-          company.id === process.env.NEXT_PUBLIC_KIBOTCHA_COMPANY_ID
-            ? KIBOTCHA_LETS_JP_LLC_NON_EXE_BEACON_ADDRESS
-            : LETS_JP_LLC_NON_EXE_BEACON_ADDRESS,
-        ],
-        scsDeployParams: [
-          "0x",
-          executiveTokenExtraParams,
-          nonExecutiveTokenExtraParams,
-        ] as `0x${string}`[],
+        scsBeaconProxy,
+        scsDeployParams,
       });
 
       console.log("Transaction hash:", transactionHash);
@@ -320,6 +384,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
         const memberAddresses = members
           .map((member) => member.user_id)
           .filter((address) => address !== null);
+        console.log("memberAddresses", memberAddresses);
         const tx = await sendMintExeTokenTx(exeTokenAddress, memberAddresses);
         console.log("tx", tx);
         const receipt = await waitForReceipt({
@@ -333,12 +398,13 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       // メンバーを追加
       if (members?.length) {
         await Promise.all(
-          members.map(async (member) => {
+          members.map(async (member, index) => {
             await updateMember({
               user_id: member.user_id,
               company_id: company.id,
               token_id: exeToken.id,
               is_minted: true,
+              token_number: index,
               date_of_employment: new Date().toISOString(),
             });
           })
@@ -351,7 +417,7 @@ export const CompanyActivation: FC<CompanyActivationProps> = ({
       const companyInfo = (await readContract({
         contract: scrProxyContract(),
         method: SCR_ABI.abi.find(
-          (item) => item.name === "getCompanyInfo"
+          (item) => item.name === "getCompanyBaseInfo"
         ) as any,
         params: [formData?.company_number],
       })) as CompanyInfo;

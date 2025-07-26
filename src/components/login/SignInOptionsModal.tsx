@@ -14,6 +14,7 @@ interface SignInOptionsModalProps {
   onGoogleClick: () => void;
   onKyosoIdClick: () => void;
   showKyosoIdLogin: boolean;
+  showGoogleLogin?: boolean;
   isGoogleLoading: boolean;
   isPhoneLoading: boolean;
 }
@@ -24,6 +25,7 @@ export const SignInOptionsModal: FC<SignInOptionsModalProps> = ({
   onGoogleClick,
   onKyosoIdClick,
   showKyosoIdLogin,
+  showGoogleLogin = true,
   isGoogleLoading,
   isPhoneLoading,
 }) => {
@@ -37,17 +39,19 @@ export const SignInOptionsModal: FC<SignInOptionsModalProps> = ({
             </ModalHeader>
             <ModalBody>
               <div className="flex flex-col gap-4 py-4">
-                <Button
-                  startContent={<PiGoogleLogo color="white" />}
-                  className="w-full text-white text-base font-semibold bg-purple-700"
-                  onPress={onGoogleClick}
-                  isLoading={isGoogleLoading}
-                  isDisabled={isPhoneLoading}
-                >
-                  {isGoogleLoading
-                    ? "Googleでサインイン中..."
-                    : "Googleでサインイン"}
-                </Button>
+                {showGoogleLogin && (
+                  <Button
+                    startContent={<PiGoogleLogo color="white" />}
+                    className="w-full text-white text-base font-semibold bg-purple-700"
+                    onPress={onGoogleClick}
+                    isLoading={isGoogleLoading}
+                    isDisabled={isPhoneLoading}
+                  >
+                    {isGoogleLoading
+                      ? "Googleでサインイン中..."
+                      : "Googleでサインイン"}
+                  </Button>
+                )}
                 {showKyosoIdLogin && (
                   <Button
                     startContent={<PiSignIn color="white" />}

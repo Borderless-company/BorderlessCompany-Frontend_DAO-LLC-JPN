@@ -55,7 +55,7 @@ export const TokenSelection: FC = () => {
   const isSaleActive = saleStatus.status === "active";
 
   const onClickNext = async () => {
-    setPage(1);
+    setPage(2);
   };
 
   useEffect(() => {
@@ -213,6 +213,11 @@ export const TokenSelection: FC = () => {
                 : "サインインして進む"}
             </Button>
           )}
+          {isGoogleLoading || isPhoneLoading ? (
+            <p className=" text-sm font-semibold text-secondary w-full text-center">
+              この処理には数分かかる場合があります。
+            </p>
+          ) : null}
         </div>
         <div className="w-full flex justify-end items-center gap-2 px-2">
           <div className="w-fit text-slate-600 text-xs leading-3 font-normal font-mono pt-[2px]">
@@ -231,6 +236,9 @@ export const TokenSelection: FC = () => {
         onClose={() => setIsSignInOptionsModalOpen(false)}
         onGoogleClick={handleGoogleSignIn}
         onKyosoIdClick={handleKyosoIdSignIn}
+        showGoogleLogin={
+          process.env.NEXT_PUBLIC_KIBOTCHA_COMPANY_ID !== estuary?.company_id
+        }
         showKyosoIdLogin={showKyosoIdLogin}
         isGoogleLoading={isGoogleLoading}
         isPhoneLoading={isPhoneLoading}

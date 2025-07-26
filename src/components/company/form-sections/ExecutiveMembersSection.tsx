@@ -130,13 +130,7 @@ export const ExecutiveMembersSection: FC<ExecutiveMembersSectionProps> = ({
       const newExecutiveMembers = [...formData.executiveMembers];
 
       if (newExecutiveMembers[index]) {
-        if (field === "isRepresentative" && value === true) {
-          newExecutiveMembers.forEach((member, i) => {
-            if (i !== index) {
-              member.isRepresentative = false;
-            }
-          });
-        }
+        // 代表社員の排他処理を削除 - 複数人選択可能に変更
 
         // ウォレットアドレスが変更された場合、ユーザー情報を取得
         if (

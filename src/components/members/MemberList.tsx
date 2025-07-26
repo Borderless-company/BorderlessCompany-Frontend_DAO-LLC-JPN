@@ -30,22 +30,25 @@ import { useCompanybyFounderId } from "@/hooks/useCompany";
 const columns = [
   { name: "Name", uid: "name" },
   { name: "Address", uid: "address" },
+  { name: "Email", uid: "email" },
   { name: "Wallet Address", uid: "walletAddress" },
   { name: "Date of Employment", uid: "dateOfEmployment" },
   { name: "Invested Amount", uid: "investedAmount" },
+  { name: "Token ID", uid: "tokenNumber" },
   { name: "Type", uid: "isExecutive" },
   { name: "Status", uid: "status" },
   // { name: "Actions", uid: "actions" },
   // { name: "Receipt", uid: "receipt" },
-  // { name: "Email", uid: "email" },
 ];
 
 type MemberRow = {
   name: string;
   address: string;
+  email: string;
   walletAddress: string;
   dateOfEmployment: string;
   investedAmount: string;
+  tokenNumber: string;
   status: string;
   isExecutive: string;
   actions: {
@@ -96,6 +99,12 @@ export const RenderCell = ({ item, columnKey }: Props) => {
       return <span className="whitespace-nowrap">{cellValue as string}</span>;
     case "address":
       return <span className="whitespace-nowrap">{cellValue as string}</span>;
+    case "email":
+      return (
+        <span className="whitespace-nowrap">
+          {(cellValue as string) || "N/A"}
+        </span>
+      );
     case "walletAddress":
       return (
         <span className="whitespace-nowrap">
@@ -109,6 +118,8 @@ export const RenderCell = ({ item, columnKey }: Props) => {
         </span>
       );
     case "investedAmount":
+      return <span className="whitespace-nowrap">{cellValue as string}</span>;
+    case "tokenNumber":
       return <span className="whitespace-nowrap">{cellValue as string}</span>;
     case "status":
       return (
@@ -179,11 +190,13 @@ const MemberList = ({
         key: member.id,
         name: member.USER?.name ?? "",
         address: member.USER?.address ?? "",
+        email: member.USER?.email ?? "",
         walletAddress: member.USER?.evm_address ?? "",
         dateOfEmployment: new Date(
           member.date_of_employment ?? ""
         ).toLocaleDateString("ja-JP"),
         investedAmount: member.invested_amount?.toString() ?? "",
+        tokenNumber: member.token_number?.toString() ?? "N/A",
         status: member.is_minted ? t("Issued") : t("Not issued"),
         isExecutive: member.is_executive?.toString() ?? "false",
         actions: {
@@ -193,18 +206,25 @@ const MemberList = ({
           isMinted: member.is_minted,
         },
         // receipt: member.receipt,
-        // email: member.USER?.email,
+        rawDateOfEmployment: member.date_of_employment ?? "",
       };
+    });
+
+    // Sort by date_of_employment in ascending order
+    const sortedData = data?.sort((a, b) => {
+      const dateA = new Date(a.rawDateOfEmployment);
+      const dateB = new Date(b.rawDateOfEmployment);
+      return dateA.getTime() - dateB.getTime();
     });
 
     // Apply filter
     if (filter === "executive") {
-      return data?.filter((member) => member.isExecutive === "true");
+      return sortedData?.filter((member) => member.isExecutive === "true");
     } else if (filter === "non-executive") {
-      return data?.filter((member) => member.isExecutive === "false");
+      return sortedData?.filter((member) => member.isExecutive === "false");
     }
 
-    return data;
+    return sortedData;
   }, [members, filter, t]);
 
   useEffect(() => {

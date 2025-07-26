@@ -140,7 +140,7 @@ const AgreementPage: FC = () => {
   };
 
   const isAllChecked = useMemo(() => {
-    return termChecked.length === 4 && !isStatelessDao(estuary?.company);
+    return termChecked.length === 3 && !isStatelessDao(estuary?.company);
   }, [termChecked]);
 
   // コンポーネントのアンマウント時にpollingをクリーンアップ
@@ -187,6 +187,8 @@ const AgreementPage: FC = () => {
             onValueChange={setTermChecked}
             isDisabled={paymentStatus === "pending"}
           >
+            {/* TODO: TermsheetsのDB作成繋ぎ込み */}
+
             <TermCheckbox
               value={"aoi"}
               termName={"定款"}
@@ -208,13 +210,13 @@ const AgreementPage: FC = () => {
               isExternal={false}
               onPressLink={onOpenTokenAgreementModal}
             />
-            <TermCheckbox
-              value={"op-regulation"}
-              termName={"運用規定"}
-              isBorder={false}
-              isExternal={false}
-              onPressLink={onOpenOperationRegulationModal}
-            />
+            {/* <TermCheckbox
+            value={"op-regulation"}
+            termName={"運用規定"}
+            isBorder={false}
+            isExternal={false}
+            onPressLink={onOpenOperationRegulationModal}
+          /> */}
           </CheckboxGroup>
         )}
       </div>
@@ -281,11 +283,11 @@ const AgreementPage: FC = () => {
         isOpen={isOpenGovAgreementModal}
         onOpenChange={onOpenChangeGovAgreementModal}
       />
-      <OperationRegulationModal
+      {/* <OperationRegulationModal
         companyId={estuary?.company_id || ""}
         isOpen={isOpenOperationRegulationModal}
         onOpenChange={onOpenChangeOperationRegulationModal}
-      />
+      /> */}
       <TokenAgreementModal
         companyId={estuary?.company_id || ""}
         isOpen={isOpenTokenAgreementModal}

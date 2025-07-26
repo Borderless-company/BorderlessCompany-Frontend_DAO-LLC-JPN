@@ -17,6 +17,9 @@ import { useTranslation } from "next-i18next";
 import PaymentPage from "./PaymentPage";
 import { useGoogleAuth } from "@/hooks/useGoogleAuth";
 import { useIsCompanyMember } from "@/hooks/useMember";
+import { useSignOut } from "@/hooks/useSignOut";
+import { InAppBrowserPage } from "../InAppBrowserPage";
+import { useInAppBrowser } from "@/hooks/useInAppBrowser";
 
 export const EstuaryContainer: FC = () => {
   const { t } = useTranslation("estuary");
@@ -30,8 +33,16 @@ export const EstuaryContainer: FC = () => {
     estuary?.company_id || undefined,
     account?.address
   );
+  const { signOut } = useSignOut();
+  const { isInAppBrowser } = useInAppBrowser();
   useEffect(() => {
     if (!me?.isLogin || !account?.address) {
+      if (page !== 0) {
+        // /estuaryパスでのみsignOutを実行
+        if (router.pathname.includes("/estuary")) {
+          signOut();
+        }
+      }
       setPage(0);
     }
     if (account?.address) {
@@ -39,12 +50,27 @@ export const EstuaryContainer: FC = () => {
         setPage(7);
       }
     }
-  }, [account?.address, me, estuary?.company_id, isMemberLoading, isMember]);
+  }, [
+    account?.address,
+    me,
+    estuary?.company_id,
+    isMemberLoading,
+    isMember,
+    page,
+    router.pathname,
+    setPage,
+    signOut,
+  ]);
+  // アプリ内ブラウザで開かれた場合は専用ページを表示
+  if (isInAppBrowser) {
+    return <InAppBrowserPage />;
+  }
+
   return (
     <div className="w-full h-svh flex flex-col items-center justify-center gap-4">
       <div className="relative w-full max-w-[35rem] h-[720px] bg-stone-50 rounded-3xl shadow-xl flex flex-col justify-center border-1 border-slate-200 overflow-y-scroll">
         {account?.address && (
-          <div className="absolute top-3 right-3">
+          <div className="absolute top-3 right-3 z-50">
             <AccountChip size="sm" />
           </div>
         )}
