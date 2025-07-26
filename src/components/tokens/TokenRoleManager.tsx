@@ -5,40 +5,48 @@ import {
   CardHeader,
   Input,
   Button,
-  Chip,
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
   useDisclosure,
-  Accordion,
-  AccordionItem,
-  Divider,
   Link,
   Select,
   SelectItem,
 } from "@heroui/react";
-import { useDropERC721Roles, ROLES, ROLE_NAMES } from "@/hooks/useDropERC721Roles";
+import {
+  useDropERC721Roles,
+  ROLES,
+  ROLE_NAMES,
+} from "@/hooks/useDropERC721Roles";
 import { useActiveAccount } from "thirdweb/react";
 
 export type TokenRoleManagerProps = {
   contractAddress: string;
 };
 
-export const TokenRoleManager: FC<TokenRoleManagerProps> = ({ contractAddress }) => {
+export const TokenRoleManager: FC<TokenRoleManagerProps> = ({
+  contractAddress,
+}) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { isOpen: isRevokeOpen, onOpen: onRevokeOpen, onOpenChange: onRevokeOpenChange } = useDisclosure();
-  
+  const {
+    isOpen: isRevokeOpen,
+    onOpen: onRevokeOpen,
+    onOpenChange: onRevokeOpenChange,
+  } = useDisclosure();
+
   const [newRoleAddress, setNewRoleAddress] = useState("");
   const [selectedRole, setSelectedRole] = useState(ROLES.MINTER_ROLE);
   const [isGranting, setIsGranting] = useState(false);
   const [isRevoking, setIsRevoking] = useState(false);
   const [txHash, setTxHash] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  
+
   // Role members state
-  const [roleMembersData, setRoleMembersData] = useState<Record<string, string[]>>({});
+  const [roleMembersData, setRoleMembersData] = useState<
+    Record<string, string[]>
+  >({});
   const [isLoadingMembers, setIsLoadingMembers] = useState(false);
   const [selectedRevokeRole, setSelectedRevokeRole] = useState("");
   const [selectedRevokeAddress, setSelectedRevokeAddress] = useState("");
@@ -60,12 +68,15 @@ export const TokenRoleManager: FC<TokenRoleManagerProps> = ({ contractAddress })
     setIsLoadingMembers(true);
     try {
       const allRoleMembers: Record<string, string[]> = {};
-      
+
       for (const [roleKey, roleValue] of Object.entries(ROLES)) {
-        const members = await getAllRoleMembersForRole(contractAddress, roleValue);
+        const members = await getAllRoleMembersForRole(
+          contractAddress,
+          roleValue
+        );
         allRoleMembers[roleValue] = members;
       }
-      
+
       setRoleMembersData(allRoleMembers);
     } catch (error) {
       console.error("Error loading role members:", error);
@@ -88,7 +99,11 @@ export const TokenRoleManager: FC<TokenRoleManagerProps> = ({ contractAddress })
     setErrorMessage(null);
 
     try {
-      const hash = await grantRoleToAddress(contractAddress, selectedRole, newRoleAddress);
+      const hash = await grantRoleToAddress(
+        contractAddress,
+        selectedRole,
+        newRoleAddress
+      );
       if (hash) {
         setTxHash(hash);
         setNewRoleAddress("");
@@ -110,7 +125,11 @@ export const TokenRoleManager: FC<TokenRoleManagerProps> = ({ contractAddress })
     setErrorMessage(null);
 
     try {
-      const hash = await revokeRoleFromAddress(contractAddress, selectedRevokeRole, selectedRevokeAddress);
+      const hash = await revokeRoleFromAddress(
+        contractAddress,
+        selectedRevokeRole,
+        selectedRevokeAddress
+      );
       if (hash) {
         setTxHash(hash);
         setSelectedRevokeRole("");
@@ -148,14 +167,16 @@ export const TokenRoleManager: FC<TokenRoleManagerProps> = ({ contractAddress })
       <Card>
         <CardHeader className="pb-2">
           <div className="flex items-center gap-2">
-            <h3 className="text-lg font-semibold">🛡️ クレーム権限管理 (MINTER_ROLE)</h3>
+            <h3 className="text-lg font-semibold">
+              🛡️ クレーム権限管理 (MINTER_ROLE)
+            </h3>
           </div>
         </CardHeader>
         <CardBody className="space-y-3">
           <p className="text-sm text-neutral">
             MINTER_ROLEを持つアドレスは、このトークンのclaimTo機能を実行できます。
           </p>
-          
+
           <div className="flex gap-2">
             <Input
               placeholder="0x... (グラント先アドレス)"
@@ -198,91 +219,6 @@ export const TokenRoleManager: FC<TokenRoleManagerProps> = ({ contractAddress })
         </CardBody>
       </Card>
 
-      {/* Advanced Role Management */}
-      <Card>
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">ロール詳細管理</h3>
-            <div className="flex gap-2">
-              <Button
-                color="primary"
-                variant="bordered"
-                size="sm"
-                onPress={onOpen}
-              >
-                ロール付与
-              </Button>
-              <Button
-                color="danger"
-                variant="bordered"
-                size="sm"
-                onPress={onRevokeOpen}
-              >
-                ロール取り消し
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardBody>
-          <Accordion variant="splitted">
-            {Object.entries(ROLES).map(([roleKey, roleValue]) => {
-              const members = roleMembersData[roleValue] || [];
-              const roleName = roleNames[roleValue as keyof typeof roleNames] || roleKey;
-              
-              return (
-                <AccordionItem
-                  key={roleValue}
-                  aria-label={`${roleName} Role`}
-                  title={
-                    <div className="flex items-center justify-between w-full">
-                      <span className="font-medium">{roleName} Role</span>
-                      <Chip size="sm" color={members.length > 0 ? "success" : "default"}>
-                        {members.length}人
-                      </Chip>
-                    </div>
-                  }
-                >
-                  <div className="space-y-2">
-                    <p className="text-xs text-neutral font-mono bg-default-100 p-2 rounded">
-                      {roleValue}
-                    </p>
-                    
-                    {isLoadingMembers ? (
-                      <p className="text-sm text-neutral">読み込み中...</p>
-                    ) : members.length > 0 ? (
-                      <div className="space-y-1">
-                        {members.map((member, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center justify-between bg-default-50 p-2 rounded"
-                          >
-                            <span className="font-mono text-xs">{member}</span>
-                            <Button
-                              color="danger"
-                              variant="light"
-                              size="sm"
-                              onPress={() => {
-                                setSelectedRevokeRole(roleValue);
-                                setSelectedRevokeAddress(member);
-                                onRevokeOpen();
-                              }}
-                            >
-                              取消
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-neutral">メンバーがいません</p>
-                    )}
-                  </div>
-                </AccordionItem>
-              );
-            })}
-          </Accordion>
-        </CardBody>
-      </Card>
-
       {/* Grant Role Modal */}
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
         <ModalContent>
@@ -295,12 +231,13 @@ export const TokenRoleManager: FC<TokenRoleManagerProps> = ({ contractAddress })
                   selectedKeys={[selectedRole]}
                   onSelectionChange={(keys) => {
                     const key = Array.from(keys)[0] as string;
-                    setSelectedRole(key);
+                    setSelectedRole(key as any);
                   }}
                 >
                   {Object.entries(ROLES).map(([roleKey, roleValue]) => (
                     <SelectItem key={roleValue} value={roleValue}>
-                      {roleNames[roleValue as keyof typeof roleNames] || roleKey}
+                      {roleNames[roleValue as keyof typeof roleNames] ||
+                        roleKey}
                     </SelectItem>
                   ))}
                 </Select>
@@ -315,7 +252,9 @@ export const TokenRoleManager: FC<TokenRoleManagerProps> = ({ contractAddress })
 
                 <div className="bg-default-100 p-3 rounded-lg">
                   <p className="text-sm font-medium mb-1">選択されたロール:</p>
-                  <p className="text-xs font-mono text-neutral">{selectedRole}</p>
+                  <p className="text-xs font-mono text-neutral">
+                    {selectedRole}
+                  </p>
                 </div>
               </ModalBody>
               <ModalFooter>
@@ -329,82 +268,6 @@ export const TokenRoleManager: FC<TokenRoleManagerProps> = ({ contractAddress })
                   isDisabled={!newRoleAddress || !selectedRole}
                 >
                   ロール付与
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-
-      {/* Revoke Role Modal */}
-      <Modal isOpen={isRevokeOpen} onOpenChange={onRevokeOpenChange}>
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader>ロールを取り消し</ModalHeader>
-              <ModalBody className="space-y-4">
-                <Select
-                  label="ロール"
-                  selectedKeys={selectedRevokeRole ? [selectedRevokeRole] : []}
-                  onSelectionChange={(keys) => {
-                    const key = Array.from(keys)[0] as string;
-                    setSelectedRevokeRole(key);
-                    setSelectedRevokeAddress("");
-                  }}
-                >
-                  {Object.entries(ROLES).map(([roleKey, roleValue]) => {
-                    const members = roleMembersData[roleValue] || [];
-                    return members.length > 0 ? (
-                      <SelectItem key={roleValue} value={roleValue}>
-                        {roleNames[roleValue as keyof typeof roleNames] || roleKey}
-                      </SelectItem>
-                    ) : null;
-                  })}
-                </Select>
-
-                {selectedRevokeRole && (
-                  <Select
-                    label="アドレス"
-                    selectedKeys={selectedRevokeAddress ? [selectedRevokeAddress] : []}
-                    onSelectionChange={(keys) => {
-                      const key = Array.from(keys)[0] as string;
-                      setSelectedRevokeAddress(key);
-                    }}
-                  >
-                    {(roleMembersData[selectedRevokeRole] || []).map((member) => (
-                      <SelectItem key={member} value={member}>
-                        {member}
-                      </SelectItem>
-                    ))}
-                  </Select>
-                )}
-
-                {selectedRevokeRole && selectedRevokeAddress && (
-                  <div className="bg-danger-50 border border-danger-200 p-3 rounded-lg">
-                    <p className="text-sm text-danger-700">
-                      <span className="font-medium">
-                        {roleNames[selectedRevokeRole as keyof typeof roleNames]}
-                      </span>
-                      ロールを
-                      <span className="font-mono text-xs">
-                        {selectedRevokeAddress}
-                      </span>
-                      から取り消します。
-                    </p>
-                  </div>
-                )}
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  キャンセル
-                </Button>
-                <Button
-                  color="danger"
-                  onPress={handleRevokeRole}
-                  isLoading={isRevoking}
-                  isDisabled={!selectedRevokeRole || !selectedRevokeAddress}
-                >
-                  ロール取り消し
                 </Button>
               </ModalFooter>
             </>

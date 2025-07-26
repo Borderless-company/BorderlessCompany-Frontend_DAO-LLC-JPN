@@ -9,6 +9,10 @@ import {
   Input,
   ModalProps,
   Textarea,
+  Progress,
+  Card,
+  CardBody,
+  Chip,
 } from "@heroui/react";
 import { Tables } from "@/types/schema";
 import { Stack } from "@/sphere/Stack";
@@ -51,6 +55,66 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
   const smartAccount = useActiveAccount();
   const { mutateAsync: sendTransaction } = useSendTransaction();
 
+  // Progress tracking state
+  const [currentStep, setCurrentStep] = useState(0);
+  const [stepStatus, setStepStatus] = useState<
+    Record<number, "pending" | "processing" | "completed" | "error">
+  >({});
+  const [stepMessages, setStepMessages] = useState<Record<number, string>>({});
+
+  const steps = [
+    {
+      id: 0,
+      name: "画像アップロード",
+      description: "トークン画像をSupabaseストレージにアップロード中...",
+      duration: "~10秒",
+    },
+    {
+      id: 1,
+      name: "コントラクトデプロイ",
+      description: "ERC721コントラクトをSoneium Minatoにデプロイ中...",
+      duration: "~30秒",
+    },
+    {
+      id: 2,
+      name: "メタデータ作成",
+      description: "NFTメタデータJSONをアップロード中...",
+      duration: "~5秒",
+    },
+    {
+      id: 3,
+      name: "LazyMint設定",
+      description: "5000個のNFTメタデータを事前準備中...",
+      duration: "~45秒",
+    },
+    {
+      id: 4,
+      name: "ClaimCondition設定",
+      description: "クレーム条件（無料、1000個/ウォレット）を設定中...",
+      duration: "~15秒",
+    },
+    {
+      id: 5,
+      name: "データベース登録",
+      description: "トークン情報をデータベースに保存中...",
+      duration: "~5秒",
+    },
+  ];
+
+  const updateStepStatus = (
+    stepId: number,
+    status: "pending" | "processing" | "completed" | "error",
+    message?: string
+  ) => {
+    setStepStatus((prev) => ({ ...prev, [stepId]: status }));
+    if (message) {
+      setStepMessages((prev) => ({ ...prev, [stepId]: message }));
+    }
+    if (status === "processing") {
+      setCurrentStep(stepId);
+    }
+  };
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -67,9 +131,13 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
 
     console.log("🚀 Starting stateless DAO token creation");
     setIsCreating(true);
+    setCurrentStep(0);
+    setStepStatus({});
+    setStepMessages({});
 
     try {
-      // 画像をアップロード
+      // Step 0: 画像をアップロード
+      updateStepStatus(0, "processing");
       let imageUrl = imgUrl;
       if (selectedFile) {
         console.log("📸 Uploading token image...");
@@ -81,9 +149,17 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
         setImgUrl(publicUrl);
         imageUrl = publicUrl;
         console.log("✅ Token image uploaded:", publicUrl);
+        updateStepStatus(
+          0,
+          "completed",
+          `画像アップロード完了: ${publicUrl.slice(-20)}...`
+        );
+      } else {
+        updateStepStatus(0, "completed", "画像なしで続行");
       }
 
-      // ERC721コントラクトをデプロイ
+      // Step 1: ERC721コントラクトをデプロイ
+      updateStepStatus(1, "processing");
       console.log("⛓️ Starting ERC721 contract deployment...");
       const chain = defineChain(
         parseInt(process.env.NEXT_PUBLIC_CHAIN_ID || "1946")
@@ -104,8 +180,14 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
         },
       });
       console.log("✅ ERC721 contract deployed at:", contractAddress);
+      updateStepStatus(
+        1,
+        "completed",
+        `コントラクト: ${contractAddress.slice(0, 10)}...`
+      );
 
-      // メタデータをアップロード
+      // Step 2: メタデータをアップロード
+      updateStepStatus(2, "processing");
       console.log("📋 Uploading NFT metadata...");
       const metadata: NFTMetadata = {
         name: formData.name,
@@ -130,8 +212,9 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
 
       const { url: metadataUrl } = await metadataResponse.json();
       console.log("✅ Metadata uploaded:", metadataUrl);
+      updateStepStatus(2, "completed", "メタデータアップロード完了");
 
-      // ClaimConditionとLazyMintの設定
+      // Setup contract for next steps
       console.log("⚙️ Setting up ClaimConditions and LazyMint...");
       const contract = getContract({
         client,
@@ -139,7 +222,8 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
         address: contractAddress,
       });
 
-      // LazyMint: 最初の100個のNFTを設定
+      // Step 3: LazyMint: 最初の5000個のNFTを設定
+      updateStepStatus(3, "processing");
       const lazyMintTransaction = lazyMint({
         contract,
         nfts: Array(5000)
@@ -156,8 +240,10 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
 
       await sendTransaction(lazyMintTransaction);
       console.log("✅ LazyMint completed");
+      updateStepStatus(3, "completed", "5000個のNFTを事前準備完了");
 
-      // ClaimConditionsの設定
+      // Step 4: ClaimConditionsの設定
+      updateStepStatus(4, "processing");
       const claimConditionsTransaction = setClaimConditions({
         contract,
         phases: [
@@ -173,8 +259,10 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
 
       await sendTransaction(claimConditionsTransaction);
       console.log("✅ ClaimConditions set");
+      updateStepStatus(4, "completed", "クレーム条件設定完了");
 
-      // トークンを作成
+      // Step 5: トークンを作成
+      updateStepStatus(5, "processing");
       console.log("🪙 Creating token record...");
       const tokenParams = {
         company_id: company.id,
@@ -188,6 +276,7 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
 
       await createToken(tokenParams);
       console.log("✅ Token created successfully");
+      updateStepStatus(5, "completed", "データベース登録完了");
 
       // リセット
       setSelectedFile(undefined);
@@ -203,6 +292,11 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
       props.onOpenChange?.(false);
     } catch (error) {
       console.error("❌ Error creating stateless DAO token:", error);
+      updateStepStatus(
+        currentStep,
+        "error",
+        error instanceof Error ? error.message : "エラーが発生しました"
+      );
       if (error instanceof Error) {
         console.error("📊 Error details:", {
           message: error.message,
@@ -220,6 +314,8 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
   return (
     <Modal
       {...props}
+      isDismissable={!isCreating}
+      hideCloseButton={isCreating}
       onClose={() => {
         setSelectedFile(undefined);
         setImgUrl(undefined);
@@ -245,46 +341,158 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
             </ModalHeader>
             <form onSubmit={handleSubmit} id="stateless-dao-token-form">
               <ModalBody className="max-h-[70vh] overflow-y-auto">
-                <Stack className="gap-4">
-                  <ImageUploader
-                    label={t("Token Image")}
-                    defaultImage={imgUrl}
-                  />
-                  <Input
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    label={t("Token Name")}
-                    labelPlacement="outside"
-                    placeholder={t("Enter token name")}
-                    description={t(
-                      "This will be the name of your ERC721 token"
+                {isCreating ? (
+                  <Stack className="gap-4 w-full justify-center items-center">
+                    <div className="text-center">
+                      <h3 className="text-lg font-semibold mb-2">
+                        トークン作成中...
+                      </h3>
+                      <Progress
+                        value={((currentStep + 1) / steps.length) * 100}
+                        className="mb-4 w-full"
+                        color="primary"
+                        size="lg"
+                      />
+                      <p className="text-sm text-neutral mb-2">
+                        {currentStep + 1} / {steps.length} ステップ完了
+                      </p>
+                      <p className="text-xs text-neutral mb-4">
+                        推定完了時間: 約2分10秒（ネットワーク状況により変動）
+                      </p>
+                    </div>
+
+                    <Card>
+                      <CardBody className="space-y-3">
+                        {steps.map((step) => {
+                          const status = stepStatus[step.id] || "pending";
+                          const message = stepMessages[step.id];
+
+                          return (
+                            <div
+                              key={step.id}
+                              className="flex items-center gap-3"
+                            >
+                              <div className="flex-shrink-0">
+                                {status === "completed" && (
+                                  <Chip
+                                    color="success"
+                                    size="sm"
+                                    variant="flat"
+                                  >
+                                    ✓
+                                  </Chip>
+                                )}
+                                {status === "processing" && (
+                                  <Chip
+                                    color="primary"
+                                    size="sm"
+                                    variant="flat"
+                                  >
+                                    ⏳
+                                  </Chip>
+                                )}
+                                {status === "error" && (
+                                  <Chip color="danger" size="sm" variant="flat">
+                                    ✗
+                                  </Chip>
+                                )}
+                                {status === "pending" && (
+                                  <Chip
+                                    color="default"
+                                    size="sm"
+                                    variant="flat"
+                                  >
+                                    ⏸
+                                  </Chip>
+                                )}
+                              </div>
+                              <div className="flex-1">
+                                <p
+                                  className={`text-sm font-medium ${
+                                    status === "completed"
+                                      ? "text-success-600"
+                                      : status === "processing"
+                                      ? "text-primary-600"
+                                      : status === "error"
+                                      ? "text-danger-600"
+                                      : "text-neutral-500"
+                                  }`}
+                                >
+                                  {step.name}
+                                </p>
+                                <p className="text-xs text-neutral">
+                                  {status === "processing"
+                                    ? step.description
+                                    : message || step.description}
+                                </p>
+                                {status === "processing" && (
+                                  <p className="text-xs text-primary-500 font-medium">
+                                    予想時間: {step.duration}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </CardBody>
+                    </Card>
+
+                    {Object.values(stepStatus).includes("error") && (
+                      <Card>
+                        <CardBody>
+                          <div className="text-center text-danger-600">
+                            <p className="font-medium">エラーが発生しました</p>
+                            <p className="text-sm mt-1">
+                              {stepMessages[currentStep] ||
+                                "不明なエラーが発生しました"}
+                            </p>
+                          </div>
+                        </CardBody>
+                      </Card>
                     )}
-                    isRequired
-                  />
-                  <Input
-                    name="symbol"
-                    value={formData.symbol}
-                    onChange={handleInputChange}
-                    label={t("Token Symbol")}
-                    labelPlacement="outside"
-                    placeholder={t("e.g. SDAO")}
-                    description={t("A short identifier for your token")}
-                    isRequired
-                  />
-                  <Textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    label={t("Token Description")}
-                    labelPlacement="outside"
-                    placeholder={t("Enter token description")}
-                    description={t(
-                      "Describe the purpose and benefits of this token."
-                    )}
-                    isRequired
-                  />
-                </Stack>
+                  </Stack>
+                ) : (
+                  <Stack className="gap-4">
+                    <ImageUploader
+                      label={t("Token Image")}
+                      defaultImage={imgUrl}
+                    />
+                    <Input
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      label={t("Token Name")}
+                      labelPlacement="outside"
+                      placeholder={t("Enter token name")}
+                      description={t(
+                        "This will be the name of your ERC721 token"
+                      )}
+                      isRequired
+                    />
+                    <Input
+                      name="symbol"
+                      value={formData.symbol}
+                      onChange={handleInputChange}
+                      label={t("Token Symbol")}
+                      labelPlacement="outside"
+                      placeholder={t("e.g. SDAO")}
+                      description={t("A short identifier for your token")}
+                      isRequired
+                    />
+                    <Textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      label={t("Token Description")}
+                      labelPlacement="outside"
+                      placeholder={t("Enter token description")}
+                      description={t(
+                        "Describe the purpose and benefits of this token."
+                      )}
+                      isRequired
+                    />
+                  </Stack>
+                )}
               </ModalBody>
               <ModalFooter>
                 <Button
