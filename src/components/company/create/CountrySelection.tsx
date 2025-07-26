@@ -5,6 +5,7 @@ import { Button, ButtonProps, Chip, Divider } from "@heroui/react";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "next-i18next";
+import { useRouter } from "next/router";
 
 type CountrySelectionProps = {
   isGoingBack: boolean;
@@ -16,6 +17,7 @@ export const CountrySelection: FC<CountrySelectionProps> = ({
   onNext,
 }) => {
   const { t } = useTranslation(["company", "common"]);
+  const router = useRouter();
   return (
     <motion.div
       className="flex flex-col items-start justify-center gap-4 w-full max-w-lg p-8"
@@ -52,6 +54,35 @@ export const CountrySelection: FC<CountrySelectionProps> = ({
           <CountrySelectionItem countryCode="AE" isWIP>
             {t("United Arab Emirates (UAE)")}
           </CountrySelectionItem>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-start justify-start gap-2 w-full mt-6">
+        <div className="flex items-center justify-start gap-1">
+          <PiPlusCircleDuotone className="text-primary text-medium" size={24} />
+          <h3 className="text-primary text-medium font-bold pt-[1.5px]">
+            または、無国籍DAOを作成
+          </h3>
+        </div>
+        <div className="flex flex-col items-start justify-start gap-0 w-full h-auto overflow-hidden bg-primary-foreground rounded-xl border-1 border-primary-outline">
+          <Button
+            disableRipple
+            onPress={() => router.push("/company/create/stateless-dao")}
+            startContent={
+              <div className="w-[28px] h-[28px] bg-gradient-to-br from-secondary-300 to-white rounded-none flex items-center justify-center"></div>
+            }
+            className="bg-transparent font-semibold text-primary w-full justify-start rounded-none data-[hover]:bg-primary-backing"
+          >
+            <div className="flex items-center justify-between w-full">
+              無国籍DAO
+              <PiArrowRight
+                className={clsx(
+                  "text-primary text-medium animate-bounce-right"
+                )}
+                size={20}
+              />
+            </div>
+          </Button>
         </div>
       </div>
     </motion.div>

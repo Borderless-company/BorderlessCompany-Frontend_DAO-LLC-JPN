@@ -39,6 +39,7 @@ import { AoIModal } from "./AoIModal";
 import { GovAgreementModal } from "./GovAgreementModal";
 import { OperationRegulationModal } from "./OperationRegulationModal";
 import { TokenAgreementModal } from "./TokenAgreementModal";
+import { isStatelessDao } from "@/utils/company";
 import {
   useCompanyInfo,
   useExeTokenContract,
@@ -171,24 +172,26 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
               <div className="w-full font-headline-lg">
                 {company?.display_name || "Your Company"}
               </div>
-              <Chip
-                className="transition-colors duration-150"
-                variant="bordered"
-                size="lg"
-                color={company?.is_active ? "primary" : "default"}
-                startContent={
-                  <PiPowerBold
-                    color={
-                      company?.is_active
-                        ? "var(--bls-primary)"
-                        : "var(--bls-neutral)"
-                    }
-                    size={20}
-                  />
-                }
-              >
-                {company?.is_active ? t("Active") : t("Inactive")}
-              </Chip>
+              {!isStatelessDao(company) && (
+                <Chip
+                  className="transition-colors duration-150"
+                  variant="bordered"
+                  size="lg"
+                  color={company?.is_active ? "primary" : "default"}
+                  startContent={
+                    <PiPowerBold
+                      color={
+                        company?.is_active
+                          ? "var(--bls-primary)"
+                          : "var(--bls-neutral)"
+                      }
+                      size={20}
+                    />
+                  }
+                >
+                  {company?.is_active ? t("Active") : t("Inactive")}
+                </Chip>
+              )}
             </Stack>
             <Stack className="w-full max-w-xl h-fit gap-0 pb-6 border-b-1 border-b-divider">
               <Stack
@@ -262,116 +265,120 @@ export const CompanyHomePage: FC<CompanyHomePageProps> = ({ companyId }) => {
                   </div>
                 </Stack>
               )}
-              <Stack h className="gap-2 mt-2">
-                <Button
-                  variant="faded"
-                  color="primary"
-                  size="md"
-                  startContent={<PiFileDuotone />}
-                  onPress={onOpenAoIModal}
-                >
-                  {"定款"}
-                </Button>
-                <Button
-                  variant="faded"
-                  color="primary"
-                  size="md"
-                  startContent={<PiFileDuotone />}
-                  onPress={onOpenGovAgreementModal}
-                >
-                  {"総会規定"}
-                </Button>
-                <Button
-                  variant="faded"
-                  color="primary"
-                  size="md"
-                  startContent={<PiFileDuotone />}
-                  onPress={onOpenOperationRegulationModal}
-                >
-                  {"運営規定"}
-                </Button>
-                <Button
-                  variant="faded"
-                  color="primary"
-                  size="md"
-                  startContent={<PiFileDuotone />}
-                  onPress={onOpenTokenAgreementModal}
-                >
-                  {"トークン規定"}
-                </Button>
-              </Stack>
+              {!isStatelessDao(company) && (
+                <Stack h className="gap-2 mt-2">
+                  <Button
+                    variant="faded"
+                    color="primary"
+                    size="md"
+                    startContent={<PiFileDuotone />}
+                    onPress={onOpenAoIModal}
+                  >
+                    {"定款"}
+                  </Button>
+                  <Button
+                    variant="faded"
+                    color="primary"
+                    size="md"
+                    startContent={<PiFileDuotone />}
+                    onPress={onOpenGovAgreementModal}
+                  >
+                    {"総会規定"}
+                  </Button>
+                  <Button
+                    variant="faded"
+                    color="primary"
+                    size="md"
+                    startContent={<PiFileDuotone />}
+                    onPress={onOpenOperationRegulationModal}
+                  >
+                    {"運営規定"}
+                  </Button>
+                  <Button
+                    variant="faded"
+                    color="primary"
+                    size="md"
+                    startContent={<PiFileDuotone />}
+                    onPress={onOpenTokenAgreementModal}
+                  >
+                    {"トークン規定"}
+                  </Button>
+                </Stack>
+              )}
             </Stack>
           </div>
-          <Stack className="w-full h-fit gap-4 px-10 py-6">
-            <Stack h className="items-center gap-2">
-              <PiKanbanDuotone className="text-primary" size={32} />
-              <h3 className="w-full font-headline-sm text-foreground">
-                {company?.is_active
-                  ? t("Level Up Your Company!")
-                  : t("Complete Tasks")}
-              </h3>
+          {!isStatelessDao(company) && (
+            <Stack className="w-full h-fit gap-4 px-10 py-6">
+              <Stack h className="items-center gap-2">
+                <PiKanbanDuotone className="text-primary" size={32} />
+                <h3 className="w-full font-headline-sm text-foreground">
+                  {company?.is_active
+                    ? t("Level Up Your Company!")
+                    : t("Complete Tasks")}
+                </h3>
+              </Stack>
+              <div className="w-full grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
+                {!company?.is_active &&
+                  taskStatus?.every((task) => task.status === "completed") && (
+                    <TaskCard
+                      title={`${t("Activate")} ${
+                        company?.display_name ||
+                        company?.COMPANY_NAME?.["ja-jp"] ||
+                        "Your Company"
+                      }${t("を起動する")}`}
+                      status="completed"
+                      variant="activation"
+                      onPress={onOpenCompanyActivation}
+                    />
+                  )}
+                {!company?.is_active &&
+                  taskStatus?.map((task) => (
+                    <>
+                      {task.task_id === "create-aoi" && (
+                        <TaskCard
+                          key={task.id}
+                          title={t("Create AoI")}
+                          status={task.status || "todo"}
+                          onPress={onOpenAoiBuilder}
+                        />
+                      )}
+                      {task.task_id === "enter-company-profile" && (
+                        <TaskCard
+                          key={task.id}
+                          title={t("Enter Company Profile")}
+                          status={task.status || "todo"}
+                          onPress={onOpenCompanyProfileEdit}
+                        />
+                      )}
+                      {task.task_id === "enter-non-executive-token-info" && (
+                        <TaskCard
+                          key={task.id}
+                          title={"非業務執行社員トークン情報を入力する"}
+                          status={task.status || "todo"}
+                          onPress={onOpenNonExecutiveTokenInfoEdit}
+                        />
+                      )}
+                      {task.task_id === "enter-executive-token-info" && (
+                        <TaskCard
+                          key={task.id}
+                          title={t("Enter Executive Member Token Info")}
+                          status={task.status || "todo"}
+                          onPress={onOpenExecutiveTokenInfoEdit}
+                        />
+                      )}
+                      {task.task_id === "create-gov-agreement" && (
+                        <TaskCard
+                          key={task.id}
+                          title={t("Create Gov Agreement")}
+                          status={task.status || "todo"}
+                          onPress={onOpenGovAgreementEdit}
+                        />
+                      )}
+                    </>
+                  ))}
+              </div>
             </Stack>
-            <div className="w-full grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
-              {!company?.is_active &&
-                taskStatus?.every((task) => task.status === "completed") && (
-                  <TaskCard
-                    title={`${t("Activate")} ${
-                      company?.display_name ||
-                      company?.COMPANY_NAME?.["ja-jp"] ||
-                      "Your Company"
-                    }${t("を起動する")}`}
-                    status="completed"
-                    variant="activation"
-                    onPress={onOpenCompanyActivation}
-                  />
-                )}
-              {!company?.is_active &&
-                taskStatus?.map((task) => (
-                  <>
-                    {task.task_id === "create-aoi" && (
-                      <TaskCard
-                        key={task.id}
-                        title={t("Create AoI")}
-                        status={task.status || "todo"}
-                        onPress={onOpenAoiBuilder}
-                      />
-                    )}
-                    {task.task_id === "enter-company-profile" && (
-                      <TaskCard
-                        key={task.id}
-                        title={t("Enter Company Profile")}
-                        status={task.status || "todo"}
-                        onPress={onOpenCompanyProfileEdit}
-                      />
-                    )}
-                    {task.task_id === "enter-non-executive-token-info" && (
-                      <TaskCard
-                        key={task.id}
-                        title={"非業務執行社員トークン情報を入力する"}
-                        status={task.status || "todo"}
-                        onPress={onOpenNonExecutiveTokenInfoEdit}
-                      />
-                    )}
-                    {task.task_id === "enter-executive-token-info" && (
-                      <TaskCard
-                        key={task.id}
-                        title={t("Enter Executive Member Token Info")}
-                        status={task.status || "todo"}
-                        onPress={onOpenExecutiveTokenInfoEdit}
-                      />
-                    )}
-                    {task.task_id === "create-gov-agreement" && (
-                      <TaskCard
-                        key={task.id}
-                        title={t("Create Gov Agreement")}
-                        status={task.status || "todo"}
-                        onPress={onOpenGovAgreementEdit}
-                      />
-                    )}
-                  </>
-                ))}
-            </div>
-          </Stack>
+          )}
         </Stack>
       )}
       {isOpenAoiBuilder && (
