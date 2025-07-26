@@ -6,6 +6,7 @@ import MemberList from "../members/MemberList";
 import { useToken } from "@/hooks/useToken";
 import { TokenSales } from "./TokenSales";
 import { TokenTypeChip } from "./TokenTypeChip";
+import { TokenRoleManager } from "./TokenRoleManager";
 import { useDropERC721Mint } from "@/hooks/useDropERC721";
 import { useActiveAccount } from "thirdweb/react";
 
@@ -111,6 +112,11 @@ export const TokenDetailPage: FC<TokenDetailPageProps> = ({
           <Tab key="token-sales" title="トークン販売" className="overflow-auto">
             <TokenSales companyId={companyId} tokenId={tokenId} />
           </Tab>
+          {token?.contract_address && (
+            <Tab key="role-management" title="権限管理" className="overflow-auto">
+              <TokenRoleManager contractAddress={token.contract_address} />
+            </Tab>
+          )}
         </Tabs>
       </div>
 

@@ -23,6 +23,10 @@ import { defineChain } from "thirdweb/chains";
 import { client } from "@/utils/client";
 import { useActiveAccount } from "thirdweb/react";
 import { useTranslation } from "next-i18next";
+import { getContract } from "thirdweb";
+import { lazyMint, setClaimConditions } from "thirdweb/extensions/erc721";
+import { useSendTransaction } from "thirdweb/react";
+import type { NFTMetadata } from "@/pages/api/token/metadata/index";
 
 type StatelessDaoTokenCreateProps = {
   company?: Tables<"COMPANY">;
@@ -45,6 +49,7 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
     description: "",
   });
   const smartAccount = useActiveAccount();
+  const { mutateAsync: sendTransaction } = useSendTransaction();
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -99,6 +104,75 @@ export const StatelessDaoTokenCreate: FC<StatelessDaoTokenCreateProps> = ({
         },
       });
       console.log("✅ ERC721 contract deployed at:", contractAddress);
+
+      // メタデータをアップロード
+      console.log("📋 Uploading NFT metadata...");
+      const metadata: NFTMetadata = {
+        name: formData.name,
+        description: formData.description,
+        image: imageUrl || "",
+        external_url: `${process.env.NEXT_PUBLIC_BASE_URL}/tokens/${contractAddress}`,
+      };
+
+      const metadataResponse = await fetch("/api/token/metadata", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tokenId: "0", // 基本メタデータとして0を使用
+          tokenUUID: contractAddress.toLowerCase(),
+          metadata,
+        }),
+      });
+
+      if (!metadataResponse.ok) {
+        throw new Error("Failed to upload metadata");
+      }
+
+      const { url: metadataUrl } = await metadataResponse.json();
+      console.log("✅ Metadata uploaded:", metadataUrl);
+
+      // ClaimConditionとLazyMintの設定
+      console.log("⚙️ Setting up ClaimConditions and LazyMint...");
+      const contract = getContract({
+        client,
+        chain,
+        address: contractAddress,
+      });
+
+      // LazyMint: 最初の100個のNFTを設定
+      const lazyMintTransaction = lazyMint({
+        contract,
+        nfts: Array(5000)
+          .fill(null)
+          .map((_, i) => ({
+            name: `${formData.name} #${i + 1}`,
+            description: formData.description,
+            image: imageUrl,
+            external_url: `${
+              process.env.NEXT_PUBLIC_BASE_URL
+            }/tokens/${contractAddress}/${i + 1}`,
+          })),
+      });
+
+      await sendTransaction(lazyMintTransaction);
+      console.log("✅ LazyMint completed");
+
+      // ClaimConditionsの設定
+      const claimConditionsTransaction = setClaimConditions({
+        contract,
+        phases: [
+          {
+            maxClaimableSupply: BigInt("1000000"),
+            maxClaimablePerWallet: BigInt("1000"),
+            currencyAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+            price: 0,
+            startTime: new Date(),
+          },
+        ],
+      });
+
+      await sendTransaction(claimConditionsTransaction);
+      console.log("✅ ClaimConditions set");
 
       // トークンを作成
       console.log("🪙 Creating token record...");

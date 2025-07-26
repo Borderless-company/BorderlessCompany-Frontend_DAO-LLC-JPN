@@ -3,10 +3,12 @@ import { getContract, estimateGas, readContract } from "thirdweb";
 import { defineChain } from "thirdweb/chains";
 import { client } from "@/utils/client";
 import { claimTo, lazyMint, setClaimConditions, getActiveClaimCondition, getTotalClaimedSupply, nextTokenIdToMint } from "thirdweb/extensions/erc721";
+import { useDropERC721Roles } from "./useDropERC721Roles";
 
 export const useDropERC721Mint = () => {
   const { mutateAsync: sendTransaction } = useSendTransaction();
   const activeAccount = useActiveAccount();
+  const { hasMinterRole } = useDropERC721Roles();
 
   const setupClaimConditions = async (contractAddress: string) => {
     const contract = getContract({
@@ -71,6 +73,7 @@ export const useDropERC721Mint = () => {
     });
 
     let isOwner = false;
+    let hasMinter = false;
 
     try {
       // Check if we're the owner
@@ -84,6 +87,16 @@ export const useDropERC721Mint = () => {
         console.log("Is owner:", isOwner, "Owner:", owner, "Active account:", activeAccount?.address);
       } catch (error) {
         console.log("Could not check owner status:", error);
+      }
+
+      // Check if we have minter role
+      if (activeAccount?.address) {
+        try {
+          hasMinter = await hasMinterRole(contractAddress, activeAccount.address);
+          console.log("Has minter role:", hasMinter);
+        } catch (error) {
+          console.log("Could not check minter role:", error);
+        }
       }
 
       // Check if claim conditions exist
@@ -100,6 +113,11 @@ export const useDropERC721Mint = () => {
       if (isOwner && !hasValidClaimConditions) {
         console.log("Owner detected, setting up claim conditions...");
         await setupClaimConditions(contractAddress);
+      }
+
+      // Check permissions before attempting to claim
+      if (!isOwner && !hasMinter) {
+        throw new Error("権限不足: トークンをミントするにはオーナーまたはMINTER_ROLEが必要です。");
       }
 
       // Now perform the claim
@@ -134,8 +152,10 @@ export const useDropERC721Mint = () => {
       // Provide helpful error messages based on common DropERC721 errors
       const errorMessage = error.message || error.toString();
       
-      if (errorMessage.includes("!Tokens") || errorMessage.includes("ETokens")) {
-        if (isOwner) {
+      if (errorMessage.includes("AccessControl") || errorMessage.includes("権限不足")) {
+        throw new Error("権限エラー: この操作を実行する権限がありません。管理者にMINTER_ROLEの付与を依頼してください。");
+      } else if (errorMessage.includes("!Tokens") || errorMessage.includes("ETokens")) {
+        if (isOwner || hasMinter) {
           throw new Error("トークンの供給が不足しています。追加のトークンをレイジーミントしてください。");
         } else {
           throw new Error("クレーム条件が設定されていないか、トークンの供給が不足しています。管理者にお問い合わせください。");
