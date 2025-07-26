@@ -1,5 +1,18 @@
 import { Stack } from "@/sphere/Stack";
-import { Button, Link, Tab, Tabs, Spinner, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input, useDisclosure } from "@heroui/react";
+import {
+  Button,
+  Link,
+  Tab,
+  Tabs,
+  Spinner,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Input,
+  useDisclosure,
+} from "@heroui/react";
 import Image from "next/image";
 import { FC, useState } from "react";
 import MemberList from "../members/MemberList";
@@ -83,7 +96,7 @@ export const TokenDetailPage: FC<TokenDetailPageProps> = ({
             </span>
           </Link>
         </Stack>
-        {token?.contract_address && (
+        {/* {token?.contract_address && (
           <Button
             color="primary"
             onPress={onOpen}
@@ -92,7 +105,7 @@ export const TokenDetailPage: FC<TokenDetailPageProps> = ({
           >
             Mint
           </Button>
-        )}
+        )} */}
       </div>
       {/* right column */}
       <div className="flex-1 h-full overflow-auto">
@@ -113,7 +126,11 @@ export const TokenDetailPage: FC<TokenDetailPageProps> = ({
             <TokenSales companyId={companyId} tokenId={tokenId} />
           </Tab>
           {token?.contract_address && (
-            <Tab key="role-management" title="権限管理" className="overflow-auto">
+            <Tab
+              key="role-management"
+              title="権限管理"
+              className="overflow-auto"
+            >
               <TokenRoleManager contractAddress={token.contract_address} />
             </Tab>
           )}
@@ -145,7 +162,9 @@ export const TokenDetailPage: FC<TokenDetailPageProps> = ({
                 />
                 {txHash && (
                   <div className="bg-success-50 border border-success-200 rounded-lg p-3">
-                    <p className="text-sm text-success-700 mb-1">ミント成功！</p>
+                    <p className="text-sm text-success-700 mb-1">
+                      ミント成功！
+                    </p>
                     <Link
                       color="success"
                       isExternal
@@ -166,10 +185,10 @@ export const TokenDetailPage: FC<TokenDetailPageProps> = ({
                   color="primary"
                   onPress={async () => {
                     if (!token?.contract_address || !mintAddress) return;
-                    
+
                     setIsMinting(true);
                     setTxHash(null);
-                    
+
                     try {
                       const hash = await mintTo(
                         token.contract_address,
@@ -186,7 +205,9 @@ export const TokenDetailPage: FC<TokenDetailPageProps> = ({
                     }
                   }}
                   isLoading={isMinting}
-                  isDisabled={!mintAddress || !mintQuantity || parseInt(mintQuantity) < 1}
+                  isDisabled={
+                    !mintAddress || !mintQuantity || parseInt(mintQuantity) < 1
+                  }
                 >
                   ミント実行
                 </Button>
