@@ -56,12 +56,12 @@ export const CountrySelection: FC<CountrySelectionProps> = ({
           </CountrySelectionItem>
         </div>
       </div>
-      
+
       <div className="flex flex-col items-start justify-start gap-2 w-full mt-6">
         <div className="flex items-center justify-start gap-1">
           <PiPlusCircleDuotone className="text-primary text-medium" size={24} />
           <h3 className="text-primary text-medium font-bold pt-[1.5px]">
-            {t("Create a stateless DAO")}
+            または、無国籍DAOを作成
           </h3>
         </div>
         <div className="flex flex-col items-start justify-start gap-0 w-full h-auto overflow-hidden bg-primary-foreground rounded-xl border-1 border-primary-outline">
@@ -69,16 +69,16 @@ export const CountrySelection: FC<CountrySelectionProps> = ({
             disableRipple
             onPress={() => router.push("/company/create/stateless-dao")}
             startContent={
-              <div className="w-[28px] h-[28px] bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">∞</span>
-              </div>
+              <div className="w-[28px] h-[28px] bg-gradient-to-br from-secondary-300 to-white rounded-none flex items-center justify-center"></div>
             }
             className="bg-transparent font-semibold text-primary w-full justify-start rounded-none data-[hover]:bg-primary-backing"
           >
             <div className="flex items-center justify-between w-full">
-              {t("Stateless DAO")}
+              無国籍DAO
               <PiArrowRight
-                className={clsx("text-primary text-medium animate-bounce-right")}
+                className={clsx(
+                  "text-primary text-medium animate-bounce-right"
+                )}
                 size={20}
               />
             </div>

@@ -44,13 +44,15 @@ export const StatelessDaoCreationPage: FC = () => {
     setIsCreating(true);
     try {
       // 画像をアップロード
+      let iconUrl = "";
       if (selectedFile) {
         console.log("📸 Uploading DAO icon...");
         const { publicUrl } = await uploadFile(
-          "dao-icons",
-          `${uuidv4()}-dao-icon`,
+          "company-icon",
+          `${uuidv4()}-company-icon`,
           selectedFile
         );
+        iconUrl = publicUrl as string;
         setImgUrl(publicUrl);
         console.log("✅ DAO icon uploaded:", publicUrl);
       }
@@ -71,7 +73,7 @@ export const StatelessDaoCreationPage: FC = () => {
         company_type: "dao" as Enums<"CompanyType">,
         company_name: companyName.id,
         display_name: daoNameJa,
-        icon: imgUrl,
+        icon: iconUrl,
       } as Tables<"COMPANY">;
       console.log("📋 Company creation parameters:", companyParams);
 
